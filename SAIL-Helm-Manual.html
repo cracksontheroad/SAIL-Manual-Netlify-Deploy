@@ -1,0 +1,3402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAIL Helm Manual - SAIL OS v6 | EduNexus</title>
+
+    <!-- Google Fonts -->
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* === ANIMATIONS === */
+@keyframes float-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.4; }
+  50% { transform: translateY(-20px) translateX(10px); opacity: 0.8; }
+}
+@keyframes float-delayed-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.3; }
+  50% { transform: translateY(-15px) translateX(-10px); opacity: 0.7; }
+}
+@keyframes float-slow-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.2; }
+  50% { transform: translateY(-25px) translateX(5px); opacity: 0.6; }
+}
+@keyframes drift {
+  0% { transform: translateX(0px); }
+  100% { transform: translateX(20px); }
+}
+@keyframes orbit {
+  0% { transform: rotate(0deg) translateX(30px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
+}
+@keyframes breathing {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.1); }
+}
+@keyframes breathing-delayed {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.05); }
+}
+@keyframes rotate-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes slideInLeft {
+  0% { opacity: 0; transform: translateX(-50px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInDown {
+  0% { opacity: 0; transform: translateY(-30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.1); }
+  50% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), 0 0 30px rgba(255, 255, 255, 0.1); }
+}
+
+/* === RESET & BASE === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); border-radius: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: rgba(255,255,255,0.85);
+  background: #000;
+  line-height: 1.7;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* === IMMERSIVE BACKGROUND === */
+.immersive-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.immersive-bg .gradient-base {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1e1b4b 0%, #3b0764 40%, #0f172a 100%);
+}
+
+.immersive-bg .bg-image {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/8d0c8cab-aafd-4759-951d-82f748461c75_3840w.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.4;
+}
+
+/* Floating particles */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(1px);
+}
+.particle-1 { top: 25%; left: 33%; width: 2px; height: 2px; background: rgba(96,165,250,0.4); animation: float-glow 4s ease-in-out infinite; }
+.particle-2 { top: 75%; right: 25%; width: 1px; height: 1px; background: rgba(167,139,250,0.5); animation: float-delayed-glow 5s ease-in-out infinite; }
+.particle-3 { bottom: 33%; left: 50%; width: 1.5px; height: 1.5px; background: rgba(244,114,182,0.3); animation: float-slow-glow 6s ease-in-out infinite; }
+.particle-4 { top: 50%; right: 33%; width: 1px; height: 1px; background: rgba(34,211,238,0.4); animation: drift 8s ease-in-out infinite alternate; }
+.particle-5 { bottom: 25%; left: 25%; width: 2px; height: 2px; background: rgba(129,140,248,0.3); animation: orbit 15s linear infinite; }
+
+/* Ambient orbs */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+}
+.orb-1 { top: -50px; right: -50px; width: 384px; height: 384px; background: radial-gradient(circle, rgba(59,130,246,0.15), transparent); animation: breathing 4s ease-in-out infinite; }
+.orb-2 { bottom: -50px; left: -50px; width: 320px; height: 320px; background: radial-gradient(circle, rgba(168,85,247,0.2), transparent); animation: breathing-delayed 4s ease-in-out infinite 2s; }
+.orb-3 { top: 50%; left: 50%; width: 256px; height: 256px; background: radial-gradient(circle, rgba(236,72,153,0.1), transparent); animation: rotate-slow 20s linear infinite; }
+
+/* === LAYOUT === */
+.container {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* === GLASS SIDEBAR === */
+.sidebar, aside.sidebar {
+  width: 300px;
+  position: fixed;
+  top: 16px;
+  bottom: 16px;
+  left: 16px;
+  z-index: 100;
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  animation: slideInLeft 0.8s ease-out forwards;
+  transition: border-color 0.5s ease;
+  scrollbar-width: thin;
+}
+.sidebar:hover { border-color: rgba(255,255,255,0.25); }
+
+.sidebar-logo, .sidebar-header, .sidebar > div:first-child, .sidebar > h2:first-child {
+  padding: 28px 24px 16px;
+  font-size: 1.35em;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.sidebar-header h2, .sidebar-header h1 {
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: 700;
+  margin: 0;
+  padding: 0;
+  border: none;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-header p, .sidebar-header .version, .sidebar-version {
+  font-size: 0.8em;
+  color: rgba(255,255,255,0.5);
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+/* Sidebar search */
+.sidebar-search, .sidebar .search-container {
+  padding: 12px 20px 16px;
+}
+
+.sidebar-search input, .sidebar input[type="text"], .search-input {
+  width: 100%;
+  padding: 10px 14px 10px 38px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.08);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  color: #fff;
+  font-size: 0.85em;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  outline: none;
+}
+.sidebar-search input:focus, .sidebar input[type="text"]:focus, .search-input:focus {
+  border-color: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.12);
+}
+.sidebar-search input::placeholder, .sidebar input[type="text"]::placeholder, .search-input::placeholder {
+  color: rgba(255,255,255,0.4);
+}
+
+/* Sidebar navigation links - all variants */
+.sidebar-nav, .sidebar-menu, .sidebar nav, .nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px 20px;
+}
+
+.sidebar-nav a, .sidebar-menu a, .sidebar-menu li a, .sidebar nav a,
+.nav-link, .nav-item, a.nav-link, a.nav-item, button.nav-link {
+  display: block;
+  padding: 10px 16px;
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.88em;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  border: 1px solid transparent;
+  background: transparent;
+  text-align: left;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.4;
+}
+
+.sidebar-nav a:hover, .sidebar-menu a:hover, .sidebar-menu li a:hover, .sidebar nav a:hover,
+.nav-link:hover, .nav-item:hover, a.nav-link:hover, a.nav-item:hover, button.nav-link:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.9);
+  border-color: rgba(255,255,255,0.1);
+  transform: scale(1.02);
+}
+
+.sidebar-nav a.active, .sidebar-menu a.active, .sidebar-menu li a.active, .sidebar nav a.active,
+.nav-link.active, .nav-item.active, a.nav-link.active, a.nav-item.active, button.nav-link.active {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border-color: rgba(255,255,255,0.2);
+  font-weight: 600;
+  box-shadow: 0 0 15px rgba(255,255,255,0.05);
+}
+
+/* Sidebar section headings / group titles */
+.nav-section-title, .nav-group, .sidebar h3, .sidebar h4,
+.sidebar-menu > h3, .sidebar-menu > h4 {
+  font-size: 0.7em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.35);
+  padding: 18px 16px 6px;
+  margin: 0;
+  border: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.nav-section {
+  margin-bottom: 4px;
+}
+
+/* Sidebar list items without bullets */
+.sidebar-menu ul, .sidebar-menu ol, .sidebar nav ul, .sidebar nav ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* === MAIN CONTENT AREA === */
+.main-wrapper {
+  margin-left: 332px;
+  flex: 1;
+  min-height: 100vh;
+  padding: 16px 16px 16px 0;
+}
+
+.main-content, main.main-content {
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 48px 52px;
+  min-height: calc(100vh - 32px);
+  transition: border-color 0.5s ease;
+  animation: fadeIn 0.6s ease-out forwards;
+}
+.main-content:hover { border-color: rgba(255,255,255,0.25); }
+
+/* === CONTENT SECTIONS === */
+.content-section { display: none; animation: fadeIn 0.4s ease-out; }
+.content-section.active { display: block; }
+
+/* === TYPOGRAPHY === */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 2.2em;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 0.6em;
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h2 {
+  font-size: 1.6em;
+  font-weight: 600;
+  margin-top: 2em;
+  margin-bottom: 0.6em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  /* Override gradient text for h2 */
+  background: none;
+  -webkit-text-fill-color: #fff;
+}
+
+h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.4em;
+  color: rgba(255,255,255,0.95);
+}
+
+h4 {
+  font-size: 1.05em;
+  font-weight: 600;
+  margin-top: 1.2em;
+  margin-bottom: 0.3em;
+  color: rgba(255,255,255,0.9);
+}
+
+p {
+  margin-bottom: 1em;
+  color: rgba(255,255,255,0.75);
+}
+
+a { color: rgba(147,197,253,0.9); text-decoration: none; transition: color 0.3s; }
+a:hover { color: #fff; }
+
+strong, b { color: rgba(255,255,255,0.95); font-weight: 600; }
+
+code {
+  background: rgba(255,255,255,0.08);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  color: rgba(196,181,253,0.9);
+}
+
+ul, ol {
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+  color: rgba(255,255,255,0.75);
+}
+
+li { margin-bottom: 0.5em; }
+
+/* === STYLED BOXES (tip, note, ai, warning, milestone) === */
+.box {
+  padding: 20px 24px;
+  margin: 20px 0;
+  border-radius: 16px;
+  border-left: 3px solid;
+  background: rgba(255,255,255,0.04);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+}
+
+.box-title {
+  font-weight: 600;
+  color: rgba(255,255,255,0.95);
+  margin-bottom: 8px;
+}
+
+.box-tip, .box.tip {
+  border-left: 3px solid rgba(52,211,153,0.6);
+  background: rgba(52,211,153,0.06);
+}
+.box-tip::before, .box.tip::before { content: "💡 "; font-weight: bold; }
+
+.box-note, .box.note {
+  border-left: 3px solid rgba(251,191,36,0.6);
+  background: rgba(251,191,36,0.06);
+}
+.box-note::before, .box.note::before { content: "⚠️ "; font-weight: bold; }
+
+.box-ai, .box.ai-feature {
+  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15));
+  border-left: 3px solid rgba(168,85,247,0.6);
+  border: 1px solid rgba(168,85,247,0.2);
+}
+.box-ai::before, .box.ai-feature::before { content: "🤖 "; font-weight: bold; }
+.box-ai a { color: rgba(251,191,36,0.9); }
+
+.box.warning {
+  border-left: 3px solid rgba(239,68,68,0.6);
+  background: rgba(239,68,68,0.06);
+}
+
+.box.milestone {
+  border-left: 3px solid rgba(59,130,246,0.6);
+  background: rgba(59,130,246,0.06);
+}
+
+/* === STEPS === */
+.steps {
+  list-style: none;
+  padding: 0;
+  counter-reset: step-counter;
+}
+
+.steps li {
+  margin: 18px 0;
+  padding-left: 54px;
+  position: relative;
+  color: rgba(255,255,255,0.75);
+}
+
+.steps li::before {
+  content: counter(step-counter);
+  counter-increment: step-counter;
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.1);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+/* === CHECKLISTS === */
+.checklist {
+  list-style: none;
+  padding: 0;
+}
+
+.checklist li {
+  padding: 10px 0 10px 32px;
+  position: relative;
+  color: rgba(255,255,255,0.75);
+}
+
+.checklist li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: rgba(52,211,153,0.8);
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+/* === TABLES === */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 20px 0;
+  font-size: 0.9em;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+th {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.95);
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.7);
+}
+
+tr:hover td {
+  background: rgba(255,255,255,0.03);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* === ROLE BADGES === */
+.role-super-admin { color: rgba(56,189,248,0.9); font-weight: 600; }
+.role-admin { color: rgba(248,113,113,0.9); font-weight: 600; }
+.role-dept-head { color: rgba(167,139,250,0.9); font-weight: 600; }
+.role-teacher { color: rgba(52,211,153,0.9); font-weight: 600; }
+.role-student { color: rgba(129,140,248,0.9); font-weight: 600; }
+.role-parent { color: rgba(148,163,184,0.9); font-weight: 600; }
+
+.role-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.82em;
+  font-weight: 600;
+  margin-right: 5px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.role-badge.super-admin { background: rgba(56,189,248,0.12); color: rgba(56,189,248,0.9); border-color: rgba(56,189,248,0.2); }
+.role-badge.admin { background: rgba(248,113,113,0.12); color: rgba(248,113,113,0.9); border-color: rgba(248,113,113,0.2); }
+.role-badge.dept-head { background: rgba(167,139,250,0.12); color: rgba(167,139,250,0.9); border-color: rgba(167,139,250,0.2); }
+.role-badge.teacher { background: rgba(52,211,153,0.12); color: rgba(52,211,153,0.9); border-color: rgba(52,211,153,0.2); }
+.role-badge.student { background: rgba(129,140,248,0.12); color: rgba(129,140,248,0.9); border-color: rgba(129,140,248,0.2); }
+.role-badge.parent { background: rgba(148,163,184,0.12); color: rgba(148,163,184,0.9); border-color: rgba(148,163,184,0.2); }
+
+/* === COLLAPSIBLE === */
+.collapsible {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.9);
+  cursor: pointer;
+  padding: 16px 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  margin: 10px 0;
+  font-weight: 600;
+  font-size: 0.95em;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.collapsible:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  transform: scale(1.01);
+}
+
+.collapsible.active {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.25);
+  box-shadow: 0 0 20px rgba(255,255,255,0.05);
+}
+
+.collapsible-content {
+  display: none;
+  padding: 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-top: none;
+  border-radius: 0 0 14px 14px;
+  margin-top: -10px;
+}
+
+.collapsible-content.active {
+  display: block;
+}
+
+.collapsible-icon, .collapsible-arrow {
+  transition: transform 0.3s;
+  color: rgba(255,255,255,0.5);
+}
+
+.collapsible.active .collapsible-icon,
+.collapsible.active .collapsible-arrow {
+  transform: rotate(180deg);
+}
+
+/* === FEATURE GRID & CARDS === */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.feature-card {
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.feature-card h4 {
+  margin-top: 0;
+  color: rgba(255,255,255,0.95);
+}
+
+/* === ICON CIRCLE === */
+.icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+/* === FOOTER === */
+.footer {
+  background: rgba(255,255,255,0.04);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  padding: 24px;
+  margin-top: 48px;
+  border-radius: 0 0 24px 24px;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 0.85em;
+  color: rgba(255,255,255,0.4);
+}
+
+/* === UTILITY CLASSES === */
+.text-teal { color: rgba(52,211,153,0.9); }
+.text-center { text-align: center; }
+.mt-2 { margin-top: 2em; }
+.mb-2 { margin-bottom: 2em; }
+
+/* === STEP DESCRIPTION (SuperTeacher specific) === */
+.step-description {
+  color: rgba(255,255,255,0.65);
+  font-size: 0.9em;
+  margin-top: 4px;
+}
+
+/* Walkthrough step cards (SuperTeacher specific) */
+.setup-step, .step-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 12px 0;
+}
+
+/* === MOBILE RESPONSIVE === */
+@media (max-width: 900px) {
+  .sidebar, aside.sidebar {
+    position: fixed;
+    width: 280px;
+    left: -300px;
+    top: 0;
+    bottom: 0;
+    border-radius: 0 24px 24px 0;
+    transition: left 0.4s ease;
+    z-index: 200;
+  }
+  .sidebar.mobile-open { left: 0; }
+
+  .main-wrapper {
+    margin-left: 0;
+    padding: 16px;
+  }
+
+  .main-content, main.main-content {
+    padding: 28px 24px;
+    border-radius: 20px;
+  }
+
+  h1 { font-size: 1.6em; }
+  h2 { font-size: 1.3em; }
+  h3 { font-size: 1.1em; }
+
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 901px) {
+  .mobile-menu-btn { display: none !important; }
+  .mobile-overlay { display: none !important; }
+}
+
+.mobile-menu-btn {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 150;
+  width: 44px;
+  height: 44px;
+  background: rgba(255,255,255,0.1);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 14px;
+  color: #fff;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  transition: all 0.3s;
+}
+.mobile-menu-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
+
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  z-index: 150;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.mobile-overlay.active { opacity: 1; pointer-events: auto; }
+
+/* === PRINT CSS === */
+@media print {
+  .sidebar, aside.sidebar, .immersive-bg, .mobile-menu-btn, .mobile-overlay { display: none !important; }
+  .main-wrapper { margin-left: 0; }
+  .main-content, main.main-content {
+    max-width: 100%;
+    padding: 0;
+    background: #fff;
+    color: #000;
+    border: none;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  body { background: #fff; color: #000; }
+  .content-section { display: block !important; page-break-after: always; }
+  h1, h2, h3, h4 { color: #000; -webkit-text-fill-color: #000; background: none; }
+  p, li, td { color: #333; }
+  th { background: #eee; color: #000; }
+  .box { background: #f5f5f5; border-color: #ccc; }
+  .collapsible-content { display: block !important; }
+  .feature-card { background: #f5f5f5; border-color: #ddd; }
+}
+</style>
+</head>
+<body>
+<!-- Immersive Background -->
+<div class="immersive-bg">
+  <div class="gradient-base"></div>
+  <div class="bg-image"></div>
+  <div class="particle particle-1"></div>
+  <div class="particle particle-2"></div>
+  <div class="particle particle-3"></div>
+  <div class="particle particle-4"></div>
+  <div class="particle particle-5"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+<!-- Mobile Menu Button -->
+<button class="mobile-menu-btn" onclick="document.querySelector('.sidebar, aside.sidebar').classList.toggle('mobile-open'); document.querySelector('.mobile-overlay').classList.toggle('active');">☰</button>
+<div class="mobile-overlay" onclick="document.querySelector('.sidebar, aside.sidebar').classList.remove('mobile-open'); this.classList.remove('active');"></div>
+
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">SAIL Helm</div>
+            <div class="sidebar-search">
+                <input type="text" id="searchInput" placeholder="Search...">
+            </div>
+            <nav class="sidebar-nav" id="sidebarNav">
+                <a href="javascript:void(0)" data-target="welcome" class="nav-link active">Welcome & Overview</a>
+                <a href="javascript:void(0)" data-target="roles" class="nav-link">Role Hierarchy</a>
+                <a href="javascript:void(0)" data-target="provisioning" class="nav-link">First-Time Setup</a>
+                <a href="javascript:void(0)" data-target="dashboard" class="nav-link">Dashboard</a>
+                <a href="javascript:void(0)" data-target="courses" class="nav-link">Course Management</a>
+                <a href="javascript:void(0)" data-target="assignments" class="nav-link">Assignments & Grading</a>
+                <a href="javascript:void(0)" data-target="ai-features" class="nav-link">AI Features</a>
+                <a href="javascript:void(0)" data-target="students" class="nav-link">Student Management</a>
+                <a href="javascript:void(0)" data-target="attendance" class="nav-link">Attendance & Wellbeing</a>
+                <a href="javascript:void(0)" data-target="class-pulse" class="nav-link">Class Pulse</a>
+                <a href="javascript:void(0)" data-target="communication" class="nav-link">Communication</a>
+                <a href="javascript:void(0)" data-target="analytics" class="nav-link">Analytics & Reports</a>
+                <a href="javascript:void(0)" data-target="administration" class="nav-link">Administration</a>
+                <a href="javascript:void(0)" data-target="settings" class="nav-link">Settings & Privacy</a>
+                <a href="javascript:void(0)" data-target="compliance" class="nav-link">Compliance</a>
+                <a href="javascript:void(0)" data-target="features" class="nav-link">Full Feature List</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-wrapper">
+            <main class="main-content">
+                <!-- Welcome Section -->
+                <section id="welcome" class="content-section active">
+                    <h1>Welcome to SAIL Helm</h1>
+                    <p>SAIL Helm is your comprehensive administrative interface for SAIL OS (Schoolwide AI Learning Operating System), an integrated educational platform designed for K-12 institutions. SAIL OS v6 represents the latest evolution in AI-powered learning management, combining traditional course management with intelligent tutoring, real-time analytics, and comprehensive safeguarding features.</p>
+
+                    <h2>What is SAIL OS?</h2>
+                    <p>SAIL OS is a complete learning ecosystem that empowers educators to create engaging courses, monitor student progress in real-time, leverage AI-powered content creation and tutoring, and make data-driven decisions about student learning and wellbeing. It brings together course content, student data, assessment tools, AI learning assistants, and comprehensive analytics under one intuitive platform.</p>
+
+                    <div class="box box-ai">
+                        <strong>AI-Powered Learning</strong> - SAIL OS integrates advanced AI capabilities throughout the platform, from automated content generation to real-time learning support, all designed with safety guardrails and educational best practices.
+                    </div>
+
+                    <h2>The Six User Roles</h2>
+                    <p>SAIL OS supports six distinct user roles, each with tailored dashboards, permissions, and feature access:</p>
+
+                    <table>
+                        <tr>
+                            <th>Role</th>
+                            <th>Primary Responsibility</th>
+                            <th>Access Level</th>
+                        </tr>
+                        <tr>
+                            <td><span class="role-super-admin">Super Admin</span></td>
+                            <td>Overall system administration, school configuration, staff management, compliance oversight</td>
+                            <td>18 pages</td>
+                        </tr>
+                        <tr>
+                            <td><span class="role-admin">Admin</span></td>
+                            <td>Day-to-day operational management, user support, content moderation</td>
+                            <td>17 pages</td>
+                        </tr>
+                        <tr>
+                            <td><span class="role-dept-head">Department Head</span></td>
+                            <td>Departmental oversight, curriculum alignment, team performance review</td>
+                            <td>14 pages</td>
+                        </tr>
+                        <tr>
+                            <td><span class="role-teacher">Teacher</span></td>
+                            <td>Course creation, assignment management, student assessment and feedback</td>
+                            <td>15 pages</td>
+                        </tr>
+                        <tr>
+                            <td><span class="role-student">Student</span></td>
+                            <td>Course participation, assignment submission, AI learning assistance</td>
+                            <td>11 pages</td>
+                        </tr>
+                        <tr>
+                            <td><span class="role-parent">Parent</span></td>
+                            <td>Monitor child progress, view grades, access school announcements</td>
+                            <td>6 pages</td>
+                        </tr>
+                    </table>
+
+                    <h2>Quick Navigation</h2>
+                    <p>This manual is organized by feature and user role. Use the sidebar to navigate to specific sections, or use the search function to find what you need. Each section contains step-by-step guides, tips, and best practices.</p>
+
+                    <div class="box box-tip">
+                        <strong>Getting Started Tip:</strong> If this is your first time using SAIL Helm, start with the "First-Time Setup" section to learn about the Provisioning Wizard.
+                    </div>
+
+                    <h2>Documentation Structure</h2>
+                    <ul class="checklist">
+                        <li>Each section begins with an overview of the feature</li>
+                        <li>Step-by-step guides are numbered for easy following</li>
+                        <li>Tips and notes highlight important information</li>
+                        <li>AI Feature boxes explain AI-powered capabilities</li>
+                        <li>Role badges indicate which user types can access each feature</li>
+                    </ul>
+                </section>
+
+                <!-- Role Hierarchy Section -->
+                <section id="roles" class="content-section">
+                    <h1>Role Hierarchy & Permissions</h1>
+                    <p>SAIL OS implements a hierarchical permission system where each role has specific access levels and capabilities. Understanding the role hierarchy is essential for properly configuring your school's access controls and ensuring security.</p>
+
+                    <h2>The Permission Hierarchy</h2>
+                    <p>The six roles are organized in a hierarchy from highest to lowest privilege:</p>
+
+                    <ol class="steps">
+                        <li><strong>Super Admin</strong> - Full system access with authority over all school data and settings</li>
+                        <li><strong>Admin</strong> - Operational management with oversight of daily activities</li>
+                        <li><strong>Department Head</strong> - Departmental leadership with curriculum oversight</li>
+                        <li><strong>Teacher</strong> - Classroom management and student assessment</li>
+                        <li><strong>Student</strong> - Course participation and learning</li>
+                        <li><strong>Parent</strong> - Monitoring child progress only</li>
+                    </ol>
+
+                    <h2>Detailed Permission Matrix</h2>
+                    <p>The following table outlines which pages and features each role can access:</p>
+
+                    <table>
+                        <tr>
+                            <th>Feature/Page</th>
+                            <th><span class="role-super-admin">Super Admin</span></th>
+                            <th><span class="role-admin">Admin</span></th>
+                            <th><span class="role-dept-head">Dept Head</span></th>
+                            <th><span class="role-teacher">Teacher</span></th>
+                            <th><span class="role-student">Student</span></th>
+                            <th><span class="role-parent">Parent</span></th>
+                        </tr>
+                        <tr>
+                            <td>Dashboard</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                        </tr>
+                        <tr>
+                            <td>Course Management</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Assignments</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓*</td>
+                        </tr>
+                        <tr>
+                            <td>Grading</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td></td>
+                            <td>✓*</td>
+                        </tr>
+                        <tr>
+                            <td>Student Roster</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Attendance</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td></td>
+                            <td>✓*</td>
+                        </tr>
+                        <tr>
+                            <td>Wellbeing Dashboard</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓*</td>
+                        </tr>
+                        <tr>
+                            <td>AI Content Studio</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Class Pulse</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>School Calendar</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                        </tr>
+                        <tr>
+                            <td>Communications</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                        </tr>
+                        <tr>
+                            <td>Analytics & Reports</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td></td>
+                            <td>✓*</td>
+                        </tr>
+                        <tr>
+                            <td>Staff Management</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Administration</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Billing & Licensing</td>
+                            <td>✓</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Settings & Security</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                        </tr>
+                        <tr>
+                            <td>Compliance & Audit</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>API Keys & Integrations</td>
+                            <td>✓</td>
+                            <td>✓</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+
+                    <p style="font-size: 0.9em; margin-top: 20px;"><em>* Limited access - Parents can only view their own child's information</em></p>
+
+                    <h2>Page Access Summary</h2>
+                    <ul class="checklist">
+                        <li>Super Admin: 18 accessible pages (full platform access)</li>
+                        <li>Admin: 17 accessible pages (no billing/licensing)</li>
+                        <li>Department Head: 14 accessible pages (departmental focus)</li>
+                        <li>Teacher: 15 accessible pages (classroom and student focus)</li>
+                        <li>Student: 11 accessible pages (learning focused)</li>
+                        <li>Parent: 6 accessible pages (monitoring only)</li>
+                    </ul>
+
+                    <div class="box box-note">
+                        <strong>Important:</strong> Always ensure users are assigned the minimum role necessary for their responsibilities. This follows the principle of least privilege and enhances security.
+                    </div>
+                </section>
+
+                <!-- Provisioning Wizard Section -->
+                <section id="provisioning" class="content-section">
+                    <h1>First-Time Setup: Provisioning Wizard</h1>
+                    <p><span class="role-badge super-admin">Super Admin</span></p>
+                    <p>The Provisioning Wizard is a comprehensive 8-step setup process that guides Super Administrators through the initial configuration of SAIL OS. This wizard ensures your school is properly configured with all necessary data, compliance settings, and user access controls before launch.</p>
+
+                    <h2>Overview of the Provisioning Process</h2>
+                    <p>The Provisioning Wizard takes approximately 30-60 minutes to complete, depending on your school's size and data complexity. You can save your progress and return to complete it later. All steps must be completed before launching SAIL OS in production.</p>
+
+                    <div class="box box-tip">
+                        <strong>Pro Tip:</strong> Gather all necessary information before starting the wizard. Have CSVs ready for staff and student imports, and ensure you have your school's DPA information available.
+                    </div>
+
+                    <h2>Step-by-Step Provisioning Walkthrough</h2>
+
+                    <h3>Step 1: School Identity</h3>
+                    <p>Configure your school's basic information.</p>
+                    <ol class="steps">
+                        <li>Click "Start Provisioning Wizard" from the Administration dashboard</li>
+                        <li>Enter your school name (e.g., "Lincoln High School")</li>
+                        <li>Select your region/country from the dropdown</li>
+                        <li>Enter your Data Protection Authority (DPA) email address for compliance notifications</li>
+                        <li>Upload your school logo (optional, recommended for branded emails)</li>
+                        <li>Click "Next" to proceed to Step 2</li>
+                    </ol>
+
+                    <div class="box box-note">
+                        <strong>Important:</strong> The DPA email address should be a monitored account, as SAIL OS will send compliance-related notifications to this address.
+                    </div>
+
+                    <h3>Step 2: Staff Import</h3>
+                    <p>Import your teaching and administrative staff into SAIL OS.</p>
+                    <ol class="steps">
+                        <li>Prepare a CSV file with staff information using the following columns:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>first_name (required)</li>
+                                <li>last_name (required)</li>
+                                <li>email (required, must be unique)</li>
+                                <li>role (required: Super Admin, Admin, Dept Head, or Teacher)</li>
+                                <li>department (optional: Math, Science, English, etc.)</li>
+                                <li>phone (optional)</li>
+                                <li>employee_id (optional)</li>
+                            </ul>
+                        </li>
+                        <li>Click "Upload CSV" and select your staff file</li>
+                        <li>Review the preview to ensure data is correct</li>
+                        <li>Correct any errors shown in the validation report</li>
+                        <li>Click "Import Staff" to proceed</li>
+                    </ol>
+
+                    <h3>Step 3: Student Import</h3>
+                    <p>Import your student population with age-gating compliance.</p>
+                    <ol class="steps">
+                        <li>Prepare a CSV file with student information using these columns:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>first_name (required)</li>
+                                <li>last_name (required)</li>
+                                <li>email (required, must be unique)</li>
+                                <li>student_id (required)</li>
+                                <li>grade (required: K-12)</li>
+                                <li>date_of_birth (required: YYYY-MM-DD for age-gating)</li>
+                                <li>parent_email (recommended for students under 13)</li>
+                                <li>parent_phone (optional)</li>
+                            </ul>
+                        </li>
+                        <li>Click "Upload CSV" and select your student file</li>
+                        <li>SAIL OS automatically flags students under 13 and verifies parent consent</li>
+                        <li>Review the age-gating report</li>
+                        <li>Click "Import Students" to proceed</li>
+                    </ol>
+
+                    <div class="box box-ai">
+                        <strong>Age-Gating Compliance:</strong> SAIL OS automatically applies COPPA compliance for students under 13, including parental consent verification and restricted AI feature access.
+                    </div>
+
+                    <h3>Step 4: Course Creation</h3>
+                    <p>Set up your initial course structure.</p>
+                    <ol class="steps">
+                        <li>Click "Create Courses" or "Import from Template"</li>
+                        <li>For manual creation, enter course details:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Course Name (e.g., "Biology 101")</li>
+                                <li>Course Code (e.g., "BIO101")</li>
+                                <li>Color (for visual identification in dashboards)</li>
+                                <li>Framework (CEFR, IELTS, International, or Custom)</li>
+                                <li>Description and learning outcomes</li>
+                            </ul>
+                        </li>
+                        <li>Assign lead teacher(s) for each course</li>
+                        <li>Click "Save Course" and continue adding courses</li>
+                        <li>Click "Next" when finished</li>
+                    </ol>
+
+                    <h3>Step 5: Enrollment</h3>
+                    <p>Enroll students in courses.</p>
+                    <ol class="steps">
+                        <li>Select a course from your created courses</li>
+                        <li>Use the student picker to select students or import from CSV</li>
+                        <li>Enrollment CSV should contain: student_email, course_code</li>
+                        <li>Verify enrollment counts for accuracy</li>
+                        <li>Repeat for each course</li>
+                        <li>Click "Next" when all enrollments are complete</li>
+                    </ol>
+
+                    <h3>Step 6: Historical Data Import</h3>
+                    <p>Optionally import grades and attendance from your previous system.</p>
+                    <ol class="steps">
+                        <li>Click "Skip" if you're starting fresh, or "Import" to add legacy data</li>
+                        <li>If importing, upload CSVs for:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Grade history (student_email, course_code, grade, date)</li>
+                                <li>Attendance records (student_email, date, status)</li>
+                                <li>Prior assignments (optional)</li>
+                            </ul>
+                        </li>
+                        <li>Review validation report for any errors</li>
+                        <li>Correct and re-upload if needed</li>
+                        <li>Click "Next" to proceed</li>
+                    </ol>
+
+                    <h3>Step 7: Compliance Review</h3>
+                    <p>Verify your school's compliance configuration.</p>
+                    <ol class="steps">
+                        <li>Review the compliance checklist:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>GDPR compliance (if applicable)</li>
+                                <li>FERPA safeguards confirmed</li>
+                                <li>COPPA age-gating verified</li>
+                                <li>Data retention policy set</li>
+                                <li>Audit logging enabled</li>
+                            </ul>
+                        </li>
+                        <li>Enable 2FA for all admin accounts</li>
+                        <li>Configure backup and disaster recovery settings</li>
+                        <li>Sign the compliance acknowledgment</li>
+                        <li>Click "Next" to proceed to launch</li>
+                    </ol>
+
+                    <h3>Step 8: Launch SAIL</h3>
+                    <p>Complete final verification and launch your SAIL OS instance.</p>
+                    <ol class="steps">
+                        <li>Review the "Ready to Launch" checklist</li>
+                        <li>Verify all data imports completed successfully</li>
+                        <li>Confirm administrative access for key staff</li>
+                        <li>Review the deployment timeline and any scheduled maintenance windows</li>
+                        <li>Click "Launch SAIL OS" to activate the platform</li>
+                        <li>You will receive a confirmation email when launch is complete</li>
+                    </ol>
+
+                    <div class="box box-note">
+                        <strong>Post-Launch:</strong> After launch, send welcome emails to all staff and students with login instructions and links to this manual.
+                    </div>
+
+                    <h2>Troubleshooting Common Import Issues</h2>
+                    <p><strong>Duplicate email addresses:</strong> Email addresses must be unique. Check for typos or students/staff using shared accounts.</p>
+                    <p><strong>Invalid date formats:</strong> Dates must be in YYYY-MM-DD format. Ensure your CSV export settings match this format.</p>
+                    <p><strong>Missing required fields:</strong> All required columns must be present in your CSV, even if some rows have empty values.</p>
+                    <p><strong>File encoding issues:</strong> Save CSVs as UTF-8 encoded files to avoid character encoding errors.</p>
+
+                    <div class="box box-tip">
+                        <strong>Support Resources:</strong> If you encounter issues during provisioning, contact SAIL Education support or consult the API documentation for advanced import options.
+                    </div>
+                </section>
+
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="content-section">
+                    <h1>Dashboard</h1>
+                    <p><span class="role-badge super-admin">Super Admin</span> <span class="role-badge admin">Admin</span> <span class="role-badge dept-head">Dept Head</span> <span class="role-badge teacher">Teacher</span> <span class="role-badge student">Student</span> <span class="role-badge parent">Parent</span></p>
+                    <p>The Dashboard is your personalized home page in SAIL OS, displaying role-specific information, widgets, and quick actions. Each role has a customized dashboard layout optimized for their responsibilities.</p>
+
+                    <h2>Dashboard Overview</h2>
+                    <p>The Dashboard automatically loads when you log into SAIL OS. It provides at-a-glance insights into key metrics, pending actions, and important notifications relevant to your role and responsibilities.</p>
+
+                    <h2>Super Admin Dashboard</h2>
+                    <p>Super Admins see system-wide metrics and administrative controls:</p>
+                    <ul class="checklist">
+                        <li>System health status and active user count</li>
+                        <li>Billing and license information</li>
+                        <li>Recent system alerts and compliance issues</li>
+                        <li>Staff management quick access</li>
+                        <li>Audit log summary</li>
+                        <li>Pending provisioning tasks</li>
+                    </ul>
+
+                    <h2>Admin Dashboard</h2>
+                    <p>Admins see operational metrics and daily management tools:</p>
+                    <ul class="checklist">
+                        <li>Submission queue widget (pending assignments to grade)</li>
+                        <li>Wellbeing alerts (students flagged for intervention)</li>
+                        <li>At-risk student list</li>
+                        <li>Recent notifications and messages</li>
+                        <li>Content moderation queue</li>
+                        <li>Quick links to frequently used features</li>
+                    </ul>
+
+                    <h2>Teacher Dashboard</h2>
+                    <p>Teachers see classroom-focused information:</p>
+                    <ul class="checklist">
+                        <li>Current courses and class enrollments</li>
+                        <li>Pending student submissions</li>
+                        <li>Recent student messages</li>
+                        <li>Class attendance summary</li>
+                        <li>Grade entry progress</li>
+                        <li>Upcoming assignment due dates</li>
+                        <li>AI Content Studio shortcuts</li>
+                    </ul>
+
+                    <h2>Student Dashboard</h2>
+                    <p>Students see their learning progress and upcoming work:</p>
+                    <ul class="checklist">
+                        <li>Enrolled courses and progress</li>
+                        <li>Upcoming assignments and due dates</li>
+                        <li>Grade summary and current performance</li>
+                        <li>AI Tutor chat access</li>
+                        <li>Recent feedback from teachers</li>
+                        <li>Collaborative learning groups</li>
+                    </ul>
+
+                    <h2>Parent Dashboard</h2>
+                    <p>Parents monitor their child's progress:</p>
+                    <ul class="checklist">
+                        <li>Child's course enrollment and grades</li>
+                        <li>Attendance record</li>
+                        <li>Recent assignments and submissions</li>
+                        <li>Teacher communications</li>
+                        <li>Wellbeing check-ins</li>
+                        <li>School calendar and important dates</li>
+                    </ul>
+
+                    <h2>Customizing Your Dashboard</h2>
+                    <ol class="steps">
+                        <li>Click the "Customize Dashboard" button in the top-right corner</li>
+                        <li>Drag widgets to rearrange their position</li>
+                        <li>Click the "X" on a widget to remove it from view</li>
+                        <li>Click "Add Widgets" to select additional widgets</li>
+                        <li>Choose your preferred layout (1-column or 2-column)</li>
+                        <li>Click "Save Dashboard" to apply your changes</li>
+                    </ol>
+
+                    <h2>Dashboard Widgets Explained</h2>
+                    <p><strong>Submission Queue:</strong> Shows all pending assignments that need grading. Click an assignment to open the grading interface.</p>
+                    <p><strong>Wellbeing Alerts:</strong> Flags students who have reported low mood scores or who are showing attendance concerns. Color-coded by priority level.</p>
+                    <p><strong>At-Risk Alerts:</strong> Lists students whose grades are dropping or who show other risk indicators. See the Attendance & Wellbeing section for intervention workflows.</p>
+                    <p><strong>Notification Feed:</strong> Real-time updates about messages, submissions, and system alerts. Click to dismiss or act on notifications.</p>
+
+                    <div class="box box-tip">
+                        <strong>Dashboard Refresh:</strong> Dashboards refresh every 60 seconds automatically. Click the refresh icon to update immediately.
+                    </div>
+                </section>
+
+                <!-- Course Management Section -->
+                <section id="courses" class="content-section">
+                    <h1>Course Management</h1>
+                    <p><span class="role-badge super-admin">Super Admin</span> <span class="role-badge admin">Admin</span> <span class="role-badge dept-head">Dept Head</span> <span class="role-badge teacher">Teacher</span> <span class="role-badge student">Student</span></p>
+                    <p>Course Management is the foundation of SAIL OS, allowing educators to create, organize, and manage all aspects of course delivery. From curriculum design to content versioning, Course Management provides comprehensive tools for educational planning and delivery.</p>
+
+                    <h2>What is a Course?</h2>
+                    <p>In SAIL OS, a course is a structured learning experience with defined learning outcomes, content materials, assignments, assessments, and a roster of enrolled students. Courses can be designed for a single class or can serve multiple sections with shared curriculum.</p>
+
+                    <h2>Creating a New Course</h2>
+                    <ol class="steps">
+                        <li>Navigate to "Course Management" from the main menu</li>
+                        <li>Click "Create New Course" button</li>
+                        <li>Enter the course name (e.g., "AP Biology 2025-2026")</li>
+                        <li>Enter the course code (e.g., "BIO-AP-01")</li>
+                        <li>Select a color for visual identification across the platform</li>
+                        <li>Select a curriculum framework:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li><strong>CEFR</strong> (Common European Framework) - Language courses</li>
+                                <li><strong>IELTS</strong> - English language proficiency</li>
+                                <li><strong>International Baccalaureate (IB)</strong> - Advanced curriculum</li>
+                                <li><strong>Custom</strong> - Define your own learning outcomes</li>
+                            </ul>
+                        </li>
+                        <li>Write course description and learning outcomes</li>
+                        <li>Assign lead teacher(s)</li>
+                        <li>Click "Create Course"</li>
+                    </ol>
+
+                    <div class="box box-note">
+                        <strong>Framework Selection:</strong> The framework you choose determines the available rubrics, grading scales, and learning outcome templates. This cannot be changed after course creation.
+                    </div>
+
+                    <h2>Course Structure and Organization</h2>
+                    <p>Once created, organize your course content using the following hierarchical structure:</p>
+
+                    <table>
+                        <tr>
+                            <th>Level</th>
+                            <th>Purpose</th>
+                            <th>Example</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Course</strong></td>
+                            <td>Overall class or subject</td>
+                            <td>Biology 101</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Unit</strong></td>
+                            <td>Major topic grouping (4-8 weeks)</td>
+                            <td>Cell Structure and Function</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Module</strong></td>
+                            <td>Lesson-level content (1-2 weeks)</td>
+                            <td>Prokaryotic vs Eukaryotic Cells</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Lesson</strong></td>
+                            <td>Single lesson or activity (1-3 days)</td>
+                            <td>Cell Membrane Properties</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Content Items</strong></td>
+                            <td>Individual resources and assignments</td>
+                            <td>Video, worksheet, quiz</td>
+                        </tr>
+                    </table>
+
+                    <h2>Adding Course Materials</h2>
+                    <ol class="steps">
+                        <li>Click into your course and select "Course Materials"</li>
+                        <li>Click "Create Unit" to start organizing content</li>
+                        <li>Enter unit name, description, and duration</li>
+                        <li>For each unit, create modules by clicking "Add Module"</li>
+                        <li>Within modules, add lessons and content items</li>
+                        <li>Use the drag-and-drop interface to reorder content</li>
+                        <li>Click "Publish Unit" when ready to make it visible to students</li>
+                    </ol>
+
+                    <h2>Grading Scales and Rubrics</h2>
+                    <p>SAIL OS supports multiple grading scale formats. Select your preferred scale during course setup:</p>
+
+                    <table>
+                        <tr>
+                            <th>Scale Type</th>
+                            <th>Format</th>
+                            <th>Best For</th>
+                        </tr>
+                        <tr>
+                            <td>Percentage</td>
+                            <td>0-100%</td>
+                            <td>Most US schools</td>
+                        </tr>
+                        <tr>
+                            <td>Letter Grade</td>
+                            <td>A-F</td>
+                            <td>US K-12</td>
+                        </tr>
+                        <tr>
+                            <td>IB 1-7</td>
+                            <td>1-7 (7 = highest)</td>
+                            <td>International Baccalaureate</td>
+                        </tr>
+                        <tr>
+                            <td>IGCSE</td>
+                            <td>A*-G</td>
+                            <td>Cambridge IGCSE</td>
+                        </tr>
+                        <tr>
+                            <td>AP</td>
+                            <td>5-1 scale</td>
+                            <td>Advanced Placement</td>
+                        </tr>
+                        <tr>
+                            <td>MYP</td>
+                            <td>8-1 scale</td>
+                            <td>IB Middle Years</td>
+                        </tr>
+                    </table>
+
+                    <h2>Creating and Using Rubrics</h2>
+                    <p>Rubrics provide detailed assessment criteria for assignments and help ensure consistent grading.</p>
+                    <ol class="steps">
+                        <li>Navigate to your course and click "Rubrics"</li>
+                        <li>Click "Create New Rubric"</li>
+                        <li>Enter rubric name and description</li>
+                        <li>Add evaluation criteria (e.g., "Clarity of Thesis")</li>
+                        <li>For each criterion, define performance levels:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Excellent (e.g., "4 points")</li>
+                                <li>Proficient (e.g., "3 points")</li>
+                                <li>Developing (e.g., "2 points")</li>
+                                <li>Beginning (e.g., "1 point")</li>
+                            </ul>
+                        </li>
+                        <li>Write descriptors for each level</li>
+                        <li>Click "Save Rubric"</li>
+                        <li>Attach the rubric to assignments when creating them</li>
+                    </ol>
+
+                    <h2>Course Enrollment</h2>
+                    <p>Add students to your course through multiple methods:</p>
+
+                    <h3>Method 1: Manual Enrollment</h3>
+                    <ol class="steps">
+                        <li>Click into your course and select "Enrollment"</li>
+                        <li>Click "Add Students"</li>
+                        <li>Use the student picker to search and select students</li>
+                        <li>Click "Enroll" to confirm</li>
+                    </ol>
+
+                    <h3>Method 2: CSV Import</h3>
+                    <ol class="steps">
+                        <li>Prepare a CSV with columns: student_email, student_id</li>
+                        <li>Click "Enrollment" and select "Import from CSV"</li>
+                        <li>Upload your file and review the preview</li>
+                        <li>Click "Import" to enroll all students</li>
+                    </ol>
+
+                    <h3>Method 3: Grade Level Sync</h3>
+                    <ol class="steps">
+                        <li>Click "Enrollment" and select "Auto-Sync by Grade"</li>
+                        <li>Select the grade level(s)</li>
+                        <li>All students in that grade will be automatically enrolled</li>
+                        <li>You can remove individual students if needed</li>
+                    </ol>
+
+                    <h2>Course Versioning</h2>
+                    <p>SAIL OS automatically maintains version history for your course, allowing you to revert changes or manage multiple course instances.</p>
+                    <ol class="steps">
+                        <li>Click into your course and select "Version History"</li>
+                        <li>View all previous versions with timestamps and editor names</li>
+                        <li>Click a version to view its contents</li>
+                        <li>Click "Restore" to revert to that version</li>
+                        <li>Create named versions by clicking "Save as Version"</li>
+                    </ol>
+
+                    <div class="box box-tip">
+                        <strong>Best Practice:</strong> Save versioned copies of your course at the end of each school year, making it easy to import and customize for the next year.
+                    </div>
+
+                    <h2>Course Templates</h2>
+                    <p>Create course templates to standardize course structures across your school:</p>
+                    <ol class="steps">
+                        <li>Design a course as your template</li>
+                        <li>Click "Save as Template" in the course settings</li>
+                        <li>Give the template a name and description</li>
+                        <li>Other teachers can now create courses from this template</li>
+                        <li>Templates automatically populate course structure and learning outcomes</li>
+                    </ol>
+
+                    <div class="box box-ai">
+                        <strong>AI Course Generator:</strong> Use SAIL OS's AI Course Generator to automatically create complete courses from a syllabus. Upload a syllabus document and the AI generates structure, units, modules, and initial content suggestions.
+                    </div>
+                </section>
+
+                <!-- Assignments & Grading Section -->
+                <section id="assignments" class="content-section">
+                    <h1>Assignments & Grading</h1>
+                    <p><span class="role-badge super-admin">Super Admin</span> <span class="role-badge admin">Admin</span> <span class="role-badge dept-head">Dept Head</span> <span class="role-badge teacher">Teacher</span> <span class="role-badge student">Student</span> <span class="role-badge parent">Parent</span></p>
+                    <p>Assignments & Grading is the core instructional interface in SAIL OS, enabling teachers to create assessments, track submissions, grade work, and provide feedback. The system features AI-powered integrity checking and comprehensive gradebook management.</p>
+
+                    <h2>Creating Assignments</h2>
+                    <ol class="steps">
+                        <li>Navigate to your course and click "Assignments"</li>
+                        <li>Click "Create New Assignment"</li>
+                        <li>Enter assignment title and description</li>
+                        <li>Choose assignment type:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Written Submission (essays, responses)</li>
+                                <li>Multiple Choice / Quiz</li>
+                                <li>File Upload (projects, media)</li>
+                                <li>Discussion Forum</li>
+                                <li>Presentation / Recording</li>
+                                <li>Peer Review</li>
+                            </ul>
+                        </li>
+                        <li>Set point value and grading scale</li>
+                        <li>Attach a rubric (optional but recommended)</li>
+                        <li>Set due date and submission deadline</li>
+                        <li>Enable late submission options if desired</li>
+                        <li>Click "Create Assignment"</li>
+                    </ol>
+
+                    <h2>Differentiated Assignments</h2>
+                    <p>SAIL OS supports differentiated learning with tiered assignment versions:</p>
+
+                    <h3>Creating Three-Tier Assignments</h3>
+                    <ol class="steps">
+                        <li>When creating an assignment, toggle "Create Differentiated Versions"</li>
+                        <li>Create three versions:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li><strong>Foundation:</strong> Simpler task, fewer requirements, lower point value</li>
+                                <li><strong>Standard:</strong> Grade-level expectations</li>
+                                <li><strong>Extension:</strong> Advanced challenge, higher rigor</li>
+                            </ul>
+                        </li>
+                        <li>Assign students to appropriate tiers based on their level</li>
+                        <li>All versions appear on the same assignment in the gradebook</li>
+                        <li>View completion by tier in assignment analytics</li>
+                    </ol>
+
+                    <div class="box box-tip">
+                        <strong>Best Practice:</strong> Use differentiated assignments to ensure all learners are appropriately challenged while maintaining classroom cohesion.
+                    </div>
+
+                    <h2>Submission Tracking</h2>
+                    <p>Monitor student submissions in real-time:</p>
+
+                    <table>
+                        <tr>
+                            <th>Status</th>
+                            <th>Meaning</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Not Started</strong></td>
+                            <td>Student has not accessed the assignment</td>
+                        </tr>
+                        <tr>
+                            <td><strong>In Progress</strong></td>
+                            <td>Student has begun work but not submitted</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Submitted</strong></td>
+                            <td>Student submitted before deadline</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Late</strong></td>
+                            <td>Student submitted after deadline</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Graded</strong></td>
+                            <td>Teacher has provided a score and feedback</td>
+                        </tr>
+                    </table>
+
+                    <h2>AI Integrity Checking</h2>
+                    <p>SAIL OS includes sophisticated AI integrity checking to detect potential academic integrity concerns in written submissions. The system uses a 5-signal approach:</p>
+
+                    <table>
+                        <tr>
+                            <th>Signal</th>
+                            <th>What It Measures</th>
+                            <th>Interpretation</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Lexical Predictability</strong></td>
+                            <td>How predictable word choices are</td>
+                            <td>AI writing uses more predictable vocabulary patterns</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Stylometric Shift</strong></td>
+                            <td>Changes in writing style within a submission</td>
+                            <td>Abrupt shifts suggest copied or pasted content</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Structural Uniformity</strong></td>
+                            <td>Paragraph and sentence structure consistency</td>
+                            <td>Overly uniform structure suggests non-human origin</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Source Corroboration</strong></td>
+                            <td>Comparison with publicly available sources</td>
+                            <td>Significant similarity to online sources</td>
+                        </tr>
+                        <tr>
+                            <td><strong>AI Likelihood Score</strong></td>
+                            <td>Overall probability of AI generation</td>
+                            <td>Composite score (0-100%) combining all signals</td>
+                        </tr>
+                    </table>
+
+                    <div class="box box-ai">
+                        <strong>Using Integrity Checks Responsibly:</strong> SAIL OS integrity checking is a screening tool, not a definitive proof. Always investigate flagged submissions and use professional judgment. False positives occur with technical writing, translated content, and ESL students.
+                    </div>
+
+                    <h2>Grading Submissions</h2>
+                    <ol class="steps">
+                        <li>Click "Assignments" and select the assignment to grade</li>
+                        <li>Click "View Submissions" to see all student work</li>
+                        <li>Click a student's submission to open the grading interface</li>
+                        <li>If rubric is attached, score each criterion</li>
+                        <li>View AI integrity score in the right sidebar</li>
+                        <li>Investigate any flagged integrity concerns by reviewing the detailed report</li>
+                        <li>Enter an overall score</li>
+                        <li>Write detailed feedback comments</li>
+                        <li>Optionally attach annotated documents or recordings</li>
+                        <li>Click "Save & Next" to move to the next student or "Submit Grade" to finalize</li>
+                    </ol>
+
+                    <h2>Gradebook Overview</h2>
+                    <p>The Gradebook provides a comprehensive view of all student grades in color-coded format:</p>
+
+                    <table>
+                        <tr>
+                            <th>Color</th>
+                            <th>Grade Range</th>
+                            <th>Status</th>
+                        </tr>
+                        <tr>
+                            <td style="background-color: #10b981; color: white;">Green</td>
+                            <td>A (90-100%)</td>
+                            <td>Excellent performance</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color: #3b82f6; color: white;">Blue</td>
+                            <td>B (80-89%)</td>
+                            <td>Good performance</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color: #f59e0b; color: white;">Amber</td>
+                            <td>C (70-79%)</td>
+                            <td>Satisfactory performance</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color: #ef4444; color: white;">Red</td>
+                            <td>D-F (Below 70%)</td>
+                            <td>Intervention needed</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color: #d1d5db;">Gray</td>
+                            <td>No Grade</td>
+                            <td>Not yet graded or no submission</td>
+                        </tr>
+                    </table>
+
+                    <h2>Accessing the Gradebook</h2>
+                    <ol class="steps">
+                        <li>Click into your course</li>
+                        <li>Select "Gradebook" from the navigation</li>
+                        <li>View students in rows, assignments in columns</li>
+                        <li>Click a cell to enter or edit a grade</li>
+                        <li>Use filters to view specific students or assignment categories</li>
+                        <li>Export gradebook as CSV for backup or integration with other systems</li>
+                    </ol>
+
+                    <h2>Grading Scales</h2>
+                    <p>Customize how grades display in your gradebook:</p>
+
+                    <h3>Percentage Scale (0-100%)</h3>
+                    <p>Default grading system. Enter scores as numbers and they automatically convert to percentages.</p>
+
+                    <h3>Letter Grade Scale (A-F)</h3>
+                    <p>Select letter grades with optional +/- modifiers. SAIL OS can auto-convert from percentage to letter grades.</p>
+
+                    <h3>IB 1-7 Scale</h3>
+                    <p>Used for International Baccalaureate courses. Scale where 7 is highest achievement.</p>
+
+                    <h3>IGCSE (A*-G)</h3>
+                    <p>Cambridge IGCSE grading scale with A* as the highest mark.</p>
+
+                    <h3>AP (5-1 Scale)</h3>
+                    <p>Advanced Placement grading where 5 is the highest possible score.</p>
+
+                    <h3>Custom Scale</h3>
+                    <p>Define your own grading scale with custom labels and ranges.</p>
+
+                    <h2>Peer Review Process</h2>
+                    <p>Enable peer review for assignments to promote collaborative learning:</p>
+
+                    <ol class="steps">
+                        <li>When creating an assignment, toggle "Enable Peer Review"</li>
+                        <li>Set the number of peers each student reviews (typically 2-3)</li>
+                        <li>Create a peer review rubric with evaluation criteria</li>
+                        <li>Set review deadline (typically 3-5 days after submission deadline)</li>
+                        <li>SAIL OS randomly assigns reviewers</li>
+                        <li>Students complete peer reviews using the rubric</li>
+                        <li>You receive peer review summary to inform your own grading</li>
+                    </ol>
+
+                    <div class="box box-note">
+                        <strong>Important:</strong> Peer reviews do not automatically affect student grades. Use them as formative feedback and reference for your own assessment.
+                    </div>
+
+                    <h2>Bulk Grading Tools</h2>
+                    <p>For quick grade entry, use bulk grading options:</p>
+
+                    <h3>CSV Grade Import</h3>
+                    <ol class="steps">
+                        <li>Export the assignment's grade template</li>
+                        <li>Fill in grades in Excel or Google Sheets</li>
+                        <li>Save and upload back to SAIL OS</li>
+                        <li>Review import preview before confirming</li>
+                    </ol>
+
+                    <h3>Quick Grade Entry</h3>
+                    <ol class="steps">
+                        <li>Click "Grade Assignment"</li>
+                        <li>View all submissions in a table</li>
+                        <li>Click cells to enter grades directly</li>
+                        <li>Use Tab key to move between students</li>
+                        <li>Click "Save All Grades" when finished</li>
+                    </ol>
+
+                    <div class="box box-tip">
+                        <strong>Grading Tip:</strong> Grade assignments in multiple sessions if working with large classes. Save your progress frequently.
+                    </div>
+                </section>
+
+                <!-- AI Features Section -->
+                <section id="ai-features" class="content-section">
+                    <h1>AI Features</h1>
+                    <p><span class="role-badge super-admin">Super Admin</span> <span class="role-badge admin">Admin</span> <span class="role-badge dept-head">Dept Head</span> <span class="role-badge teacher">Teacher</span></p>
+                    <p>SAIL OS integrates advanced AI capabilities throughout the platform to enhance teaching and learning. All AI features are built with safety guardrails, transparency, and educational best practices at their core.</p>
+
+                    <h2>AI Content Studio</h2>
+                    <p>AI Content Studio automatically generates educational content in multiple formats, enabling teachers to create engaging learning materials quickly.</p>
+
+                    <h3>Content Types</h3>
+                    <p><strong>Slide Decks:</strong> Generate professional presentation slides from topics, standards, or learning outcomes.</p>
+                    <ol class="steps">
+                        <li>Click "AI Content Studio" from the course menu</li>
+                        <li>Select "Generate Slide Deck"</li>
+                        <li>Enter a topic or learning outcome</li>
+                        <li>Specify grade level and duration</li>
+                        <li>Choose style and design template</li>
+                        <li>The AI generates a full presentation with speaker notes</li>
+                        <li>Edit and customize before using</li>
+                    </ol>
+
+                    <p><strong>Infographics:</strong> Create visual representations of data and concepts.</p>
+                    <ol class="steps">
+                        <li>Click "Generate Infographic"</li>
+                        <li>Choose data type or concept to visualize</li>
+                        <li>Specify dimensions and style</li>
+                        <li>Review generated infographic</li>
+                        <li>Download or embed in course materials</li>
+                    </ol>
+
+                    <p><strong>Flashcards:</strong> Generate study cards automatically from curriculum content.</p>
+                    <ol class="steps">
+                        <li>Click "Generate Flashcards"</li>
+                        <li>Enter topic or upload a document</li>
+                        <li>Specify number of cards and difficulty level</li>
+                        <li>Customize card formatting</li>
+                        <li>Distribute to students for study</li>
+                    </ol>
+
+                    <p><strong>Podcasts:</strong> Generate audio lessons for accessible learning.</p>
+                    <ol class="steps">
+                        <li>Click "Generate Podcast"</li>
+                        <li>Provide topic and learning objectives</li>
+                        <li>Choose narrator voice and pacing</li>
+                        <li>The AI generates an audio file with transcript</li>
+                        <li>Add to lessons for multi-modal learning</li>
+                    </ol>
+
+                    <p><strong>Videos:</strong> Create animated educational videos.</p>
+                    <ol class="steps">
+                        <li>Click "Generate Video"</li>
+                        <li>Enter topic, learning level, and duration</li>
+                        <li>Select animation style and visuals</li>
+                        <li>The AI generates a complete video with captions</li>
+                        <li>Customize captions and narration if desired</li>
+                    </ol>
+
+                    <div class="box box-note">
+                        <strong>Content Review:</strong> Always review AI-generated content for accuracy and educational appropriateness before sharing with students.
+                    </div>
+
+                    <h2>AI Learning Tutor</h2>
+                    <p>The AI Learning Tutor provides students with immediate, personalized help and explanations while maintaining safety guardrails.</p>
+
+                    <h3>Student Experience</h3>
+                    <p>Students access the AI Tutor through a chat interface directly in the course:</p>
+                    <ul class="checklist">
+                        <li>Students can ask questions about course content</li>
+                        <li>AI provides explanations, examples, and guided learning</li>
+                        <li>All interactions are logged and monitored</li>
+                        <li>Students cannot receive direct answers to assignments</li>
+                        <li>Help-seeking generates learning engagement metrics</li>
+                    </ul>
+
+                    <h3>Safety Guardrails</h3>
+                    <p>The AI Tutor includes multiple safety mechanisms:</p>
+                    <ul class="checklist">
+                        <li>Cannot provide answers to graded assignments</li>
+                        <li>Recognizes harmful requests and refuses appropriately</li>
+                        <li>Age-appropriate responses based on student grade level</li>
+                        <li>Blocks attempts to bypass content filtering</li>
+                        <li>All conversations logged for teacher review</li>
+                    </ul>
+
+                    <h3>Teacher Monitoring</h3>
+                    <ol class="steps">
+                        <li>Navigate to "AI Tutor Logs" in your course</li>
+                        <li>View summary of student help-seeking patterns</li>
+                        <li>Click on individual students to see conversation transcripts</li>
+                        <li>Identify topics where students need additional support</li>
+                        <li>Use this data to inform lesson planning</li>
+                    </ol>
+
+                    <h2>AI Course Generator</h2>
+                    <p>Automatically generate complete courses from syllabi or topic descriptions.</p>
+
+                    <ol class="steps">
+                        <li>Click "Course Management" and select "AI Course Generator"</li>
+                        <li>Upload a syllabus or describe your course</li>
+                        <li>Specify grade level and curriculum framework</li>
+                        <li>Set desired course duration and structure</li>
+                        <li>The AI generates:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Complete course structure with units and modules</li>
+                                <li>Learning outcomes aligned to standards</li>
+                                <li>Suggested assignments and assessments</li>
+                                <li>Initial content outline</li>
+                            </ul>
+                        </li>
+                        <li>Review the generated course</li>
+                        <li>Customize as needed</li>
+                        <li>Click "Import to Course" to use it</li>
+                    </ol>
+
+                    <h2>Lesson Planner</h2>
+                    <p>Get AI-powered suggestions for lesson planning and activities.</p>
+
+                    <ol class="steps">
+                        <li>Open a unit in your course</li>
+                        <li>Click "Suggest Lesson Plan"</li>
+                        <li>The AI generates suggested lesson components:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Hook/engagement activity</li>
+                                <li>Direct instruction approaches</li>
+                                <li>Practice activities</li>
+                                <li>Assessment options</li>
+                                <li>Differentiation strategies</li>
+                            </ul>
+                        </li>
+                        <li>Review and customize suggestions</li>
+                        <li>Add to lesson materials</li>
+                    </ol>
+
+                    <h2>Differentiation Tool</h2>
+                    <p>Get AI suggestions for differentiating instruction to meet diverse learner needs.</p>
+
+                    <ol class="steps">
+                        <li>Select an assignment or lesson</li>
+                        <li>Click "Generate Differentiation"</li>
+                        <li>Specify learning levels (Foundation/Standard/Extension)</li>
+                        <li>The AI generates three versions:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Simplified version for students needing support</li>
+                                <li>Grade-level version for standard learners</li>
+                                <li>Advanced version for advanced learners</li>
+                            </ul>
+                        </li>
+                        <li>Customize each version</li>
+                        <li>Assign students to appropriate tiers</li>
+                    </ol>
+
+                    <h2>AI Moderation</h2>
+                    <p>SAIL OS uses AI to moderate student content and discussions with three-tier responses.</p>
+
+                    <table>
+                        <tr>
+                            <th>Tier</th>
+                            <th>Action</th>
+                            <th>Content Type</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Tier 1: Block</strong></td>
+                            <td>Content is not published; student is notified with guidance</td>
+                            <td>Severe: harassment, hate speech, dangerous content</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tier 2: Warn</strong></td>
+                            <td>Content is published but flagged; teacher is notified</td>
+                            <td>Moderate: bullying, inappropriate language, misinformation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tier 3: Log</strong></td>
+                            <td>Content is published; flagged in audit logs for review</td>
+                            <td>Minor: potentially concerning patterns or themes</td>
+                        </tr>
+                    </table>
+
+                    <h3>Managing Flagged Content</h3>
+                    <ol class="steps">
+                        <li>Navigate to "Moderation Queue" from the course menu</li>
+                        <li>Review flagged submissions with AI explanations</li>
+                        <li>Take action:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Approve - content is fine, remove flag</li>
+                                <li>Block - remove content, contact student</li>
+                                <li>Investigate - open for further review</li>
+                            </ul>
+                        </li>
+                        <li>Document decisions in audit trail</li>
+                    </ol>
+
+                    <h2>AI Integrity Checks</h2>
+                    <p>Detect potential academic integrity concerns in written submissions (see Assignments & Grading section for details).</p>
+
+                    <div class="box box-ai">
+                        <strong>Ethical AI Use:</strong> All SAIL OS AI features are designed to enhance, not replace, teacher judgment and professional expertise. Teachers always maintain final authority over grades, content decisions, and student interactions.
+                    </div>
+
+                    <h2>AI Usage Guidelines</h2>
+                    <p>Best practices for using AI features in your classroom:</p>
+
+                    <ul class="checklist">
+                        <li>Always review AI-generated content before sharing with students</li>
+                        <li>Use AI as a tool to enhance teaching, not replace lesson planning</li>
+                        <li>Maintain transparency with students about AI use</li>
+                        <li>Monitor AI Tutor usage to identify students needing support</li>
+                        <li>Use integrity checks as screening tools, not definitive proof</li>
+                        <li>Combine AI data with other observations for student support</li>
+                        <li>Respect student privacy in all AI interactions</li>
+                    </ul>
+
+                    <h2>Disabling AI Features</h2>
+                    <p>If you prefer not to use certain AI features:</p>
+                    <ol class="steps">
+                        <li>Go to your course settings</li>
+                        <li>Click "AI Features"</li>
+                        <li>Toggle off specific features you don't want to use</li>
+                        <li>Students will not see disabled features</li>
+                        <li>You can re-enable at any time</li>
+                    </ol>
+                </section>
+
+                <!-- Student Management Section -->
+                <section id="students" class="content-section">
+                    <h1>Student Management</h1>
+                    <p><span class="role-badge super-admin">Super Admin</span> <span class="role-badge admin">Admin</span> <span class="role-badge dept-head">Dept Head</span> <span class="role-badge teacher">Teacher</span></p>
+                    <p>Student Management provides tools for managing rosters, accommodations, badges, and student data within SAIL OS.</p>
+
+                    <h2>Student Roster</h2>
+                    <p>View and manage your enrolled students:</p>
+
+                    <ol class="steps">
+                        <li>Click into your course and select "Roster"</li>
+                        <li>View all enrolled students with contact information</li>
+                        <li>Use filters to search or sort by various criteria</li>
+                        <li>Click a student name to view their profile</li>
+                        <li>Use bulk actions to modify multiple students at once</li>
+                    </ol>
+
+                    <h2>Bulk Student Import</h2>
+                    <p>Add multiple students to your course via CSV import:</p>
+
+                    <ol class="steps">
+                        <li>Click "Enrollment" and select "Import from CSV"</li>
+                        <li>Prepare CSV with required columns:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>first_name (required)</li>
+                                <li>last_name (required)</li>
+                                <li>email (required)</li>
+                                <li>student_id (optional)</li>
+                                <li>date_of_birth (optional)</li>
+                            </ul>
+                        </li>
+                        <li>Upload file and review preview</li>
+                        <li>Click "Import" to add all students</li>
+                    </ol>
+
+                    <h2>IEPs and Accommodations</h2>
+                    <p>Document and manage special education accommodations and IEPs:</p>
+
+                    <ol class="steps">
+                        <li>Click into a student's profile</li>
+                        <li>Click "IEP & Accommodations"</li>
+                        <li>Click "Add Accommodation" or "Upload IEP"</li>
+                        <li>For manual accommodations, enter:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Accommodation type (e.g., extended time, large text)</li>
+                                <li>Description of accommodation</li>
+                                <li>Effective dates</li>
+                                <li>Responsible provider</li>
+                            </ul>
+                        </li>
+                        <li>Upload full IEP document (PDF)</li>
+                        <li>Accommodations apply automatically to assignments</li>
+                    </ol>
+
+                    <h2>Student Badges</h2>
+                    <p>Award badges to recognize student achievement and engagement. SAIL OS includes 8 standard badge types:</p>
+
+                    <table>
+                        <tr>
+                            <th>Badge Type</th>
+                            <th>Description</th>
+                            <th>Trigger</th>
+                        </tr>
+                        <tr>
+                            <td>🏆 Academic Excellence</td>
+                            <td>Consistent high grades</td>
+                            <td>Manual or auto-awarded for GPA ≥ 3.8</td>
+                        </tr>
+                        <tr>
+                            <td>🎯 Perfect Attendance</td>
+                            <td>No absences in period</td>
+                            <td>Auto-awarded quarterly</td>
+                        </tr>
+                        <tr>
+                            <td>⭐ Rising Star</td>
+                            <td>Significant grade improvement</td>
+                            <td>Manual award</td>
+                        </tr>
+                        <tr>
+                            <td>🤝 Collaboration Champion</td>
+                            <td>Strong peer interaction</td>
+                            <td>Manual award by teacher</td>
+                        </tr>
+                        <tr>
+                            <td>🎨 Creative Thinking</td>
+                            <td>Innovative problem solving</td>
+                            <td>Manual award</td>
+                        </tr>
+                        <tr>
+                            <td>💬 Discussion Leader</td>
+                            <td>Active classroom participation</td>
+                            <td>Manual award</td>
+                        </tr>
+                        <tr>
+                            <td>🔬 Research Excellence</td>
+                            <td>Outstanding project work</td>
+                            <td>Manual award</td>
+                        </tr>
+                        <tr>
+                            <td>🌟 Community Helper</td>
+                            <td>Service or peer support</td>
+                            <td>Manual award</td>
+                        </tr>
+                    </table>
+
+                    <h3>Awarding Badges</h3>
+                    <ol class="steps">
+                        <li>Click into student's profile</li>
+                        <li>Click "Award Badge"</li>
+                        <li>Select badge type</li>
+                        <li>Write optional citation explaining why badge was earned</li>
+                        <li>Click "Award" to give badge</li>
+                        <li>Student sees badge on their profile</li>
+                    </ol>
+
+                    <h2>Leaderboard</h2>
+                    <p>Display class leaderboards to promote healthy competition and engagement:</p>
+
+                    <ol class="steps">
+                        <li>Go to course settings and click "Leaderboard"</li>
+                        <li>Toggle "Enable Leaderboard" to activate</li>
+                        <li>Choose ranking metric:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Total points/GPA</li>
+                                <li>Participation points</li>
+                                <li>Badge count</li>
+                                <li>Custom metric</li>
+                            </ul>
+                        </li>
+                        <li>Students can opt-in or opt-out of appearing on leaderboard</li>
+                        <li>Leaderboard updates in real-time</li>
+                    </ol>
+
+                    <div class="box box-note">
+                        <strong>Privacy & Sensitivity:</strong> Some students may feel discouraged by public leaderboards. Always allow opt-out and consider using badges as an alternative metric.
+                    </div>
+                </section>
+
+                <!-- Attendance & Wellbeing Section -->
+                <section id="attendance" class="content-section">
+                    <h1>Attendance & Wellbeing</h1>
+                    <p><span class="role-badge super-admin">Super Admin</span> <span class="role-badge admin">Admin</span> <span class="role-badge dept-head">Dept Head</span> <span class="role-badge teacher">Teacher</span> <span class="role-badge student">Student</span> <span class="role-badge parent">Parent</span></p>
+                    <p>Attendance & Wellbeing combines attendance tracking with proactive student support, enabling early intervention and holistic student care.</p>
+
+                    <h2>Taking Attendance</h2>
+                    <ol class="steps">
+                        <li>Navigate to your course and click "Attendance"</li>
+                        <li>Select the date of class</li>
+                        <li>Mark each student's status:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Present ✓</li>
+                                <li>Absent ✗</li>
+                                <li>Tardy (late)</li>
+                                <li>Excused Absence</li>
+                                <li>Early Dismissal</li>
+                            </ul>
+                        </li>
+                        <li>Add notes for specific absences if desired</li>
+                        <li>Click "Save Attendance"</li>
+                    </ol>
+
+                    <h2>Chronic Absence Detection</h2>
+                    <p>SAIL OS automatically monitors and alerts about concerning absence patterns:</p>
+
+                    <table>
+                        <tr>
+                            <th>Threshold</th>
+                            <th>Days Absent</th>
+                            <th>Action</th>
+                        </tr>
+                        <tr>
+                            <td>Low Risk</td>
+                            <td>3-5 days (per semester)</td>
+                            <td>Alert generated, teacher notified</td>
+                        </tr>
+                        <tr>
+                            <td>Medium Risk</td>
+                            <td>6-9 days (per semester)</td>
+                            <td>Parent contacted, intervention plan offered</td>
+                        </tr>
+                        <tr>
+                            <td>High Risk</td>
+                            <td>10+ days (per semester)</td>
+                            <td>School admin notified, formal intervention required</td>
+                        </tr>
+                    </table>
+
+                    <h2>Mood Check-Ins</h2>
+                    <p>Students can regularly report their emotional wellbeing using a 1-5 mood scale:</p>
+
+                    <table>
+                        <tr>
+                            <th>Rating</th>
+                            <th>Meaning</th>
+                            <th>Response</th>
+                        </tr>
+                        <tr>
+                            <td>😔 1</td>
+                            <td>Very Distressed</td>
+                            <td>Immediate alert to counselor</td>
+                        </tr>
+                        <tr>
+                            <td>😕 2</td>
+                            <td>Troubled</td>
+                            <td>Alert to school support staff</td>
+                        </tr>
+                        <tr>
+                            <td>😐 3</td>
+                            <td>Okay</td>
+                            <td>Data logged, normal monitoring</td>
+                        </tr>
+                        <tr>
+                            <td>🙂 4</td>
+                            <td>Good</td>
+                            <td>Data logged</td>
+                        </tr>
+                        <tr>
+                            <td>😊 5</td>
+                            <td>Excellent</td>
+                            <td>Data logged</td>
+                        </tr>
+                    </table>
+
+                    <h3>Setting Up Mood Check-Ins</h3>
+                    <ol class="steps">
+                        <li>Go to course settings and click "Wellbeing Tools"</li>
+                        <li>Toggle "Enable Mood Check-Ins"</li>
+                        <li>Set frequency (daily, weekly, or as-needed)</li>
+                        <li>Students see mood check-in prompt at login or on dashboard</li>
+                        <li>You receive daily wellbeing summary reports</li>
+                    </ol>
+
+                    <h2>Wellbeing Dashboard</h2>
+                    <p>Monitor all students' wellbeing metrics in one view:</p>
+
+                    <ol class="steps">
+                        <li>Click "Wellbeing Dashboard" from the course menu</li>
+                        <li>View color-coded student status:</li>
+                        <li>Green - All well, no concerns</li>
+                        <li>Yellow - Some concerning trends, monitor</li>
+                        <li>Red - Immediate attention needed</li>
+                        <li>Click a student to see detailed wellbeing profile</li>
+                    </ol>
+
+                    <h2>At-Risk Intervention Workflow</h2>
+                    <p>Comprehensive process for supporting students showing multiple risk indicators:</p>
+
+                    <ol class="steps">
+                        <li><strong>Risk Identification:</strong> System flags students with:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Declining grades (2+ grade drops)</li>
+                                <li>Chronic absenteeism (6+ days)</li>
+                                <li>Low mood check-ins (consistent 1-2 ratings)</li>
+                                <li>Decreased engagement (low login frequency)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Initial Assessment:</strong> Click on flagged student to review all risk signals</li>
+                        <li><strong>Intervention Planning:</strong> Click "Create Intervention Plan" and document:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Risk factors identified</li>
+                                <li>Specific support strategies</li>
+                                <li>Responsible adults</li>
+                                <li>Timeline for follow-up</li>
+                            </ul>
+                        </li>
+                        <li><strong>Family Communication:</strong> Generate letter to parents notifying them of supports offered</li>
+                        <li><strong>Monitoring:</strong> Track intervention progress with regular check-ins</li>
+                        <li><strong>Resolution:</strong> Mark intervention as resolved or escalate if needed</li>
+                    </ol>
+
+                    <h2>Safeguarding Protocol</h2>
+                    <p>SAIL OS includes a three-tier safeguarding process for serious concerns:</p>
+
+                    <h3>Tier 1: Low Concern</h3>
+                    <p><strong>Triggers:</strong> Isolated mood report of 1-2, first absence pattern detected</p>
+                    <p><strong>Actions:</strong> Teacher conversation, informal check-in, monitoring</p>
+
+                    <h3>Tier 2: Medium Concern</h3>
+                    <p><strong>Triggers:</strong> Multiple risk signals, persistent mood issues, behavioral changes</p>
+                    <p><strong>Actions:</strong> School counselor involvement, parent meeting, formal support plan</p>
+
+                    <h3>Tier 3: High Concern</h3>
+                    <p><strong>Triggers:</strong> Immediate safety concerns, severe distress, self-harm indicators</p>
+                    <p><strong>Actions:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>School admin notified immediately</li>
+                            <li>School counselor engaged</li>
+                            <li>Parents contacted</li>
+                            <li>Emergency protocols activated if needed</li>
+                            <li>Documentation in secure audit trail</li>
+                        </ul>
+                    </p>
+
+                    <div class="box box-note">
+                        <strong>Important:</strong> If a student is in immediate danger, call emergency services (911) immediately. SAIL OS safeguarding is a support tool, not a replacement for professional crisis intervention.
+                    </div>
+                </section>
+
+                <!-- Class Pulse Section -->
+                <section id="class-pulse" class="content-section">
+                    <h1>Class Pulse</h1>
+                    <p><span class="role-badge super-admin">Super Admin</span> <span class="role-badge admin">Admin</span> <span class="role-badge dept-head">Dept Head</span> <span class="role-badge teacher">Teacher</span></p>
+                    <p>Class Pulse provides real-time monitoring of student engagement, online status, and learning activity within your course.</p>
+
+                    <h2>Accessing Class Pulse</h2>
+                    <ol class="steps">
+                        <li>Click into your course</li>
+                        <li>Select "Class Pulse" from the navigation menu</li>
+                        <li>View real-time dashboard with multiple monitoring metrics</li>
+                    </ol>
+
+                    <h2>Real-Time Monitoring Features</h2>
+
+                    <h3>Who's Online</h3>
+                    <p>See which students are currently logged into your course:</p>
+                    <ul class="checklist">
+                        <li>Green indicator = currently online</li>
+                        <li>Yellow indicator = online within last 5 minutes</li>
+                        <li>Gray indicator = offline</li>
+                        <li>Click a student to see their current activity</li>
+                    </ul>
+
+                    <h3>Page Tracking</h3>
+                    <p>Monitor which course pages students are viewing:</p>
+                    <ul class="checklist">
+                        <li>See current location of each student</li>
+                        <li>Identify which lessons or materials are getting most traffic</li>
+                        <li>Detect students who are lost or confused (bouncing between pages)</li>
+                        <li>Track page view history for each student</li>
+                    </ul>
+
+                    <h3>Live Submission Feed</h3>
+                    <p>Watch assignments being submitted in real-time:</p>
+                    <ul class="checklist">
+                        <li>See submissions appear instantly</li>
+                        <li>Identify early vs. last-minute submitters</li>
+                        <li>Quick links to open any submission for review</li>
+                        <li>Filter by assignment or time period</li>
+                    </ul>
+
+                    <h3>Time-on-Task Analytics</h3>
+                    <p>Track how long students spend on course materials:</p>
+                    <ul class="checklist">
+                        <li>View average time spent per lesson by all students</li>
+                        <li>Compare individual student time-on-task to class average</li>
+                        <li>Identify lessons that are too short or too long</li>
+                        <li>Flag students spending very little time on materials</li>
+                    </ul>
+
+                    <h2>Engagement Metrics</h2>
+                    <p>Class Pulse displays key engagement indicators:</p>
+
+                    <table>
+                        <tr>
+                            <th>Metric</th>
+                            <th>What It Shows</th>
+                            <th>Interpretation</th>
+                        </tr>
+                        <tr>
+                            <td>Avg. Login Frequency</td>
+                            <td>Times per week students access course</td>
+                            <td>Below 3x = possible disengagement</td>
+                        </tr>
+                        <tr>
+                            <td>Assignment Completion Rate</td>
+                            <td>% of assignments submitted on time</td>
+                            <td>Below 80% = may need intervention</td>
+                        </tr>
+                        <tr>
+                            <td>Discussion Posts</td>
+                            <td>Average replies per student</td>
+                            <td>Track participation trends</td>
+                        </tr>
+                        <tr>
+                            <td>Avg. Session Duration</td>
+                            <td>Minutes per login session</td>
+                            <td>Very short sessions = spot checking</td>
+                        </tr>
+                    </table>
+
+                    <h2>Using Class Pulse for Instruction</h2>
+                    <p>Tips for leveraging Class Pulse data:</p>
+
+                    <ul class="checklist">
+                        <li>Check before class to see which students are prepared</li>
+                        <li>Identify struggling students early based on engagement patterns</li>
+                        <li>Adjust pacing if many students are spending too little time on lessons</li>
+                        <li>Celebrate students with strong engagement in class</li>
+                        <li>Use time-on-task data to inform assignment length</li>
+                        <li>Track the impact of interventions on engagement metrics</li>
+                    </ul>
+
+                    <div class="box box-tip">
+                        <strong>Privacy Note:</strong> While Class Pulse monitors engagement, it is not a surveillance tool. Use data to support student success, not to penalize students for occasional low engagement.
+                    </div>
+                </section>
+
+                <!-- Communication Section -->
+                <section id="communication" class="content-section">
+                    <h1>Communication</h1>
+                    <p><span class="role-badge super-admin">Super Admin</span> <span class="role-badge admin">Admin</span> <span class="role-badge dept-head">Dept Head</span> <span class="role-badge teacher">Teacher</span> <span class="role-badge student">Student</span> <span class="role-badge parent">Parent</span></p>
+                    <p>Communication tools enable seamless messaging between teachers, students, and parents within SAIL OS.</p>
+
+                    <h2>Course Messages</h2>
+                    <p>Send and receive messages within a course context:</p>
+
+                    <ol class="steps">
+                        <li>Click "Messages" from the course menu</li>
+                        <li>Click "New Message" or reply to existing thread</li>
+                        <li>Select recipient(s) - individual student, group, or entire class</li>
+                        <li>Write message using rich text editor</li>
+                        <li>Attach files if needed</li>
+                        <li>Click "Send"</li>
+                        <li>Recipients receive email notification and see message in SAIL OS</li>
+                    </ol>
+
+                    <h2>Notifications</h2>
+                    <p>Stay updated with customizable notifications:</p>
+
+                    <h3>Notification Types</h3>
+                    <ul class="checklist">
+                        <li>Submission notifications - when students submit assignments</li>
+                        <li>Grade notifications - when assignments are graded</li>
+                        <li>Message notifications - new messages from teachers or students</li>
+                        <li>Attendance alerts - chronic absence detected</li>
+                        <li>Wellbeing alerts - mood check-in concerns</li>
+                        <li>Discussion notifications - replies to forum posts</li>
+                    </ul>
+
+                    <h3>Managing Notifications</h3>
+                    <ol class="steps">
+                        <li>Go to Settings > Notifications</li>
+                        <li>Toggle notification types on/off</li>
+                        <li>Choose delivery method (in-app, email, or both)</li>
+                        <li>Set frequency (real-time, daily digest, weekly summary)</li>
+                        <li>Click "Save Preferences"</li>
+                    </ol>
+
+                    <h2>Parent Linking</h2>
+                    <p>Connect parents to their student's account for monitoring:</p>
+
+                    <ol class="steps">
+                        <li>Navigate to your course and click "Enrollment"</li>
+                        <li>Find the student and click "Link Parent"</li>
+                        <li>Enter parent email address</li>
+                        <li>SAIL OS sends parent a registration link</li>
+                        <li>Parent creates account and links to their child</li>
+                        <li>Parent can now see grades, assignments, and attendance</li>
+                    </ol>
+
+                    <h2>School Calendar Management</h2>
+                    <p>Manage school calendar events visible to all users:</p>
+
+                    <ol class="steps">
+                        <li>Go to Administration > Calendar</li>
+                        <li>Click "Add Event"</li>
+                        <li>Enter event details:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Event title</li>
+                                <li>Date and time</li>
+                                <li>Location</li>
+                                <li>Description</li>
+                                <li>Visibility (school-wide, department, or course)</li>
+                            </ul>
+                        </li>
+                        <li>Optionally set as holiday/no-school day</li>
+                        <li>Click "Create Event"</li>
+                        <li>Event appears on all users' calendars</li>
+                    </ol>
+
+                    <h2>Announcements</h2>
+                    <p>Broadcast important information to your course:</p>
+
+                    <ol class="steps">
+                        <li>Click "Announcements" from the course menu</li>
+                        <li>Click "Create Announcement"</li>
+                        <li>Write announcement using rich text editor</li>
+                        <li>Set visibility (all students, groups, or individuals)</li>
+                        <li>Optionally pin to top of announcements list</li>
+                        <li>Click "Publish"</li>
+                        <li>Students see announcement and receive email notification</li>
+                    </ol>
+
+                    <div class="box box-tip">
+                        <strong>Communication Best Practice:</strong> Use announcements for course-wide information and messages for individual student feedback. This keeps communications organized and ensures everyone sees important updates.
+                    </div>
+                </section>
+
+                <!-- Analytics & Reports Section -->
+                <section id="analytics" class="content-section">
+                    <h1>Analytics & Reports</h1>
+                    <p><span class="role-badge super-admin">Super Admin</span> <span class="role-badge admin">Admin</span> <span class="role-badge dept-head">Dept Head</span> <span class="role-badge teacher">Teacher</span> <span class="role-badge parent">Parent</span></p>
+                    <p>Analytics & Reports provide comprehensive data visualization and reporting tools for tracking student progress and school performance.</p>
+
+                    <h2>Course Analytics</h2>
+                    <p>View course-level performance metrics:</p>
+
+                    <ol class="steps">
+                        <li>Click into your course and select "Analytics"</li>
+                        <li>View dashboard with key metrics:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Class average and GPA trend</li>
+                                <li>Grade distribution histogram</li>
+                                <li>Assignment completion rates</li>
+                                <li>Attendance trends</li>
+                            </ul>
+                        </li>
+                        <li>Click on specific metrics for deeper analysis</li>
+                    </ol>
+
+                    <h2>GPA Trends</h2>
+                    <p>Monitor grade trends over time:</p>
+
+                    <ul class="checklist">
+                        <li>View class average GPA by assignment</li>
+                        <li>Identify assignments where most students struggled</li>
+                        <li>Compare current year performance to previous years</li>
+                        <li>Track overall class improvement or decline</li>
+                        <li>Export trend data for reports</li>
+                    </ul>
+
+                    <h2>Attendance Reports</h2>
+                    <p>Analyze attendance patterns:</p>
+
+                    <ol class="steps">
+                        <li>Click "Attendance" in Analytics</li>
+                        <li>Select time period (week, month, semester, year)</li>
+                        <li>View class attendance rate summary</li>
+                        <li>Drill down to individual student patterns</li>
+                        <li>Export report for parent communication or intervention planning</li>
+                    </ol>
+
+                    <h2>Grade Distribution</h2>
+                    <p>Visualize how students' grades are distributed:</p>
+
+                    <ul class="checklist">
+                        <li>Histogram showing number of students in each grade range</li>
+                        <li>Identify if distribution is typical or unusual</li>
+                        <li>Compare to previous years to spot trends</li>
+                        <li>Use data to adjust instructional strategies</li>
+                    </ul>
+
+                    <h2>Department Reports</h2>
+                    <p><span class="role-badge super-admin">Super Admin</span> <span class="role-badge admin">Admin</span> <span class="role-badge dept-head">Dept Head</span></p>
+                    <p>Department Heads and Admins can view department-wide analytics with four main tabs:</p>
+
+                    <h3>1. Overview Tab</h3>
+                    <p>Department-wide summary metrics:</p>
+                    <ul class="checklist">
+                        <li>Overall department GPA</li>
+                        <li>Number of courses and students</li>
+                        <li>Staff count by role</li>
+                        <li>Key performance indicators</li>
+                    </ul>
+
+                    <h3>2. Performance Tab</h3>
+                    <p>Detailed performance metrics:</p>
+                    <ul class="checklist">
+                        <li>Course-by-course GPA comparison</li>
+                        <li>Student achievement levels</li>
+                        <li>Grade distribution across department</li>
+                        <li>Teacher performance comparisons</li>
+                    </ul>
+
+                    <h3>3. Attendance Tab</h3>
+                    <p>Department attendance overview:</p>
+                    <ul class="checklist">
+                        <li>Overall attendance rate</li>
+                        <li>Chronic absence cases</li>
+                        <li>Attendance by grade level</li>
+                        <li>Trends and patterns</li>
+                    </ul>
+
+                    <h3>4. Engagement Tab</h3>
+                    <p>Student engagement and participation:</p>
+                    <ul class="checklist">
+                        <li>Login frequency by course</li>
+                        <li>Assignment completion rates</li>
+                        <li>Discussion participation</li>
+                        <li>Peer feedback quality</li>
+                    </ul>
+
+                    <h2>Parent Reports</h2>
+                    <p>Generate customized reports for parents:</p>
+
+                    <ol class="steps">
+                        <li>Select a student from your roster</li>
+                        <li>Click "Generate Parent Report"</li>
+                        <li>Choose report type:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Progress Report - current grades and attendance</li>
+                                <li>Trends Report - grade progress over time</li>
+                                <li>Behavior Report - engagement and conduct</li>
+                                <li>Comprehensive Report - all of the above</li>
+                            </ul>
+                        </li>
+                        <li>Customize content and format</li>
+                        <li>Generate PDF for printing or digital sharing</li>
+                        <li>Optionally email directly to parents</li>
+                    </ol>
+
+                    <h2>Custom Reports</h2>
+                    <p>Create custom reports with selected data:</p>
+
+                    <ol class="steps">
+                        <li>Go to Analytics and click "Create Custom Report"</li>
+                        <li>Select data to include (grades, attendance, engagement, etc.)</li>
+                        <li>Choose visualization type (table, chart, graph)</li>
+                        <li>Set filters (date range, grade level, specific courses)</li>
+                        <li>Choose output format (PDF, CSV, or display in browser)</li>
+                        <li>Click "Generate" to create report</li>
+                        <li>Save report template for future use</li>
+                    </ol>
+
+                    <div class="box box-tip">
+                        <strong>Data Privacy:</strong> All reports respect student privacy settings and only show data appropriate to the viewer's role.
+                    </div>
+                </section>
+
+                <!-- Administration Section -->
+                <section id="administration" class="content-section">
+                    <h1>Administration</h1>
+                    <p><span class="role-badge super-admin">Super Admin</span> <span class="role-badge admin">Admin</span></p>
+                    <p>Administration tools manage school-wide settings, staff, and operational functions.</p>
+
+                    <h2>Members Management</h2>
+                    <p>Manage all school staff and administrators:</p>
+
+                    <ol class="steps">
+                        <li>Go to Administration > Members</li>
+                        <li>View list of all staff members</li>
+                        <li>Click on a member to view/edit details:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Name and contact information</li>
+                                <li>Role assignment</li>
+                                <li>Department assignment</li>
+                                <li>Course assignments</li>
+                                <li>Access permissions</li>
+                            </ul>
+                        </li>
+                        <li>To add staff, click "Add Member" and enter details</li>
+                        <li>To remove staff, click "Deactivate" (this preserves historical data)</li>
+                    </ol>
+
+                    <h2>School Calendar Management</h2>
+                    <p>Manage school-wide calendar (see Communication section for details).</p>
+
+                    <h2>Billing & Licensing</h2>
+                    <p><span class="role-badge super-admin">Super Admin</span></p>
+                    <p>Manage your SAIL OS subscription and licensing:</p>
+
+                    <h3>Current Plan</h3>
+                    <p>SAIL OS offers flexible licensing models:</p>
+
+                    <table>
+                        <tr>
+                            <th>Plan</th>
+                            <th>Cost</th>
+                            <th>Features</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Standard</strong></td>
+                            <td>Starting at $299/month</td>
+                            <td>Core LMS, basic AI features, up to 500 students</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Professional</strong></td>
+                            <td>Starting at $399/month</td>
+                            <td>All Standard + advanced AI, analytics, up to 2000 students</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Enterprise Pro</strong></td>
+                            <td>$499/month</td>
+                            <td>All features, unlimited students, custom integrations, dedicated support</td>
+                        </tr>
+                    </table>
+
+                    <h3>Managing Your Subscription</h3>
+                    <ol class="steps">
+                        <li>Go to Administration > Billing</li>
+                        <li>View current plan and license details</li>
+                        <li>View billing history and invoices</li>
+                        <li>Update payment method</li>
+                        <li>To upgrade, click "Change Plan" and select new tier</li>
+                        <li>Changes take effect at start of next billing cycle</li>
+                    </ol>
+
+                    <h2>API Keys & Integrations</h2>
+                    <p>Configure API keys for third-party integrations:</p>
+
+                    <ol class="steps">
+                        <li>Go to Administration > API Keys</li>
+                        <li>Click "Generate New Key"</li>
+                        <li>Select scopes (which data the key can access)</li>
+                        <li>Give the key a name for identification</li>
+                        <li>Copy the key (it only displays once)</li>
+                        <li>Use key to authenticate API requests from integrations</li>
+                        <li>To revoke key, click "Deactivate"</li>
+                    </ol>
+
+                    <h2>System Status</h2>
+                    <p>Monitor system health and uptime:</p>
+
+                    <ol class="steps">
+                        <li>Go to Administration > System Status</li>
+                        <li>View current system status:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>All Systems Green - everything operating normally</li>
+                                <li>Degraded Performance - some services slow</li>
+                                <li>Maintenance Window - scheduled updates in progress</li>
+                                <li>Service Incident - unplanned outage in progress</li>
+                            </ul>
+                        </li>
+                        <li>View incident history and status page</li>
+                        <li>Subscribe to status updates via email or RSS</li>
+                    </ol>
+
+                    <div class="box box-note">
+                        <strong>Maintenance Windows:</strong> SAIL OS typically performs maintenance on Tuesday nights 2am-4am UTC. Plan grading sessions around this window.
+                    </div>
+                </section>
+
+                <!-- Settings & Privacy Section -->
+                <section id="settings" class="content-section">
+                    <h1>Settings & Privacy</h1>
+                    <p><span class="role-badge super-admin">Super Admin</span> <span class="role-badge admin">Admin</span> <span class="role-badge dept-head">Dept Head</span> <span class="role-badge teacher">Teacher</span> <span class="role-badge student">Student</span> <span class="role-badge parent">Parent</span></p>
+                    <p>Settings & Privacy tools help you manage your account preferences, privacy settings, and data rights.</p>
+
+                    <h2>Account Settings</h2>
+                    <ol class="steps">
+                        <li>Click your profile icon in the top-right corner</li>
+                        <li>Select "Account Settings"</li>
+                        <li>Update your information:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Name and profile picture</li>
+                                <li>Email address</li>
+                                <li>Phone number</li>
+                                <li>Timezone and language preferences</li>
+                            </ul>
+                        </li>
+                        <li>Click "Save Changes"</li>
+                    </ol>
+
+                    <h2>Notification Settings</h2>
+                    <p>Control how and when you receive notifications:</p>
+
+                    <ol class="steps">
+                        <li>Go to Settings > Notifications</li>
+                        <li>Choose notification types to enable/disable</li>
+                        <li>Select delivery method (email, in-app, both)</li>
+                        <li>Set notification frequency (real-time, daily, weekly)</li>
+                        <li>Click "Save Preferences"</li>
+                    </ol>
+
+                    <h2>Accessibility Settings</h2>
+                    <p>SAIL OS includes five accessibility options:</p>
+
+                    <table>
+                        <tr>
+                            <th>Option</th>
+                            <th>Description</th>
+                            <th>Who Uses It</th>
+                        </tr>
+                        <tr>
+                            <td>High Contrast Mode</td>
+                            <td>Increases color contrast for better visibility</td>
+                            <td>Users with low vision</td>
+                        </tr>
+                        <tr>
+                            <td>Text Size Adjustment</td>
+                            <td>Increase or decrease text size (75%-200%)</td>
+                            <td>Users with vision impairments</td>
+                        </tr>
+                        <tr>
+                            <td>Screen Reader Support</td>
+                            <td>Full ARIA labels and semantic HTML</td>
+                            <td>Blind and low-vision users</td>
+                        </tr>
+                        <tr>
+                            <td>Keyboard Navigation</td>
+                            <td>Navigate all features using keyboard only</td>
+                            <td>Users with motor impairments</td>
+                        </tr>
+                        <tr>
+                            <td>Dyslexia-Friendly Font</td>
+                            <td>OpenDyslexic font option</td>
+                            <td>Users with dyslexia</td>
+                        </tr>
+                    </table>
+
+                    <h3>Enabling Accessibility Features</h3>
+                    <ol class="steps">
+                        <li>Go to Settings > Accessibility</li>
+                        <li>Toggle options on/off as needed</li>
+                        <li>Changes apply immediately</li>
+                        <li>Settings are saved per user account</li>
+                    </ol>
+
+                    <h2>Security Settings</h2>
+                    <p>Manage your account security:</p>
+
+                    <h3>Password Management</h3>
+                    <ol class="steps">
+                        <li>Go to Settings > Security</li>
+                        <li>Click "Change Password"</li>
+                        <li>Enter current password and new password (minimum 12 characters)</li>
+                        <li>Click "Update Password"</li>
+                        <li>All active sessions will be logged out for security</li>
+                    </ol>
+
+                    <h3>Two-Factor Authentication (2FA)</h3>
+                    <ol class="steps">
+                        <li>Go to Settings > Security</li>
+                        <li>Click "Enable Two-Factor Authentication"</li>
+                        <li>Choose authentication method:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Authenticator app (Google Authenticator, Authy, etc.)</li>
+                                <li>SMS text message</li>
+                                <li>Email verification</li>
+                            </ul>
+                        </li>
+                        <li>Follow setup instructions</li>
+                        <li>Save backup codes in secure location</li>
+                        <li>2FA will be required on next login</li>
+                    </ol>
+
+                    <div class="box box-note">
+                        <strong>2FA Requirement:</strong> All admin and teacher accounts must have 2FA enabled. Super Admins should enforce this school-wide.
+                    </div>
+
+                    <h2>GDPR Data Rights</h2>
+                    <p><span class="role-badge super-admin">Super Admin</span> <span class="role-badge admin">Admin</span></p>
+                    <p>SAIL OS supports GDPR Article requests:</p>
+
+                    <h3>Article 15: Right to Access</h3>
+                    <ol class="steps">
+                        <li>Go to Settings > GDPR Tools > Right to Access</li>
+                        <li>Select the user for whom you're requesting data</li>
+                        <li>Click "Generate Data Report"</li>
+                        <li>SAIL OS compiles all personal data into a downloadable file (CSV/JSON)</li>
+                        <li>Report includes: profile data, assignments, grades, messages, login history</li>
+                        <li>Provide report to user within 30 days</li>
+                    </ol>
+
+                    <h3>Article 17: Right to be Forgotten</h3>
+                    <ol class="steps">
+                        <li>Go to Settings > GDPR Tools > Right to be Forgotten</li>
+                        <li>Select the user to delete</li>
+                        <li>Choose deletion scope:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Full deletion - all personal data removed</li>
+                                <li>Anonymization - personal data replaced with anonymized placeholders</li>
+                            </ul>
+                        </li>
+                        <li>Confirm deletion (this is irreversible)</li>
+                        <li>System performs deletion within 24 hours</li>
+                    </ol>
+
+                    <h3>Article 33: Breach Notification</h3>
+                    <p>If a data breach occurs, SAIL OS will:</p>
+                    <ul class="checklist">
+                        <li>Detect breach within 24 hours</li>
+                        <li>Notify Super Admin via email immediately</li>
+                        <li>Generate breach report with affected users and data</li>
+                        <li>Provide template for GDPR authority notification</li>
+                        <li>Log breach in audit trail</li>
+                    </ul>
+
+                    <h2>Audit Trail</h2>
+                    <p>View all account activity:</p>
+
+                    <ol class="steps">
+                        <li>Go to Settings > Audit Trail</li>
+                        <li>View login history with timestamps and IP addresses</li>
+                        <li>See all grade changes with original and new values</li>
+                        <li>Track student enrollment changes</li>
+                        <li>Monitor document access and downloads</li>
+                        <li>Export audit logs for compliance review</li>
+                    </ol>
+                </section>
+
+                <!-- Compliance Section -->
+                <section id="compliance" class="content-section">
+                    <h1>Compliance</h1>
+                    <p><span class="role-badge super-admin">Super Admin</span> <span class="role-badge admin">Admin</span></p>
+                    <p>SAIL OS is designed to meet major educational and data privacy regulations. This section outlines our compliance commitments.</p>
+
+                    <h2>FERPA (Family Educational Rights and Privacy Act)</h2>
+                    <p><strong>Applies to:</strong> All US K-12 schools</p>
+                    <p>SAIL OS ensures FERPA compliance through:</p>
+                    <ul class="checklist">
+                        <li>Role-based access controls restricting student data access</li>
+                        <li>Parents can access only their child's records</li>
+                        <li>Students 18+ can control parental access</li>
+                        <li>Complete audit trails for all data access</li>
+                        <li>Secure data destruction at course/year end</li>
+                        <li>Annual FERPA compliance training recommended</li>
+                    </ul>
+
+                    <h2>GDPR (General Data Protection Regulation)</h2>
+                    <p><strong>Applies to:</strong> Schools in EU or serving EU students</p>
+                    <p>SAIL OS GDPR features:</p>
+                    <ul class="checklist">
+                        <li>Data Processing Agreement (DPA) available for all schools</li>
+                        <li>Legal basis established for each data processing activity</li>
+                        <li>User consent management for optional data uses</li>
+                        <li>Right to access, rectification, erasure, and portability</li>
+                        <li>Data retention policies configurable by school</li>
+                        <li>Breach notification within 72 hours</li>
+                        <li>Automated impact assessments for high-risk processing</li>
+                    </ul>
+
+                    <h2>COPPA (Children's Online Privacy Protection Act)</h2>
+                    <p><strong>Applies to:</strong> US schools serving students under 13</p>
+                    <p>SAIL OS COPPA compliance:</p>
+                    <ul class="checklist">
+                        <li>Automatic age-gating for students under 13</li>
+                        <li>Parental consent verification required</li>
+                        <li>Restricted data collection for young students</li>
+                        <li>No third-party advertising or tracking</li>
+                        <li>Limited AI features for under-13 students</li>
+                        <li>Parental access to all collected information</li>
+                    </ul>
+
+                    <h2>KCSIE (Keeping Children Safe in Education)</h2>
+                    <p><strong>Applies to:</strong> UK schools</p>
+                    <p>SAIL OS KCSIE features:</p>
+                    <ul class="checklist">
+                        <li>Safeguarding protocols with three-tier intervention system</li>
+                        <li>Staff training tracking and compliance</li>
+                        <li>Incident logging and reporting capabilities</li>
+                        <li>Designated Safeguarding Lead (DSL) access to support tools</li>
+                        <li>Integration with external safeguarding agencies</li>
+                        <li>Wellbeing monitoring and at-risk identification</li>
+                    </ul>
+
+                    <h2>Online Safety Act</h2>
+                    <p><strong>Applies to:</strong> UK online platforms serving minors</p>
+                    <p>SAIL OS Online Safety features:</p>
+                    <ul class="checklist">
+                        <li>Age-appropriate content safeguards</li>
+                        <li>AI moderation of user-generated content</li>
+                        <li>Transparent reporting of moderation decisions</li>
+                        <li>User reporting mechanism for harmful content</li>
+                        <li>Data minimization for under-18 users</li>
+                        <li>Parental controls and monitoring tools</li>
+                    </ul>
+
+                    <h2>EU AI Act</h2>
+                    <p><strong>Applies to:</strong> EU schools using AI features</p>
+                    <p>SAIL OS AI compliance:</p>
+                    <ul class="checklist">
+                        <li>Risk assessment for all AI-powered features</li>
+                        <li>Transparency documentation for AI systems</li>
+                        <li>Human oversight of critical AI decisions (grading, safeguarding)</li>
+                        <li>Bias testing and fairness audits</li>
+                        <li>No high-risk AI used for student assessment</li>
+                        <li>Regular third-party AI audits</li>
+                    </ul>
+
+                    <h2>UNESCO AI and Education Guidance</h2>
+                    <p>SAIL OS aligns with UNESCO's principles:</p>
+                    <ul class="checklist">
+                        <li>Promotes inclusive and equitable education</li>
+                        <li>Protects cultural and linguistic diversity</li>
+                        <li>Maintains human agency and responsibility</li>
+                        <li>Transparent about AI limitations</li>
+                        <li>Regular stakeholder engagement</li>
+                    </ul>
+
+                    <h2>UNCRC (UN Convention on the Rights of the Child)</h2>
+                    <p>SAIL OS respects child rights:</p>
+                    <ul class="checklist">
+                        <li>Right to education - platform supports inclusive learning</li>
+                        <li>Right to privacy - strict data protection</li>
+                        <li>Right to participation - student voice in features</li>
+                        <li>Right to protection - safeguarding and moderation</li>
+                        <li>Freedom from discrimination - accessible to all abilities</li>
+                    </ul>
+
+                    <h2>Data Retention Policy</h2>
+                    <p>SAIL OS implements the following default data retention schedule:</p>
+
+                    <table>
+                        <tr>
+                            <th>Data Type</th>
+                            <th>Retention Period</th>
+                            <th>Notes</th>
+                        </tr>
+                        <tr>
+                            <td>Student grades and assignments</td>
+                            <td>6 years minimum (FERPA)</td>
+                            <td>Can extend per school policy</td>
+                        </tr>
+                        <tr>
+                            <td>Attendance records</td>
+                            <td>3 years minimum</td>
+                            <td>Required for legal compliance</td>
+                        </tr>
+                        <tr>
+                            <td>Login logs and audit trails</td>
+                            <td>2 years</td>
+                            <td>Reduced granularity after 6 months</td>
+                        </tr>
+                        <tr>
+                            <td>Student messages and discussions</td>
+                            <td>Until graduation + 3 years</td>
+                            <td>Student requests for deletion honored</td>
+                        </tr>
+                        <tr>
+                            <td>Safeguarding records</td>
+                            <td>Until age 25 or 8 years (whichever longer)</td>
+                            <td>Extended retention for serious incidents</td>
+                        </tr>
+                        <tr>
+                            <td>AI Tutor conversation logs</td>
+                            <td>1 year</td>
+                            <td>Privacy-focused retention</td>
+                        </tr>
+                    </table>
+
+                    <h2>Compliance Reporting</h2>
+                    <p>Generate compliance reports as needed:</p>
+
+                    <ol class="steps">
+                        <li>Go to Administration > Compliance</li>
+                        <li>Select report type (FERPA, GDPR, COPPA, etc.)</li>
+                        <li>Choose date range</li>
+                        <li>Click "Generate Report"</li>
+                        <li>Review and export for regulatory submission</li>
+                    </ol>
+
+                    <div class="box box-tip">
+                        <strong>Annual Compliance Review:</strong> Conduct annual compliance audits using SAIL OS's built-in compliance reports and documentation.
+                    </div>
+                </section>
+
+                <!-- Full Feature List Section -->
+                <section id="features" class="content-section">
+                    <h1>Full Feature List</h1>
+                    <p>Complete inventory of all SAIL OS features organized by category.</p>
+
+                    <h2>Course Management</h2>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>Course Creation</h4>
+                            <p>Create courses with customizable frameworks, learning outcomes, and structure.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Course Templates</h4>
+                            <p>Save and reuse course structures across multiple classes.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Content Organization</h4>
+                            <p>Organize content into units, modules, and lessons.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Curriculum Frameworks</h4>
+                            <p>Support for CEFR, IELTS, IB, and custom frameworks.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Course Versioning</h4>
+                            <p>Track and restore previous course versions.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Bulk Enrollment</h4>
+                            <p>Import students via CSV or auto-sync by grade level.</p>
+                        </div>
+                    </div>
+
+                    <h2>Assessment & Grading</h2>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>Assignment Creation</h4>
+                            <p>Create various assignment types with detailed rubrics.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Differentiated Assignments</h4>
+                            <p>Create Foundation, Standard, and Extension versions.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Peer Review</h4>
+                            <p>Enable peer assessment with structured feedback.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Gradebook</h4>
+                            <p>Comprehensive gradebook with filtering and export.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Multiple Grading Scales</h4>
+                            <p>Percentage, letter, IB, IGCSE, AP, and MYP scales.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Rubric Templates</h4>
+                            <p>Create and manage reusable rubrics.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>AI Integrity Checking</h4>
+                            <p>5-signal detection of AI-generated content.</p>
+                        </div>
+                    </div>
+
+                    <h2>AI Features</h2>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>AI Content Studio</h4>
+                            <p>Generate slides, infographics, flashcards, podcasts, and videos.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>AI Learning Tutor</h4>
+                            <p>24/7 student help with safety guardrails.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>AI Course Generator</h4>
+                            <p>Create complete courses from syllabi.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Lesson Planner</h4>
+                            <p>AI-powered lesson planning suggestions.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Differentiation Tool</h4>
+                            <p>Generate tiered versions of content and assignments.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>AI Moderation</h4>
+                            <p>3-tier content moderation with flagging and logging.</p>
+                        </div>
+                    </div>
+
+                    <h2>Student Engagement</h2>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>Student Badges</h4>
+                            <p>8 badge types for achievement recognition.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Leaderboards</h4>
+                            <p>Optional class leaderboards for engagement.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Class Pulse</h4>
+                            <p>Real-time engagement monitoring and analytics.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Time-on-Task Analytics</h4>
+                            <p>Track student engagement duration.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Discussion Forums</h4>
+                            <p>Moderated peer discussion and collaboration.</p>
+                        </div>
+                    </div>
+
+                    <h2>Attendance & Wellbeing</h2>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>Attendance Tracking</h4>
+                            <p>Record and monitor student attendance.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Chronic Absence Detection</h4>
+                            <p>Automatic alerts for attendance concerns.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Mood Check-Ins</h4>
+                            <p>Daily 1-5 mood scale reporting by students.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Wellbeing Dashboard</h4>
+                            <p>Comprehensive wellbeing monitoring.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>At-Risk Identification</h4>
+                            <p>Multi-signal early warning system.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Safeguarding Protocol</h4>
+                            <p>3-tier safeguarding and intervention workflow.</p>
+                        </div>
+                    </div>
+
+                    <h2>Communication</h2>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>Messaging</h4>
+                            <p>In-platform messaging between teachers and students.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Notifications</h4>
+                            <p>Customizable in-app and email notifications.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Parent Linking</h4>
+                            <p>Connect parents to student accounts for monitoring.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Announcements</h4>
+                            <p>Course-wide announcements to all students.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>School Calendar</h4>
+                            <p>Shared calendar with events and holidays.</p>
+                        </div>
+                    </div>
+
+                    <h2>Analytics & Reporting</h2>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>Course Analytics</h4>
+                            <p>GPA trends, grade distribution, completion rates.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Attendance Reports</h4>
+                            <p>Individual and class attendance analysis.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Department Reports</h4>
+                            <p>4-tab department-level analytics dashboard.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Parent Reports</h4>
+                            <p>Generate customized reports for families.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Custom Reports</h4>
+                            <p>Build reports with selected data and visualizations.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Export Options</h4>
+                            <p>Export all data as CSV, PDF, or JSON.</p>
+                        </div>
+                    </div>
+
+                    <h2>Administration</h2>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>Staff Management</h4>
+                            <p>Manage all school members and role assignments.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Provisioning Wizard</h4>
+                            <p>8-step school setup and configuration.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Bulk Data Import</h4>
+                            <p>Import staff, students, and courses via CSV.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>IEP Management</h4>
+                            <p>Track accommodations and IEPs per student.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Billing Management</h4>
+                            <p>Manage subscription and licensing.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>API Keys</h4>
+                            <p>Generate and manage integration API keys.</p>
+                        </div>
+                    </div>
+
+                    <h2>Security & Privacy</h2>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>Two-Factor Authentication</h4>
+                            <p>Authenticator app, SMS, or email 2FA.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Audit Trails</h4>
+                            <p>Complete audit logs of all system activity.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>GDPR Tools</h4>
+                            <p>Right to access, erasure, and data portability.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Accessibility Options</h4>
+                            <p>5 built-in accessibility features.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Data Retention</h4>
+                            <p>Configurable data retention policies.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Compliance Reports</h4>
+                            <p>Generate FERPA, GDPR, and COPPA reports.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Footer -->
+                <div class="footer">
+                    <p>SAIL Education © 2026 | SAIL OS v6 | Comprehensive K-12 Learning Platform</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Navigation
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.content-section');
+        const searchInput = document.getElementById('searchInput');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('data-target');
+                showSection(targetId);
+                updateActiveNav(link);
+            });
+        });
+
+        function showSection(sectionId) {
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function updateActiveNav(activeLink) {
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            activeLink.classList.add('active');
+        }
+
+        // Search
+        searchInput.addEventListener('keyup', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            navLinks.forEach(link => {
+                const text = link.textContent.toLowerCase();
+                link.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            });
+        });
+
+        // Collapsible functionality
+        const collapsibles = document.querySelectorAll('.collapsible');
+        collapsibles.forEach(collapsible => {
+            collapsible.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                if (content && content.classList.contains('collapsible-content')) {
+                    content.classList.toggle('active');
+                }
+            });
+        });
+
+        // Mobile sidebar toggle
+        if (window.innerWidth <= 768) {
+            const sidebar = document.querySelector('.sidebar');
+            const toggleBtn = document.createElement('button');
+            toggleBtn.className = 'sidebar-toggle';
+            toggleBtn.textContent = '☰';
+            toggleBtn.style.cssText = 'position: fixed; top: 20px; left: 20px; z-index: 1001; background: #0D9A7C; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer;';
+            document.body.insertBefore(toggleBtn, document.body.firstChild);
+
+            toggleBtn.addEventListener('click', () => {
+                sidebar.style.display = sidebar.style.display === 'none' ? 'block' : 'none';
+            });
+        }
+
+        // Smooth scroll
+        });
+    </script>
+</body>
+</html>

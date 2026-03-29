@@ -1,0 +1,2421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperStudent v2 Manual - SAIL Education</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* === ANIMATIONS === */
+@keyframes float-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.4; }
+  50% { transform: translateY(-20px) translateX(10px); opacity: 0.8; }
+}
+@keyframes float-delayed-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.3; }
+  50% { transform: translateY(-15px) translateX(-10px); opacity: 0.7; }
+}
+@keyframes float-slow-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.2; }
+  50% { transform: translateY(-25px) translateX(5px); opacity: 0.6; }
+}
+@keyframes drift {
+  0% { transform: translateX(0px); }
+  100% { transform: translateX(20px); }
+}
+@keyframes orbit {
+  0% { transform: rotate(0deg) translateX(30px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
+}
+@keyframes breathing {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.1); }
+}
+@keyframes breathing-delayed {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.05); }
+}
+@keyframes rotate-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes slideInLeft {
+  0% { opacity: 0; transform: translateX(-50px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInDown {
+  0% { opacity: 0; transform: translateY(-30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.1); }
+  50% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), 0 0 30px rgba(255, 255, 255, 0.1); }
+}
+
+/* === RESET & BASE === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); border-radius: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: rgba(255,255,255,0.85);
+  background: #000;
+  line-height: 1.7;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* === IMMERSIVE BACKGROUND === */
+.immersive-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.immersive-bg .gradient-base {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1e1b4b 0%, #3b0764 40%, #0f172a 100%);
+}
+
+.immersive-bg .bg-image {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/8d0c8cab-aafd-4759-951d-82f748461c75_3840w.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.4;
+}
+
+/* Floating particles */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(1px);
+}
+.particle-1 { top: 25%; left: 33%; width: 2px; height: 2px; background: rgba(96,165,250,0.4); animation: float-glow 4s ease-in-out infinite; }
+.particle-2 { top: 75%; right: 25%; width: 1px; height: 1px; background: rgba(167,139,250,0.5); animation: float-delayed-glow 5s ease-in-out infinite; }
+.particle-3 { bottom: 33%; left: 50%; width: 1.5px; height: 1.5px; background: rgba(244,114,182,0.3); animation: float-slow-glow 6s ease-in-out infinite; }
+.particle-4 { top: 50%; right: 33%; width: 1px; height: 1px; background: rgba(34,211,238,0.4); animation: drift 8s ease-in-out infinite alternate; }
+.particle-5 { bottom: 25%; left: 25%; width: 2px; height: 2px; background: rgba(129,140,248,0.3); animation: orbit 15s linear infinite; }
+
+/* Ambient orbs */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+}
+.orb-1 { top: -50px; right: -50px; width: 384px; height: 384px; background: radial-gradient(circle, rgba(59,130,246,0.15), transparent); animation: breathing 4s ease-in-out infinite; }
+.orb-2 { bottom: -50px; left: -50px; width: 320px; height: 320px; background: radial-gradient(circle, rgba(168,85,247,0.2), transparent); animation: breathing-delayed 4s ease-in-out infinite 2s; }
+.orb-3 { top: 50%; left: 50%; width: 256px; height: 256px; background: radial-gradient(circle, rgba(236,72,153,0.1), transparent); animation: rotate-slow 20s linear infinite; }
+
+/* === LAYOUT === */
+.container {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* === GLASS SIDEBAR === */
+.sidebar, aside.sidebar {
+  width: 300px;
+  position: fixed;
+  top: 16px;
+  bottom: 16px;
+  left: 16px;
+  z-index: 100;
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  animation: slideInLeft 0.8s ease-out forwards;
+  transition: border-color 0.5s ease;
+  scrollbar-width: thin;
+}
+.sidebar:hover { border-color: rgba(255,255,255,0.25); }
+
+.sidebar-logo, .sidebar-header, .sidebar > div:first-child, .sidebar > h2:first-child {
+  padding: 28px 24px 16px;
+  font-size: 1.35em;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.sidebar-header h2, .sidebar-header h1 {
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: 700;
+  margin: 0;
+  padding: 0;
+  border: none;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-header p, .sidebar-header .version, .sidebar-version {
+  font-size: 0.8em;
+  color: rgba(255,255,255,0.5);
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+/* Sidebar search */
+.sidebar-search, .sidebar .search-container {
+  padding: 12px 20px 16px;
+}
+
+.sidebar-search input, .sidebar input[type="text"], .search-input {
+  width: 100%;
+  padding: 10px 14px 10px 38px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.08);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  color: #fff;
+  font-size: 0.85em;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  outline: none;
+}
+.sidebar-search input:focus, .sidebar input[type="text"]:focus, .search-input:focus {
+  border-color: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.12);
+}
+.sidebar-search input::placeholder, .sidebar input[type="text"]::placeholder, .search-input::placeholder {
+  color: rgba(255,255,255,0.4);
+}
+
+/* Sidebar navigation links - all variants */
+.sidebar-nav, .sidebar-menu, .sidebar nav, .nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px 20px;
+}
+
+.sidebar-nav a, .sidebar-menu a, .sidebar-menu li a, .sidebar nav a,
+.nav-link, .nav-item, a.nav-link, a.nav-item, button.nav-link {
+  display: block;
+  padding: 10px 16px;
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.88em;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  border: 1px solid transparent;
+  background: transparent;
+  text-align: left;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.4;
+}
+
+.sidebar-nav a:hover, .sidebar-menu a:hover, .sidebar-menu li a:hover, .sidebar nav a:hover,
+.nav-link:hover, .nav-item:hover, a.nav-link:hover, a.nav-item:hover, button.nav-link:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.9);
+  border-color: rgba(255,255,255,0.1);
+  transform: scale(1.02);
+}
+
+.sidebar-nav a.active, .sidebar-menu a.active, .sidebar-menu li a.active, .sidebar nav a.active,
+.nav-link.active, .nav-item.active, a.nav-link.active, a.nav-item.active, button.nav-link.active {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border-color: rgba(255,255,255,0.2);
+  font-weight: 600;
+  box-shadow: 0 0 15px rgba(255,255,255,0.05);
+}
+
+/* Sidebar section headings / group titles */
+.nav-section-title, .nav-group, .sidebar h3, .sidebar h4,
+.sidebar-menu > h3, .sidebar-menu > h4 {
+  font-size: 0.7em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.35);
+  padding: 18px 16px 6px;
+  margin: 0;
+  border: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.nav-section {
+  margin-bottom: 4px;
+}
+
+/* Sidebar list items without bullets */
+.sidebar-menu ul, .sidebar-menu ol, .sidebar nav ul, .sidebar nav ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* === MAIN CONTENT AREA === */
+.main-wrapper {
+  margin-left: 332px;
+  flex: 1;
+  min-height: 100vh;
+  padding: 16px 16px 16px 0;
+}
+
+.main-content, main.main-content {
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 48px 52px;
+  min-height: calc(100vh - 32px);
+  transition: border-color 0.5s ease;
+  animation: fadeIn 0.6s ease-out forwards;
+}
+.main-content:hover { border-color: rgba(255,255,255,0.25); }
+
+/* === CONTENT SECTIONS === */
+.content-section { display: none; animation: fadeIn 0.4s ease-out; }
+.content-section.active { display: block; }
+
+/* === TYPOGRAPHY === */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 2.2em;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 0.6em;
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h2 {
+  font-size: 1.6em;
+  font-weight: 600;
+  margin-top: 2em;
+  margin-bottom: 0.6em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  /* Override gradient text for h2 */
+  background: none;
+  -webkit-text-fill-color: #fff;
+}
+
+h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.4em;
+  color: rgba(255,255,255,0.95);
+}
+
+h4 {
+  font-size: 1.05em;
+  font-weight: 600;
+  margin-top: 1.2em;
+  margin-bottom: 0.3em;
+  color: rgba(255,255,255,0.9);
+}
+
+p {
+  margin-bottom: 1em;
+  color: rgba(255,255,255,0.75);
+}
+
+a { color: rgba(147,197,253,0.9); text-decoration: none; transition: color 0.3s; }
+a:hover { color: #fff; }
+
+strong, b { color: rgba(255,255,255,0.95); font-weight: 600; }
+
+code {
+  background: rgba(255,255,255,0.08);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  color: rgba(196,181,253,0.9);
+}
+
+ul, ol {
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+  color: rgba(255,255,255,0.75);
+}
+
+li { margin-bottom: 0.5em; }
+
+/* === STYLED BOXES (tip, note, ai, warning, milestone) === */
+.box {
+  padding: 20px 24px;
+  margin: 20px 0;
+  border-radius: 16px;
+  border-left: 3px solid;
+  background: rgba(255,255,255,0.04);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+}
+
+.box-title {
+  font-weight: 600;
+  color: rgba(255,255,255,0.95);
+  margin-bottom: 8px;
+}
+
+.box-tip, .box.tip {
+  border-left: 3px solid rgba(52,211,153,0.6);
+  background: rgba(52,211,153,0.06);
+}
+.box-tip::before, .box.tip::before { content: "💡 "; font-weight: bold; }
+
+.box-note, .box.note {
+  border-left: 3px solid rgba(251,191,36,0.6);
+  background: rgba(251,191,36,0.06);
+}
+.box-note::before, .box.note::before { content: "⚠️ "; font-weight: bold; }
+
+.box-ai, .box.ai-feature {
+  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15));
+  border-left: 3px solid rgba(168,85,247,0.6);
+  border: 1px solid rgba(168,85,247,0.2);
+}
+.box-ai::before, .box.ai-feature::before { content: "🤖 "; font-weight: bold; }
+.box-ai a { color: rgba(251,191,36,0.9); }
+
+.box.warning {
+  border-left: 3px solid rgba(239,68,68,0.6);
+  background: rgba(239,68,68,0.06);
+}
+
+.box.milestone {
+  border-left: 3px solid rgba(59,130,246,0.6);
+  background: rgba(59,130,246,0.06);
+}
+
+/* === STEPS === */
+.steps {
+  list-style: none;
+  padding: 0;
+  counter-reset: step-counter;
+}
+
+.steps li {
+  margin: 18px 0;
+  padding-left: 54px;
+  position: relative;
+  color: rgba(255,255,255,0.75);
+}
+
+.steps li::before {
+  content: counter(step-counter);
+  counter-increment: step-counter;
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.1);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+/* === CHECKLISTS === */
+.checklist {
+  list-style: none;
+  padding: 0;
+}
+
+.checklist li {
+  padding: 10px 0 10px 32px;
+  position: relative;
+  color: rgba(255,255,255,0.75);
+}
+
+.checklist li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: rgba(52,211,153,0.8);
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+/* === TABLES === */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 20px 0;
+  font-size: 0.9em;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+th {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.95);
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.7);
+}
+
+tr:hover td {
+  background: rgba(255,255,255,0.03);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* === ROLE BADGES === */
+.role-super-admin { color: rgba(56,189,248,0.9); font-weight: 600; }
+.role-admin { color: rgba(248,113,113,0.9); font-weight: 600; }
+.role-dept-head { color: rgba(167,139,250,0.9); font-weight: 600; }
+.role-teacher { color: rgba(52,211,153,0.9); font-weight: 600; }
+.role-student { color: rgba(129,140,248,0.9); font-weight: 600; }
+.role-parent { color: rgba(148,163,184,0.9); font-weight: 600; }
+
+.role-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.82em;
+  font-weight: 600;
+  margin-right: 5px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.role-badge.super-admin { background: rgba(56,189,248,0.12); color: rgba(56,189,248,0.9); border-color: rgba(56,189,248,0.2); }
+.role-badge.admin { background: rgba(248,113,113,0.12); color: rgba(248,113,113,0.9); border-color: rgba(248,113,113,0.2); }
+.role-badge.dept-head { background: rgba(167,139,250,0.12); color: rgba(167,139,250,0.9); border-color: rgba(167,139,250,0.2); }
+.role-badge.teacher { background: rgba(52,211,153,0.12); color: rgba(52,211,153,0.9); border-color: rgba(52,211,153,0.2); }
+.role-badge.student { background: rgba(129,140,248,0.12); color: rgba(129,140,248,0.9); border-color: rgba(129,140,248,0.2); }
+.role-badge.parent { background: rgba(148,163,184,0.12); color: rgba(148,163,184,0.9); border-color: rgba(148,163,184,0.2); }
+
+/* === COLLAPSIBLE === */
+.collapsible {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.9);
+  cursor: pointer;
+  padding: 16px 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  margin: 10px 0;
+  font-weight: 600;
+  font-size: 0.95em;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.collapsible:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  transform: scale(1.01);
+}
+
+.collapsible.active {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.25);
+  box-shadow: 0 0 20px rgba(255,255,255,0.05);
+}
+
+.collapsible-content {
+  display: none;
+  padding: 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-top: none;
+  border-radius: 0 0 14px 14px;
+  margin-top: -10px;
+}
+
+.collapsible-content.active {
+  display: block;
+}
+
+.collapsible-icon, .collapsible-arrow {
+  transition: transform 0.3s;
+  color: rgba(255,255,255,0.5);
+}
+
+.collapsible.active .collapsible-icon,
+.collapsible.active .collapsible-arrow {
+  transform: rotate(180deg);
+}
+
+/* === FEATURE GRID & CARDS === */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.feature-card {
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.feature-card h4 {
+  margin-top: 0;
+  color: rgba(255,255,255,0.95);
+}
+
+/* === ICON CIRCLE === */
+.icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+/* === FOOTER === */
+.footer {
+  background: rgba(255,255,255,0.04);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  padding: 24px;
+  margin-top: 48px;
+  border-radius: 0 0 24px 24px;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 0.85em;
+  color: rgba(255,255,255,0.4);
+}
+
+/* === UTILITY CLASSES === */
+.text-teal { color: rgba(52,211,153,0.9); }
+.text-center { text-align: center; }
+.mt-2 { margin-top: 2em; }
+.mb-2 { margin-bottom: 2em; }
+
+/* === STEP DESCRIPTION (SuperTeacher specific) === */
+.step-description {
+  color: rgba(255,255,255,0.65);
+  font-size: 0.9em;
+  margin-top: 4px;
+}
+
+/* Walkthrough step cards (SuperTeacher specific) */
+.setup-step, .step-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 12px 0;
+}
+
+/* === MOBILE RESPONSIVE === */
+@media (max-width: 900px) {
+  .sidebar, aside.sidebar {
+    position: fixed;
+    width: 280px;
+    left: -300px;
+    top: 0;
+    bottom: 0;
+    border-radius: 0 24px 24px 0;
+    transition: left 0.4s ease;
+    z-index: 200;
+  }
+  .sidebar.mobile-open { left: 0; }
+
+  .main-wrapper {
+    margin-left: 0;
+    padding: 16px;
+  }
+
+  .main-content, main.main-content {
+    padding: 28px 24px;
+    border-radius: 20px;
+  }
+
+  h1 { font-size: 1.6em; }
+  h2 { font-size: 1.3em; }
+  h3 { font-size: 1.1em; }
+
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 901px) {
+  .mobile-menu-btn { display: none !important; }
+  .mobile-overlay { display: none !important; }
+}
+
+.mobile-menu-btn {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 150;
+  width: 44px;
+  height: 44px;
+  background: rgba(255,255,255,0.1);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 14px;
+  color: #fff;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  transition: all 0.3s;
+}
+.mobile-menu-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
+
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  z-index: 150;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.mobile-overlay.active { opacity: 1; pointer-events: auto; }
+
+/* === PRINT CSS === */
+@media print {
+  .sidebar, aside.sidebar, .immersive-bg, .mobile-menu-btn, .mobile-overlay { display: none !important; }
+  .main-wrapper { margin-left: 0; }
+  .main-content, main.main-content {
+    max-width: 100%;
+    padding: 0;
+    background: #fff;
+    color: #000;
+    border: none;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  body { background: #fff; color: #000; }
+  .content-section { display: block !important; page-break-after: always; }
+  h1, h2, h3, h4 { color: #000; -webkit-text-fill-color: #000; background: none; }
+  p, li, td { color: #333; }
+  th { background: #eee; color: #000; }
+  .box { background: #f5f5f5; border-color: #ccc; }
+  .collapsible-content { display: block !important; }
+  .feature-card { background: #f5f5f5; border-color: #ddd; }
+}
+</style>
+</head>
+<body>
+<!-- Immersive Background -->
+<div class="immersive-bg">
+  <div class="gradient-base"></div>
+  <div class="bg-image"></div>
+  <div class="particle particle-1"></div>
+  <div class="particle particle-2"></div>
+  <div class="particle particle-3"></div>
+  <div class="particle particle-4"></div>
+  <div class="particle particle-5"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+<!-- Mobile Menu Button -->
+<button class="mobile-menu-btn" onclick="document.querySelector('.sidebar, aside.sidebar').classList.toggle('mobile-open'); document.querySelector('.mobile-overlay').classList.toggle('active');">☰</button>
+<div class="mobile-overlay" onclick="document.querySelector('.sidebar, aside.sidebar').classList.remove('mobile-open'); this.classList.remove('active');"></div>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h1>SuperStudent</h1>
+            <p>v2 Manual</p>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search guide...">
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Getting Started</div>
+            <a class="nav-link" href="javascript:void(0)" data-target="welcome" onclick="closeMobileMenu()">Welcome</a>
+            <a class="nav-link" href="javascript:void(0)" data-target="what-is" onclick="closeMobileMenu()">What is SuperStudent?</a>
+            <a class="nav-link" href="javascript:void(0)" data-target="setup" onclick="closeMobileMenu()">Setting Up Your Profile</a>
+            <a class="nav-link" href="javascript:void(0)" data-target="dashboard" onclick="closeMobileMenu()">Understanding the Dashboard</a>
+            <a class="nav-link" href="javascript:void(0)" data-target="navigation" onclick="closeMobileMenu()">Navigating the App</a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Core Features</div>
+            <a class="nav-link" href="javascript:void(0)" data-target="courses" onclick="closeMobileMenu()">My Courses</a>
+            <a class="nav-link" href="javascript:void(0)" data-target="assignments" onclick="closeMobileMenu()">Assignments</a>
+            <a class="nav-link" href="javascript:void(0)" data-target="task-generator" onclick="closeMobileMenu()">AI Task Generator</a>
+            <a class="nav-link" href="javascript:void(0)" data-target="tutor" onclick="closeMobileMenu()">AI Tutor</a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Learning & Progress</div>
+            <a class="nav-link" href="javascript:void(0)" data-target="gradebook" onclick="closeMobileMenu()">Gradebook</a>
+            <a class="nav-link" href="javascript:void(0)" data-target="tracker" onclick="closeMobileMenu()">Study Tracker</a>
+            <a class="nav-link" href="javascript:void(0)" data-target="calendar" onclick="closeMobileMenu()">Study Calendar</a>
+            <a class="nav-link" href="javascript:void(0)" data-target="revision" onclick="closeMobileMenu()">Revision Planner</a>
+            <a class="nav-link" href="javascript:void(0)" data-target="analytics" onclick="closeMobileMenu()">Analytics</a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Wellbeing & Portfolio</div>
+            <a class="nav-link" href="javascript:void(0)" data-target="wellbeing" onclick="closeMobileMenu()">Wellbeing</a>
+            <a class="nav-link" href="javascript:void(0)" data-target="portfolio" onclick="closeMobileMenu()">My Portfolio</a>
+            <a class="nav-link" href="javascript:void(0)" data-target="leaderboard" onclick="closeMobileMenu()">Leaderboard</a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Admin & Support</div>
+            <a class="nav-link" href="javascript:void(0)" data-target="messages" onclick="closeMobileMenu()">Messages</a>
+            <a class="nav-link" href="javascript:void(0)" data-target="progress-report" onclick="closeMobileMenu()">Progress Report</a>
+            <a class="nav-link" href="javascript:void(0)" data-target="resources" onclick="closeMobileMenu()">Resources & AI</a>
+            <a class="nav-link" href="javascript:void(0)" data-target="settings" onclick="closeMobileMenu()">Settings</a>
+            <a class="nav-link" href="javascript:void(0)" data-target="compliance" onclick="closeMobileMenu()">Compliance & Safety</a>
+        </div>
+    </div>
+
+    <!-- HAMBURGER MENU -->
+    <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="content-wrapper">
+            <!-- WELCOME SECTION -->
+            <section id="welcome">
+                <h1>SuperStudent v2 Manual</h1>
+                <p style="font-size: 16px; color: #666;">Your comprehensive guide to mastering the AI-powered student companion for self-directed learning.</p>
+
+                <div class="ai-feature-box">
+                    <strong>Welcome to Your Learning Companion</strong><br>
+                    SuperStudent v2 is an intelligent, AI-powered platform designed specifically for self-directed learners. Whether you're managing coursework, preparing for exams, or tracking your academic progress, SuperStudent empowers you with tools that adapt to your learning style.
+                </div>
+            </section>
+
+            <!-- WHAT IS SUPERSTUDENT -->
+            <section id="what-is">
+                <h2>What is SuperStudent?</h2>
+
+                <h3>Overview</h3>
+                <p>SuperStudent v2 is a standalone student companion application built for modern learners who want to take control of their education. Unlike traditional learning platforms, SuperStudent combines course management, AI-powered tutoring, progress tracking, and wellbeing monitoring in a single, intuitive interface.</p>
+
+                <h3>Core Purpose</h3>
+                <p>SuperStudent helps you:</p>
+                <div class="feature-list">
+                    <div class="feature-item">Manage courses, assignments, and deadlines in one place</div>
+                    <div class="feature-item">Generate practice assignments and study materials on-demand using AI</div>
+                    <div class="feature-item">Learn in your preferred style with 12+ AI-powered teaching methods</div>
+                    <div class="feature-item">Track grades, study time, and academic progress in real-time</div>
+                    <div class="feature-item">Maintain mental and emotional wellbeing with daily mood check-ins</div>
+                    <div class="feature-item">Build a digital portfolio showcasing your achievements</div>
+                    <div class="feature-item">Collaborate safely with teachers and peers</div>
+                </div>
+
+                <h3>Who Should Use SuperStudent?</h3>
+                <p>SuperStudent is designed for:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li><strong>Self-Directed Learners:</strong> Students managing their own learning pace and goals</li>
+                    <li><strong>Online Learners:</strong> Those in fully remote or hybrid learning environments</li>
+                    <li><strong>Students Seeking Extra Support:</strong> Learners who benefit from AI tutoring and personalized practice</li>
+                    <li><strong>All Ages & Grades:</strong> From middle school through university and beyond</li>
+                </ul>
+            </section>
+
+            <!-- SETUP SECTION -->
+            <section id="setup">
+                <h2>Setting Up Your Profile</h2>
+
+                <p>Your first time using SuperStudent? Follow these steps to create your profile and personalize your learning experience.</p>
+
+                <h3>First-Time Setup (Step-by-Step)</h3>
+
+                <div class="step-guide">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Enter Your Name</h4>
+                            <p>Start by entering your full name. This will appear on your profile, progress reports, and portfolio. You can update this anytime.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Select Your Grade Level</h4>
+                            <p>Choose your current grade (e.g., 9th Grade, 10th Grade, College Year 1, etc.). This helps SuperStudent tailor content difficulty and recommendations.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Add Your Subjects</h4>
+                            <p>List the subjects you're currently studying (e.g., Mathematics, History, Biology, English). You can add or remove subjects as needed.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Define Your Study Goals</h4>
+                            <p>Set 1-3 primary goals (e.g., "Improve math grades by 10%", "Complete all assignments on time", "Master essay writing"). These goals will drive your daily dashboard.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Choose Your Learning Preferences</h4>
+                            <p>Indicate your preferred learning styles (visual, auditory, hands-on, etc.). SuperStudent will use these to recommend the best AI tutoring methods.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tip-box">
+                    <strong>Tip:</strong> You can return to setup and update your preferences anytime from Settings. Your learning style preferences may change as you discover what works best for you!
+                </div>
+            </section>
+
+            <!-- DASHBOARD SECTION -->
+            <section id="dashboard">
+                <h2>Understanding the Dashboard</h2>
+
+                <p>Your dashboard is your command center. It displays your key metrics, progress, and quick actions at a glance.</p>
+
+                <h3>Dashboard Components</h3>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    Study Goal Tracker <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p>At the top of your dashboard, you'll see progress bars for each of your study goals. Each bar shows:</p>
+                    <ul style="margin-left: 20px; margin-bottom: 15px;">
+                        <li>Goal name (e.g., "Complete all assignments on time")</li>
+                        <li>Current progress percentage</li>
+                        <li>Target completion date</li>
+                    </ul>
+                    <p><strong>How to use it:</strong> Click on a goal to see detailed progress, milestones, and action items.</p>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    Quick Stats <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p>View your current academic snapshot:</p>
+                    <ul style="margin-left: 20px; margin-bottom: 15px;">
+                        <li><strong>Overall GPA:</strong> Your current grade average</li>
+                        <li><strong>Active Assignments:</strong> Number of assignments due in the next 14 days</li>
+                        <li><strong>Study Streak:</strong> Your current consecutive days of studying</li>
+                        <li><strong>Wellbeing Score:</strong> Average mood from the past week (1-5 scale)</li>
+                    </ul>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    Subject Breakdown <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p>A visual breakdown of your performance by subject, showing:</p>
+                    <ul style="margin-left: 20px; margin-bottom: 15px;">
+                        <li>Current grade in each subject</li>
+                        <li>Number of completed assignments</li>
+                        <li>Study time logged (hours/week)</li>
+                        <li>Color-coded performance indicators (green = excellent, yellow = good, orange = needs attention)</li>
+                    </ul>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    Quick Actions <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p>Fast shortcuts to common tasks:</p>
+                    <ul style="margin-left: 20px; margin-bottom: 15px;">
+                        <li><strong>View Upcoming Assignments:</strong> See your next 5 due dates</li>
+                        <li><strong>Log Study Session:</strong> Quick entry for study tracking</li>
+                        <li><strong>Daily Mood Check-in:</strong> Log your current wellbeing</li>
+                        <li><strong>Generate Practice Assignment:</strong> Create an AI-powered study material</li>
+                        <li><strong>Message Tutor:</strong> Quick access to AI Tutor chat</li>
+                    </ul>
+                </div>
+
+                <div class="note-box">
+                    <strong>Dashboard Refresh:</strong> Your dashboard updates every 5 minutes with the latest grades, submissions, and notifications. You can also manually refresh by clicking the refresh icon in the top-right corner.
+                </div>
+            </section>
+
+            <!-- NAVIGATION SECTION -->
+            <section id="navigation">
+                <h2>Navigating the App</h2>
+
+                <p>SuperStudent has 17 main navigation sections, each designed for a specific aspect of your learning journey. Here's a quick overview:</p>
+
+                <table>
+                    <tr>
+                        <th>Section</th>
+                        <th>Purpose</th>
+                        <th>Key Actions</th>
+                    </tr>
+                    <tr>
+                        <td><strong>🏠 Dashboard</strong></td>
+                        <td>Your command center with all key metrics</td>
+                        <td>View goals, stats, quick actions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>📚 My Courses</strong></td>
+                        <td>View and manage your enrolled courses</td>
+                        <td>View materials, rubrics, resources</td>
+                    </tr>
+                    <tr>
+                        <td><strong>✏️ Assignments</strong></td>
+                        <td>Submit, track, and review assignments</td>
+                        <td>Submit work, view feedback, grades</td>
+                    </tr>
+                    <tr>
+                        <td><strong>🤖 AI Task Generator</strong></td>
+                        <td>Generate custom practice assignments</td>
+                        <td>Create exercises, specify difficulty</td>
+                    </tr>
+                    <tr>
+                        <td><strong>🎓 AI Tutor</strong></td>
+                        <td>Learn in 12 different styles with AI</td>
+                        <td>Choose learning method, chat, save content</td>
+                    </tr>
+                    <tr>
+                        <td><strong>📊 Gradebook</strong></td>
+                        <td>Track all your grades by course</td>
+                        <td>View grades, trends, export CSV</td>
+                    </tr>
+                    <tr>
+                        <td><strong>⏱️ Study Tracker</strong></td>
+                        <td>Log and monitor study sessions</td>
+                        <td>Log time, view streaks, subject breakdown</td>
+                    </tr>
+                    <tr>
+                        <td><strong>📅 Study Calendar</strong></td>
+                        <td>Plan exams and revision sessions</td>
+                        <td>Add dates, set countdowns, mark holidays</td>
+                    </tr>
+                    <tr>
+                        <td><strong>📋 Revision Planner</strong></td>
+                        <td>Build structured revision schedules</td>
+                        <td>Create plans, checklists, manage time</td>
+                    </tr>
+                    <tr>
+                        <td><strong>📈 Analytics</strong></td>
+                        <td>Deep dive into your performance data</td>
+                        <td>View trends, subject analysis, insights</td>
+                    </tr>
+                    <tr>
+                        <td><strong>💚 Wellbeing</strong></td>
+                        <td>Track mental and emotional health</td>
+                        <td>Mood check-ins, support resources</td>
+                    </tr>
+                    <tr>
+                        <td><strong>🏆 My Portfolio</strong></td>
+                        <td>Showcase your best work & achievements</td>
+                        <td>Add projects, view badges, reflections</td>
+                    </tr>
+                    <tr>
+                        <td><strong>🎯 Leaderboard</strong></td>
+                        <td>View rankings and achievements</td>
+                        <td>Opt in/out, view badges, rankings</td>
+                    </tr>
+                    <tr>
+                        <td><strong>💬 Messages</strong></td>
+                        <td>Communicate with teachers & peers</td>
+                        <td>Send, receive, organize messages</td>
+                    </tr>
+                    <tr>
+                        <td><strong>📄 Progress Report</strong></td>
+                        <td>Generate comprehensive progress reports</td>
+                        <td>Create reports, share with parents</td>
+                    </tr>
+                    <tr>
+                        <td><strong>📚 Resources & AI</strong></td>
+                        <td>Access educational materials & shortcuts</td>
+                        <td>Browse library, save resources</td>
+                    </tr>
+                    <tr>
+                        <td><strong>⚙️ Settings</strong></td>
+                        <td>Customize your account & preferences</td>
+                        <td>Profile, privacy, accessibility, API keys</td>
+                    </tr>
+                </table>
+
+                <div class="tip-box">
+                    <strong>Pro Tip:</strong> Use keyboard shortcuts to navigate faster. Press <code>?</code> anywhere in the app to see all available shortcuts.
+                </div>
+            </section>
+
+            <!-- MY COURSES SECTION -->
+            <section id="courses">
+                <h2>My Courses</h2>
+
+                <p>The "My Courses" section is your hub for viewing course materials, understanding assessment criteria, and accessing course resources.</p>
+
+                <h3>Viewing Your Courses</h3>
+
+                <p>When you open My Courses, you'll see a card-based layout of all your enrolled courses. Each course card shows:</p>
+                <div class="feature-list">
+                    <div class="feature-item">Course title and code (e.g., BIO-101)</div>
+                    <div class="feature-item">Instructor name and contact email</div>
+                    <div class="feature-item">Current grade (percentage or letter)</div>
+                    <div class="feature-item">Number of assignments (completed/total)</div>
+                    <div class="feature-item">Color-coded status indicator</div>
+                </div>
+
+                <h3>Course Details & Materials</h3>
+
+                <p>Click on any course card to open the full course view:</p>
+
+                <div class="step-guide">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Overview Tab</h4>
+                            <p>See the course description, learning outcomes, and instructor details.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Materials Tab</h4>
+                            <p>Access all course materials organized by unit or week (lecture notes, slides, readings, videos).</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Assignments Tab</h4>
+                            <p>View all course assignments with due dates, submission status, and grades.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Rubrics Tab</h4>
+                            <p>See detailed grading rubrics for major assignments and assessments.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Rubrics & Assessment Criteria</h3>
+
+                <p>Understanding rubrics is crucial for academic success. When viewing a rubric:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li><strong>Criteria:</strong> The areas being assessed (e.g., "Critical Thinking", "Organization")</li>
+                    <li><strong>Performance Levels:</strong> Usually ranging from "Emerging" to "Excellent"</li>
+                    <li><strong>Point Values:</strong> Points awarded for each performance level</li>
+                    <li><strong>Descriptions:</strong> What each level looks like in practice</li>
+                </ul>
+
+                <div class="ai-feature-box">
+                    <strong>AI Rubric Analysis:</strong> Click "Analyze with AI" on any rubric to get personalized suggestions for how to meet each criterion. The AI Tutor will break down what's needed at each level and provide tips for reaching the highest score.
+                </div>
+
+                <h3>Resources Attached to Courses</h3>
+
+                <p>Many courses have attached resources such as:</p>
+                <div class="feature-list">
+                    <div class="feature-item">Textbook chapters and e-books</div>
+                    <div class="feature-item">Recommended websites and research databases</div>
+                    <div class="feature-item">Video lectures and documentaries</div>
+                    <div class="feature-item">Study guides and practice problems</div>
+                    <div class="feature-item">Glossaries of key terms</div>
+                </div>
+
+                <p>To access resources: Open the course → Click "Resources" tab → Click on any resource to open it or download it.</p>
+            </section>
+
+            <!-- ASSIGNMENTS SECTION -->
+            <section id="assignments">
+                <h2>Assignments</h2>
+
+                <p>The Assignments section is where you manage your work, submit assignments, and review feedback.</p>
+
+                <h3>Viewing Active Assignments</h3>
+
+                <p>Your active assignments are organized by due date. Each assignment shows:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li><strong>Status Badge:</strong> "Not Started" (red), "In Progress" (yellow), "Ready to Submit" (blue), "Submitted" (green), "Graded" (purple)</li>
+                    <li><strong>Due Date:</strong> When the assignment is due</li>
+                    <li><strong>Countdown Timer:</strong> Days/hours until the deadline</li>
+                    <li><strong>Course:</strong> Which course the assignment is for</li>
+                    <li><strong>Assignment Type:</strong> Essay, Problem Set, Project, etc.</li>
+                </ul>
+
+                <h3>Submitting an Assignment (Step-by-Step)</h3>
+
+                <div class="step-guide">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Click on the Assignment</h4>
+                            <p>Open the assignment card to view full details, rubric, and submission form.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Review the Requirements</h4>
+                            <p>Read the assignment brief, rubric, and any attached instructions. Click "Learn About This Topic" if you need background information from the AI Tutor.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Prepare Your Work</h4>
+                            <p>Complete your work in your preferred tool (Microsoft Word, Google Docs, Canva, code editor, etc.). Save your file locally first.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Upload Your File</h4>
+                            <p>In the submission form, click "Upload File" and select your completed work. Supported formats: PDF, DOC, DOCX, PPTX, images, videos.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Add Comments (Optional)</h4>
+                            <p>Include a brief note to your teacher about your submission, any challenges you faced, or questions you have.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Submit</h4>
+                            <p>Click "Submit Assignment". Your work is now submitted and the timestamp is recorded. You'll receive a confirmation email.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tip-box">
+                    <strong>Tip:</strong> Submit early! If you finish before the deadline, upload your work at least 24 hours ahead of time. This gives you peace of mind and time to address any technical issues.
+                </div>
+
+                <h3>Viewing Graded Work & Feedback</h3>
+
+                <p>Once your assignment is graded, you'll see:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li><strong>Final Grade:</strong> Points earned and percentage</li>
+                    <li><strong>Rubric Breakdown:</strong> Your score in each rubric criterion</li>
+                    <li><strong>Teacher Feedback:</strong> Comments and suggestions for improvement</li>
+                    <li><strong>Annotated File:</strong> Your original submission with teacher markups (if applicable)</li>
+                </ul>
+
+                <div class="ai-feature-box">
+                    <strong>AI Feedback Analysis:</strong> Click "Analyze Feedback with AI" to get the AI Tutor's interpretation of teacher comments and personalized suggestions for improvement on future assignments.
+                </div>
+
+                <h3>Assignment Detail Tabs</h3>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    Brief Tab <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p>The full assignment instructions, requirements, grading rubric, and any attached documents or examples.</p>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    Studio Content Tab <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p>Related learning materials: recommended resources, tutorial videos, reading suggestions, and AI Tutor content for this assignment type.</p>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    Submissions Tab <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p>View all your submission attempts, timestamps, and file versions. If the instructor allows revisions, you can resubmit here.</p>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    Quiz Results Tab <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p>If the assignment includes a quiz component, see your answers, correct answers, and detailed explanations for any incorrect responses.</p>
+                </div>
+            </section>
+
+            <!-- AI TASK GENERATOR SECTION -->
+            <section id="task-generator">
+                <h2>AI Task Generator</h2>
+
+                <p>The AI Task Generator creates custom practice assignments tailored to your current learning needs. Perfect for exam prep, concept mastery, and extra practice.</p>
+
+                <h3>What is the AI Task Generator?</h3>
+
+                <p>Instead of searching for practice problems or study materials online, the AI Task Generator creates brand-new, original assignments in seconds. You specify what you want to learn, and the AI generates a complete assignment with a grading rubric.</p>
+
+                <h3>Generating a Practice Assignment (Step-by-Step)</h3>
+
+                <div class="step-guide">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Select a Topic</h4>
+                            <p>Enter the specific topic you want to practice (e.g., "photosynthesis", "calculus derivatives", "Shakespearean sonnets", "French subjunctive mood").</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Choose Your Subject</h4>
+                            <p>Select which subject the topic belongs to (Biology, Math, English Literature, French, etc.).</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Pick an Assignment Type</h4>
+                            <p>Choose from Essay, Homework Problem Set, Exam-Style Quiz, or Investigation Project (see types below).</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Set the Difficulty Level</h4>
+                            <p>Choose Foundation (basic), Standard (grade-level appropriate), or Advanced (challenging, extension content).</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Click Generate</h4>
+                            <p>The AI creates your assignment in 30-60 seconds. You'll see the full assignment prompt and grading rubric.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Assignment Types</h3>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    📝 Essay <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p><strong>Best for:</strong> Analyzing concepts, synthesizing ideas, practicing writing skills.</p>
+                    <p><strong>What you get:</strong> An essay prompt with specific requirements (word count, structure, citations), a grading rubric evaluating thesis, evidence, organization, and style.</p>
+                    <p><strong>Time to complete:</strong> 30 minutes - 2 hours depending on difficulty.</p>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    🧮 Homework <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p><strong>Best for:</strong> Problem-solving, calculations, applying formulas, working through examples.</p>
+                    <p><strong>What you get:</strong> A set of 5-15 problems ranging from simple to complex, complete with hints and worked examples for learning.</p>
+                    <p><strong>Time to complete:</strong> 20 minutes - 1 hour depending on difficulty.</p>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    📋 Exam <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p><strong>Best for:</strong> Test prep, identifying knowledge gaps, timed practice.</p>
+                    <p><strong>What you get:</strong> 20-40 multiple-choice, short-answer, and/or essay questions mimicking real exam formats. Includes answer key and explanations.</p>
+                    <p><strong>Time to complete:</strong> Timed (usually 1-2 hours). You can take it under test conditions or untimed for learning.</p>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    🔬 Investigation <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p><strong>Best for:</strong> Deep exploration of topics, research projects, critical thinking.</p>
+                    <p><strong>What you get:</strong> A research question or investigation prompt, scaffolding questions to guide your exploration, and a rubric evaluating inquiry, evidence, and conclusions.</p>
+                    <p><strong>Time to complete:</strong> 2-5 hours depending on scope and difficulty.</p>
+                </div>
+
+                <h3>Difficulty Levels</h3>
+
+                <table>
+                    <tr>
+                        <th>Level</th>
+                        <th>Description</th>
+                        <th>When to Use</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Foundation</strong></td>
+                        <td>Basic concepts, simple examples, straightforward problems</td>
+                        <td>Reviewing fundamentals, learning a new topic from scratch</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Standard</strong></td>
+                        <td>Grade-level appropriate, mixed simple and complex problems</td>
+                        <td>Regular practice, typical homework, standard exams</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Advanced</strong></td>
+                        <td>Challenging problems, synthesis, extension content</td>
+                        <td>Preparing for advanced placement, mastery, competition prep</td>
+                    </tr>
+                </table>
+
+                <h3>Understanding Generated Rubrics</h3>
+
+                <p>Every generated assignment includes a detailed rubric. The rubric breaks down:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li><strong>Criteria:</strong> What aspects of your work are being evaluated</li>
+                    <li><strong>Performance Descriptors:</strong> What "excellent", "good", "developing", and "emerging" look like</li>
+                    <li><strong>Point Distributions:</strong> How many points each criterion is worth</li>
+                </ul>
+
+                <div class="ai-feature-box">
+                    <strong>Self-Grade Your Work:</strong> After completing a generated assignment, use the rubric to grade your own work. This helps you identify areas for improvement before submitting to your teacher or using the assignment purely for practice.
+                </div>
+
+                <h3>Saving Generated Assignments</h3>
+
+                <p>Once you generate an assignment:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Click "Save to My Library" to keep it for future reference</li>
+                    <li>Print or download as PDF for offline work</li>
+                    <li>Share with classmates (the assignment itself, not your answers)</li>
+                    <li>Return to it anytime from your Study Library</li>
+                </ul>
+
+                <div class="tip-box">
+                    <strong>Tip:</strong> Build a personal practice library by generating and saving assignments in your areas of weakness. Review these periodically to track improvement over time.
+                </div>
+            </section>
+
+            <!-- AI TUTOR SECTION (MAJOR) -->
+            <section id="tutor">
+                <h2>AI Tutor</h2>
+
+                <p>The AI Tutor is your intelligent, always-available learning companion. It adapts to YOUR learning style and explains concepts in a way that makes sense to you. Choose from 12 different learning methods, ask follow-up questions, and access your learning history anytime.</p>
+
+                <h3>Overview of the AI Tutor</h3>
+
+                <p>The AI Tutor uses advanced language models (powered by Claude, Gemini, and ElevenLabs) to generate personalized explanations, visual content, interactive activities, and audio-visual materials—all tailored to your selected learning style.</p>
+
+                <p><strong>Key Features:</strong></p>
+                <div class="feature-list">
+                    <div class="feature-item">Choose from 12 learning methods (visual, auditory, hands-on, etc.)</div>
+                    <div class="feature-item">Ask follow-up questions to deepen understanding</div>
+                    <div class="feature-item">Save and organize all generated content by topic</div>
+                    <div class="feature-item">Review learning history anytime</div>
+                    <div class="feature-item">Multi-language support (18 languages)</div>
+                    <div class="feature-item">Content moderation for safety and accuracy</div>
+                </div>
+
+                <h3>12 Learning Styles Explained</h3>
+
+                <p>Each learning style is best suited for different topics and learners. Experiment to find what works for you!</p>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    👁️ Visual Learner - Mind Maps & Diagrams <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p><strong>How it works:</strong> The AI generates an interactive mind map showing concepts, relationships, and hierarchies visually.</p>
+                    <p><strong>Best for:</strong> Understanding how concepts relate, seeing the "big picture", organizing complex information.</p>
+                    <p><strong>Example:</strong> Ask about "The Water Cycle" and get a beautiful, clickable diagram showing evaporation, condensation, precipitation, and collection.</p>
+                    <p><strong>Output format:</strong> Interactive SVG diagram that you can click to expand sections and see details.</p>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    👂 Auditory Learner - Spoken-Style Explanations <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p><strong>How it works:</strong> The AI explains concepts as if speaking to you directly, using conversational language, tone, and pacing.</p>
+                    <p><strong>Best for:</strong> Learners who prefer listening over reading, getting explanations in natural language.</p>
+                    <p><strong>Example:</strong> Ask about "Photosynthesis" and get an explanation like: "Imagine plants are like tiny solar panels. Here's how they work..."</p>
+                    <p><strong>Output format:</strong> Text written in conversational, speech-like style you can read or pair with Audio Explainer (🎙️).</p>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    📖 Reading/Writing - Detailed Notes & Definitions <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p><strong>How it works:</strong> The AI generates comprehensive notes with key terms, definitions, examples, and citations.</p>
+                    <p><strong>Best for:</strong> Learners who love reading, need detailed documentation, prefer structured notes for study.</p>
+                    <p><strong>Example:</strong> Ask about "American Revolutionary War" and get organized notes with sections on causes, key figures, major battles, and consequences.</p>
+                    <p><strong>Output format:</strong> Formatted text document with headings, bullet points, definitions, and citations.</p>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    🤲 Hands-On Learner - Step-by-Step Examples <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p><strong>How it works:</strong> The AI provides worked examples showing every step of a process or problem-solving approach.</p>
+                    <p><strong>Best for:</strong> Learners who learn by doing, need to see examples before attempting problems independently.</p>
+                    <p><strong>Example:</strong> Ask about "Solving Quadratic Equations" and get 3-5 complete worked examples showing each step, from setup to final answer.</p>
+                    <p><strong>Output format:</strong> Step-by-step guide with annotated examples.</p>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    🔀 Analogy Thinker - Real-World Comparisons <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p><strong>How it works:</strong> The AI explains concepts using real-world analogies and comparisons you can relate to.</p>
+                    <p><strong>Best for:</strong> Abstract concepts, learning through metaphor and comparison.</p>
+                    <p><strong>Example:</strong> Ask about "Mitochondria" and get: "Think of mitochondria as the battery factory in your cells. Just like batteries power your devices, mitochondria power your cells with energy."</p>
+                    <p><strong>Output format:</strong> Explanation using everyday analogies and comparisons.</p>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    ⚡ Quick Summary - Bullet-Point Overview <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p><strong>How it works:</strong> The AI distills complex concepts into a concise, scannable bullet-point list.</p>
+                    <p><strong>Best for:</strong> Quick review, last-minute studying, getting the essentials without details.</p>
+                    <p><strong>Example:</strong> Ask about "Photosynthesis" and get: "• Sunlight → Energy | • Water + CO2 → Glucose | • Happens in chloroplasts | • Process: Light Reactions + Calvin Cycle"</p>
+                    <p><strong>Output format:</strong> Short bullet points, ideal for flashcards or cheat sheets.</p>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    🎬 Explainer Video - 6-Scene Auto-Animated <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p><strong>How it works:</strong> The AI generates a 2-3 minute animated educational video with narration, showing the concept visually step-by-step.</p>
+                    <p><strong>Best for:</strong> Visual learners, understanding processes and sequences, engaging videos for review.</p>
+                    <p><strong>Example:</strong> Ask about "Gravity" and get a 2-minute animated video showing objects falling, forces explained visually, with narration and text overlays.</p>
+                    <p><strong>Output format:</strong> Downloadable MP4 video (480p or 1080p).</p>
+                    <p><strong>Generation time:</strong> 2-3 minutes.</p>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    🃏 Flashcard Game - Interactive 10-Card Deck <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p><strong>How it works:</strong> The AI generates 10 interactive flashcards with questions on one side and answers on the other. Includes a spaced-repetition algorithm to help you learn more effectively.</p>
+                    <p><strong>Best for:</strong> Memorization, vocabulary, quick facts, making study fun and interactive.</p>
+                    <p><strong>Example:</strong> Ask about "Spanish Vocabulary: Foods" and get 10 cards with Spanish food words on one side and English translations on the other.</p>
+                    <p><strong>Features:</strong> Flip cards, mark as "got it" or "need more practice", track your progress across sessions.</p>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    📊 Infographic - Gemini-Powered Visual Stats <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p><strong>How it works:</strong> The AI generates a visually stunning infographic using Google Gemini's image generation, showing data, statistics, or key points visually.</p>
+                    <p><strong>Best for:</strong> Presenting data, understanding statistics, visual learning through beautiful graphics.</p>
+                    <p><strong>Example:</strong> Ask about "Climate Change: By the Numbers" and get an infographic with statistics on rising temperatures, sea levels, carbon emissions—all visually represented.</p>
+                    <p><strong>Output format:</strong> High-resolution PNG infographic (1200x1600 pixels).</p>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    🔀 Flow Diagram - Interactive Process Flow <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p><strong>How it works:</strong> The AI creates an interactive flowchart or process diagram showing how something works step-by-step, with decision points and branching paths.</p>
+                    <p><strong>Best for:</strong> Understanding processes, workflows, decision-making paths, scientific processes.</p>
+                    <p><strong>Example:</strong> Ask about "How to Write an Essay" and get an interactive flowchart starting from "Choose a Topic" → "Research" → "Outline" → "Write Intro" → etc., with clickable sections.</p>
+                    <p><strong>Output format:</strong> Interactive SVG diagram with tooltips on hover.</p>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    🎙️ Audio Explainer - Gemini TTS Narration <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p><strong>How it works:</strong> The AI generates an explanation and uses Google Gemini's text-to-speech to create a natural-sounding audio file (like a podcast or audiobook chapter).</p>
+                    <p><strong>Best for:</strong> Auditory learners, learning while commuting, getting explanations without reading.</p>
+                    <p><strong>Example:</strong> Ask about "The History of the Internet" and get a 5-10 minute audio explanation in a natural voice, available in 18 languages.</p>
+                    <p><strong>Output format:</strong> MP3 audio file (playable in-app or downloadable).</p>
+                    <p><strong>Duration:</strong> Usually 5-10 minutes depending on topic complexity.</p>
+                    <p><strong>Languages:</strong> English, Spanish, French, German, Chinese, Japanese, and 12 more.</p>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    🎬 Video Explainer - Gemini Narrated Slideshow <span>+</span>
+                </div>
+                <div class="collapsible-content">
+                    <p><strong>How it works:</strong> The AI generates a slideshow with beautiful visuals and Gemini TTS narration, creating a polished educational video.</p>
+                    <p><strong>Best for:</strong> Visual + auditory learners, engaging video content, presentation-quality explanations.</p>
+                    <p><strong>Example:</strong> Ask about "The Solar System" and get a 3-5 minute slideshow with images of planets, narrated explanation, and smooth transitions.</p>
+                    <p><strong>Output format:</strong> MP4 video with slides and narration.</p>
+                    <p><strong>Duration:</strong> Usually 3-7 minutes.</p>
+                </div>
+
+                <h3>Multi-Language Support</h3>
+
+                <p>The AI Tutor supports 18 languages, allowing you to learn in your preferred language or strengthen language skills:</p>
+
+                <div class="feature-list">
+                    <div class="feature-item">English, Spanish, French, German, Italian, Portuguese</div>
+                    <div class="feature-item">Chinese (Mandarin), Japanese, Korean, Russian</div>
+                    <div class="feature-item">Arabic, Hindi, Dutch, Swedish, Polish, Vietnamese, Thai</div>
+                </div>
+
+                <p><strong>How to change language:</strong> In the AI Tutor chat, click the language selector at the top and choose your preferred language. All future responses will be in that language.</p>
+
+                <h3>Saving & Reviewing Generated Content</h3>
+
+                <p>Every piece of content the AI Tutor generates can be saved:</p>
+
+                <div class="step-guide">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Click "Save"</h4>
+                            <p>After the AI generates content, click the "Save" button in the top-right corner.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Name Your Content</h4>
+                            <p>Give it a descriptive name (e.g., "Mitochondria Visual Guide", "Spanish Food Flashcards").</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Choose a Collection</h4>
+                            <p>Organize by subject, topic, or study goal.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Access Anytime</h4>
+                            <p>Visit "My Study Library" to review all saved content, search by topic, and track what you've learned.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Multi-Turn Chat for Follow-Up Questions</h3>
+
+                <p>The AI Tutor remembers your conversation! After it generates content, you can ask follow-up questions:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>"Can you explain this part in more detail?"</li>
+                    <li>"Show me an example of..."</li>
+                    <li>"What if we changed...?"</li>
+                    <li>"How does this relate to...?"</li>
+                    <li>"Generate 5 practice problems on this"</li>
+                </ul>
+
+                <p>The AI uses conversation history to provide contextual, relevant responses.</p>
+
+                <h3>Content Safety & Moderation</h3>
+
+                <div class="note-box">
+                    <strong>Quality Assurance:</strong> All AI-generated content goes through a 3-tier moderation system to ensure accuracy, appropriateness, and safety. See the Compliance & Safety section for details on how your content is moderated.
+                </div>
+            </section>
+
+            <!-- GRADEBOOK SECTION -->
+            <section id="gradebook">
+                <h2>Gradebook</h2>
+
+                <p>Your Gradebook shows all your grades across all courses, organized by course and assignment. Track your academic performance at a glance.</p>
+
+                <h3>Tracking Your Grades</h3>
+
+                <p>The Gradebook displays:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li><strong>Course Name:</strong> Which course the grade is from</li>
+                    <li><strong>Assignment/Assessment:</strong> What was graded</li>
+                    <li><strong>Points Earned / Total Points:</strong> Your score and max possible</li>
+                    <li><strong>Percentage:</strong> Your score as a percentage</li>
+                    <li><strong>Letter Grade:</strong> A, B, C, D, F (if applicable)</li>
+                    <li><strong>Date Graded:</strong> When the grade was entered</li>
+                </ul>
+
+                <h3>Understanding Grade Colors</h3>
+
+                <p>Grades are color-coded for quick visual scanning:</p>
+                <table>
+                    <tr>
+                        <th>Color</th>
+                        <th>Grade Range</th>
+                        <th>Meaning</th>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #22c55e; color: white;"><strong>Green</strong></td>
+                        <td>90-100%</td>
+                        <td>Excellent work</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #3b82f6; color: white;"><strong>Blue</strong></td>
+                        <td>80-89%</td>
+                        <td>Good work</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #f59e0b; color: white;"><strong>Yellow/Amber</strong></td>
+                        <td>70-79%</td>
+                        <td>Satisfactory, room for improvement</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #ef4444; color: white;"><strong>Red</strong></td>
+                        <td>Below 70%</td>
+                        <td>Needs improvement, consider extra help</td>
+                    </tr>
+                </table>
+
+                <h3>Course-by-Course Performance</h3>
+
+                <p>Click on any course to see detailed grade breakdown:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li><strong>Current Grade:</strong> Your overall grade in the course</li>
+                    <li><strong>Grade Distribution:</strong> Breakdown by category (tests 40%, homework 30%, participation 20%, etc.)</li>
+                    <li><strong>Recent Assignments:</strong> Your 5 most recent grades with dates</li>
+                    <li><strong>Trend:</strong> Graph showing your grade trend over time (improving, stable, declining)</li>
+                </ul>
+
+                <h3>CSV Export</h3>
+
+                <p>To export your grades:</p>
+                <div class="step-guide">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Click "Export"</h4>
+                            <p>Look for the export button in the top-right corner of the Gradebook.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Choose Format</h4>
+                            <p>Select CSV (comma-separated values) to open in Excel or Google Sheets.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Download</h4>
+                            <p>Your grades will download as a file you can save, edit, and share.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ai-feature-box">
+                    <strong>Grade Analysis:</strong> Upload your grades CSV to the AI Tutor and ask: "Analyze my grades and suggest which topics I should focus on." The AI will identify patterns and recommend study areas.
+                </div>
+            </section>
+
+            <!-- STUDY TRACKER SECTION -->
+            <section id="tracker">
+                <h2>Study Tracker</h2>
+
+                <p>The Study Tracker helps you log and monitor your study sessions. Track time spent, maintain streaks, and see which subjects need more attention.</p>
+
+                <h3>Logging Study Sessions (Step-by-Step)</h3>
+
+                <div class="step-guide">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Click "Log Study Session"</h4>
+                            <p>Find this button on your Dashboard or in the Study Tracker section.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Select Date</h4>
+                            <p>Choose the date you studied (can be today or a past date if you forgot to log).</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Choose Subject</h4>
+                            <p>Select which subject you studied (Math, Biology, History, etc.).</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Enter Duration</h4>
+                            <p>How long did you study? (e.g., 45 minutes, 1.5 hours). You can also use a timer for real-time tracking.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Add Notes (Optional)</h4>
+                            <p>What did you study? (e.g., "Practiced algebra equations", "Read Chapter 5 on evolution"). This helps you remember later.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Submit</h4>
+                            <p>Your study session is logged and counted toward your daily and weekly totals.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Daily Study Goal Progress</h3>
+
+                <p>Set a daily study goal (e.g., "2 hours per day") and watch your progress update in real-time:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Progress bar showing today's study time vs. goal</li>
+                    <li>Breakdown by subject (which subjects have you studied today?)</li>
+                    <li>Encouragement messages when you reach milestones</li>
+                </ul>
+
+                <h3>Study Streak Tracking</h3>
+
+                <p>A "study streak" is the number of consecutive days you've logged study time. The longer your streak, the closer you are to mastery!</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li><strong>Current Streak:</strong> Days in a row you've studied</li>
+                    <li><strong>Longest Streak:</strong> Your all-time record</li>
+                    <li><strong>Streak Protection:</strong> If you miss a day, you can "protect" your streak once per month by making up study time within 48 hours</li>
+                </ul>
+
+                <div class="tip-box">
+                    <strong>Tip:</strong> Even 30 minutes of focused study counts! You don't need to study for hours to maintain a streak. Consistency is more important than duration.
+                </div>
+
+                <h3>Subject Time Distribution</h3>
+
+                <p>See how much time you've spent on each subject over the past week, month, or year:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Pie chart showing time allocation</li>
+                    <li>Comparison to recommended study time per subject</li>
+                    <li>Insights on whether you're studying all subjects equally or neglecting any</li>
+                </ul>
+
+                <div class="ai-feature-box">
+                    <strong>Smart Recommendations:</strong> If the AI notices you're not spending enough time on a subject, it will suggest: "Your math grade is dropping but you've only studied 2 hours this month. Try 30 minutes per day." It learns from your grades and study patterns to make personalized suggestions.
+                </div>
+            </section>
+
+            <!-- STUDY CALENDAR SECTION -->
+            <section id="calendar">
+                <h2>Study Calendar</h2>
+
+                <p>Plan ahead! The Study Calendar helps you manage exam dates, revision sessions, and important deadlines in one place.</p>
+
+                <h3>Adding Exam Dates</h3>
+
+                <p>To add an exam to your calendar:</p>
+                <div class="step-guide">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Click on a Date</h4>
+                            <p>Select the date of your exam on the calendar.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Add Event Details</h4>
+                            <p>Enter exam name, subject, time, location, and duration.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Set Reminders</h4>
+                            <p>Choose when you want to be reminded (1 day before, 1 week before, etc.).</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Save</h4>
+                            <p>Your exam is now on your calendar and visible from your Dashboard.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Planning Revision Sessions</h3>
+
+                <p>Once an exam is on your calendar, SuperStudent can help you plan:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Click "Plan Revision" on any exam to create a revision schedule</li>
+                    <li>AI suggests how many hours to study based on exam date and your current grade</li>
+                    <li>Auto-schedule daily revision sessions leading up to the exam</li>
+                    <li>Get suggestions for which topics to focus on based on your weak areas</li>
+                </ul>
+
+                <h3>Holiday & Break Markers</h3>
+
+                <p>Mark holidays and breaks on your calendar so you can:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Avoid scheduling study sessions on days off</li>
+                    <li>Front-load work before breaks</li>
+                    <li>Catch up if needed after breaks</li>
+                    <li>Plan extended revision if an exam falls right after break</li>
+                </ul>
+
+                <h3>Countdown Timers</h3>
+
+                <p>Every exam on your calendar shows a countdown timer:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Days until the exam</li>
+                    <li>Hours and minutes (once within 24 hours)</li>
+                    <li>Updates automatically</li>
+                </ul>
+
+                <div class="tip-box">
+                    <strong>Tip:</strong> Use the countdown as motivation! "Only 14 days until the history exam" can help you stay focused and manage your time wisely.
+                </div>
+            </section>
+
+            <!-- REMAINING SECTIONS (ABBREVIATED) -->
+            <section id="revision">
+                <h2>Revision Planner</h2>
+
+                <h3>Building a Revision Schedule</h3>
+                <p>Create structured revision schedules for upcoming exams. The Revision Planner helps you:</p>
+                <div class="feature-list">
+                    <div class="feature-item">Break down large topics into manageable study blocks</div>
+                    <div class="feature-item">Space out study sessions using spaced repetition</div>
+                    <div class="feature-item">Allocate time based on topic difficulty</div>
+                    <div class="feature-item">Adjust schedule if you get behind</div>
+                </div>
+
+                <h3>Revision Checklists</h3>
+                <p>Create checklists for each revision topic to track progress:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>☐ Read chapter 3</li>
+                    <li>☐ Watch video explainer</li>
+                    <li>☐ Take practice quiz</li>
+                    <li>☐ Make flashcards</li>
+                    <li>☐ Self-test (80% minimum)</li>
+                </ul>
+
+                <h3>Time Management Tools</h3>
+                <p>Features to help you stay on track:</p>
+                <div class="feature-list">
+                    <div class="feature-item">Pomodoro timer integration (25 min study + 5 min break)</div>
+                    <div class="feature-item">Time estimates for each topic based on difficulty</div>
+                    <div class="feature-item">Visual timeline showing how much time you have</div>
+                    <div class="feature-item">Notifications if you're falling behind</div>
+                </div>
+            </section>
+
+            <section id="analytics">
+                <h2>Analytics</h2>
+
+                <h3>Performance Trends Over Time</h3>
+                <p>See how your grades have changed across the school year:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Line graphs showing grade trends by course</li>
+                    <li>Identify subjects where you're improving or declining</li>
+                    <li>See how your GPA has evolved</li>
+                </ul>
+
+                <h3>Subject-Based Analytics</h3>
+                <p>Deep dive into performance by subject:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Average grade in each subject</li>
+                    <li>Most difficult assignment types</li>
+                    <li>Comparison to class averages (if visible)</li>
+                </ul>
+
+                <h3>Assignment Completion Rates</h3>
+                <p>Track whether you're completing assignments on time:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>% of assignments submitted on time vs. late</li>
+                    <li>Average time between assignment release and submission</li>
+                    <li>Predictions on whether you'll meet upcoming deadlines</li>
+                </ul>
+
+                <h3>Study Time Analytics</h3>
+                <p>Understand your study habits:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Total study hours per week/month/year</li>
+                    <li>Most productive times of day</li>
+                    <li>Study time vs. grades correlation</li>
+                </ul>
+            </section>
+
+            <section id="wellbeing">
+                <h2>Wellbeing</h2>
+
+                <h3>Daily Mood Check-ins (1-5 Scale)</h3>
+                <p>Each day, SuperStudent asks: "How are you feeling today?" Rate from:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>😢 1 - Very stressed/anxious</li>
+                    <li>😐 2 - Stressed</li>
+                    <li>😊 3 - Okay</li>
+                    <li>😌 4 - Good</li>
+                    <li>😄 5 - Excellent</li>
+                </ul>
+
+                <h3>Wellbeing Log & History</h3>
+                <p>View your mood trends over time to identify patterns related to:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Exam periods (usually lower mood)</li>
+                    <li>Seasonal changes</li>
+                    <li>Correlation with grades and study load</li>
+                </ul>
+
+                <h3>Support Resources</h3>
+                <div class="note-box">
+                    <strong>Important:</strong> If you consistently rate low on wellbeing, SuperStudent will suggest support resources: counseling services, crisis hotlines, or speaking with a trusted adult. Your wellbeing matters as much as your grades.
+                </div>
+
+                <h3>Privacy & Confidentiality</h3>
+                <p>All wellbeing data is confidential and separate from academic records. Your mood check-ins are:</p>
+                <div class="feature-list">
+                    <div class="feature-item">Encrypted and secure</div>
+                    <div class="feature-item">Not shared with teachers unless you choose</div>
+                    <div class="feature-item">Only used to provide support and suggestions</div>
+                </div>
+            </section>
+
+            <section id="portfolio">
+                <h2>My Portfolio</h2>
+
+                <h3>Showcasing Your Best Work</h3>
+                <p>Your portfolio is a collection of your best assignments, projects, and reflections:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Add any completed work to your portfolio</li>
+                    <li>Write reflections on what you learned</li>
+                    <li>Share with teachers, parents, or colleges</li>
+                </ul>
+
+                <h3>Achievement Badges (8 Types)</h3>
+                <p>Earn badges for hitting milestones:</p>
+                <table>
+                    <tr>
+                        <th>Badge</th>
+                        <th>Earned When...</th>
+                    </tr>
+                    <tr>
+                        <td>🎯 First Submission</td>
+                        <td>Submit your first assignment</td>
+                    </tr>
+                    <tr>
+                        <td>🔥 Perfect Week</td>
+                        <td>Get A's on all assignments in one week</td>
+                    </tr>
+                    <tr>
+                        <td>📈 Grade Improver</td>
+                        <td>Improve a grade by 10+ points</td>
+                    </tr>
+                    <tr>
+                        <td>💬 Active Communicator</td>
+                        <td>Send 10 messages to teachers</td>
+                    </tr>
+                    <tr>
+                        <td>🏅 Top of Class</td>
+                        <td>Achieve highest grade in a course</td>
+                    </tr>
+                    <tr>
+                        <td>✅ Perfect Attendance</td>
+                        <td>No late submissions for 30 days</td>
+                    </tr>
+                    <tr>
+                        <td>⭐ Honour Roll</td>
+                        <td>Maintain 3.5+ GPA for one term</td>
+                    </tr>
+                    <tr>
+                        <td>🧠 Deep Thinker</td>
+                        <td>Complete 50 AI Tutor sessions</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section id="leaderboard">
+                <h2>Leaderboard</h2>
+
+                <h3>How Rankings Work</h3>
+                <p>The leaderboard ranks students based on:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Overall GPA</li>
+                    <li>Badges earned</li>
+                    <li>Assignment completion rate</li>
+                    <li>Study streaks</li>
+                </ul>
+
+                <h3>Opting In/Out (Privacy Control)</h3>
+                <p>Leaderboards are OPTIONAL. You can:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Opt in to appear on class leaderboard</li>
+                    <li>Opt in to appear on school leaderboard</li>
+                    <li>Opt out anytime from Settings</li>
+                    <li>Choose to show only badges, not grades</li>
+                </ul>
+            </section>
+
+            <section id="progress-report">
+                <h2>Progress Report</h2>
+
+                <h3>Generating Your Progress Report</h3>
+                <p>Create comprehensive reports showing your academic progress:</p>
+                <div class="step-guide">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Click "Generate Report"</h4>
+                            <p>In the Progress Report section.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Choose Time Period</h4>
+                            <p>This week, month, semester, or year.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Select Details to Include</h4>
+                            <p>Grades, attendance, wellbeing, study time, achievements.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Generate & Download</h4>
+                            <p>Get a professional PDF report.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Report Contents</h3>
+                <p>Your report includes:</p>
+                <div class="feature-list">
+                    <div class="feature-item">Grades by course with trends</div>
+                    <div class="feature-item">Attendance and on-time submission rates</div>
+                    <div class="feature-item">Wellbeing summary and mood trends</div>
+                    <div class="feature-item">Total study time and subject breakdown</div>
+                    <div class="feature-item">Achievements and badges earned</div>
+                    <div class="feature-item">Recommendations for next steps</div>
+                </div>
+
+                <h3>Sharing with Parents</h3>
+                <p>To share your report with parents:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Click "Share" and enter parent email addresses</li>
+                    <li>Parents receive a secure link (password protected)</li>
+                    <li>They can view the report but cannot download or edit it</li>
+                </ul>
+            </section>
+
+            <section id="messages">
+                <h2>Messages</h2>
+
+                <h3>Sending & Receiving Messages</h3>
+                <p>Communicate securely with teachers and classmates:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Click on a course to see class members</li>
+                    <li>Click a person's name to start a message</li>
+                    <li>Type your message and click "Send"</li>
+                    <li>Receive notifications when you get new messages</li>
+                </ul>
+
+                <h3>Message History</h3>
+                <p>All messages are stored so you can:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Scroll back to view past conversations</li>
+                    <li>Search for messages by keyword or person</li>
+                    <li>Archive or delete conversations</li>
+                </ul>
+            </section>
+
+            <section id="resources">
+                <h2>Resources & AI</h2>
+
+                <h3>Educational Resource Library</h3>
+                <p>Browse curated educational resources by subject:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Khan Academy videos</li>
+                    <li>MIT OpenCourseWare materials</li>
+                    <li>Subject-specific databases and tools</li>
+                    <li>Citation guides and research resources</li>
+                </ul>
+
+                <h3>AI Content Shortcuts</h3>
+                <p>Quick access to common AI Tutor requests:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>"Explain [topic] to me"</li>
+                    <li>"Generate practice problems"</li>
+                    <li>"Create study guide"</li>
+                    <li>"Analyze my assignment feedback"</li>
+                </ul>
+            </section>
+
+            <section id="settings">
+                <h2>Settings</h2>
+
+                <h3>Account Settings</h3>
+                <p>Manage your profile:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Name, grade, email</li>
+                    <li>Profile picture</li>
+                    <li>Password and 2FA</li>
+                </ul>
+
+                <h3>Leaderboard Privacy</h3>
+                <p>Choose whether to appear on leaderboards and what information is visible.</p>
+
+                <h3>Notifications</h3>
+                <p>Control when you receive notifications:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Upcoming deadlines (1 day, 3 days, 1 week before)</li>
+                    <li>Grade posted notifications</li>
+                    <li>Message notifications</li>
+                    <li>Daily mood check-in reminders</li>
+                </ul>
+
+                <h3>Security</h3>
+                <p>Two-factor authentication, session management, device login history.</p>
+
+                <h3>Accessibility</h3>
+                <p>Enable features to make SuperStudent more accessible:</p>
+                <div class="feature-list">
+                    <div class="feature-item">High Contrast Mode (easier to read)</div>
+                    <div class="feature-item">Larger Text (increase font size)</div>
+                    <div class="feature-item">Reduce Motion (fewer animations)</div>
+                    <div class="feature-item">Screen Reader Support (for blind/low vision users)</div>
+                    <div class="feature-item">Keyboard Navigation (navigate without mouse)</div>
+                </div>
+
+                <h3>API Keys</h3>
+                <p>For advanced users, manage API keys for:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Google Gemini (for advanced AI features)</li>
+                    <li>ElevenLabs (for premium voice narration)</li>
+                </ul>
+
+                <h3>GDPR & Data Management</h3>
+                <p>Manage your data:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Download all your data as JSON</li>
+                    <li>Delete account and all data</li>
+                    <li>View data retention policies</li>
+                </ul>
+            </section>
+
+            <section id="compliance">
+                <h2>Compliance & Safety</h2>
+
+                <h3>Content Moderation (3-Tier System)</h3>
+                <p>All AI-generated content goes through:</p>
+                <table>
+                    <tr>
+                        <th>Tier</th>
+                        <th>Check</th>
+                        <th>Purpose</th>
+                    </tr>
+                    <tr>
+                        <td><strong>1. Automated</strong></td>
+                        <td>Filters for inappropriate language, plagiarism, bias</td>
+                        <td>Real-time safety check</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2. AI Review</strong></td>
+                        <td>AI checks for accuracy, relevance, appropriateness</td>
+                        <td>Content quality assurance</td>
+                    </tr>
+                    <tr>
+                        <td><strong>3. Human Review</strong></td>
+                        <td>SAIL staff review flagged content</td>
+                        <td>Final safety gate</td>
+                    </tr>
+                </table>
+
+                <h3>Academic Integrity</h3>
+                <p>SuperStudent supports academic honesty:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>AI Tutor content is for learning, not submitting as your own</li>
+                    <li>Plagiarism detection on all submissions</li>
+                    <li>Clear guidelines on proper citation and attribution</li>
+                </ul>
+
+                <h3>FERPA/GDPR Compliance</h3>
+                <p>Your data is protected under:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li><strong>FERPA (USA):</strong> Your education records are private</li>
+                    <li><strong>GDPR (EU):</strong> Your personal data is protected with strict privacy rights</li>
+                    <li>Data stored encrypted in secure servers</li>
+                    <li>Regular security audits and compliance checks</li>
+                </ul>
+
+                <h3>Data Retention Policies</h3>
+                <p>How long your data is kept:</p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li><strong>Active Account:</strong> All data retained while enrolled</li>
+                    <li><strong>After Graduation:</strong> Data retained for 3 years (for transcripts)</li>
+                    <li><strong>Upon Request:</strong> Delete all data anytime via Settings</li>
+                </ul>
+
+                <h3>Your Rights</h3>
+                <div class="feature-list">
+                    <div class="feature-item">Right to Access: View all data we have about you</div>
+                    <div class="feature-item">Right to Erasure: Request deletion of your account and data</div>
+                    <div class="feature-item">Right to Portability: Download your data in standard format</div>
+                    <div class="feature-item">Right to Correction: Update inaccurate information</div>
+                </div>
+            </section>
+
+            <!-- FOOTER -->
+            <div class="footer">
+                <p>SAIL Education © 2026 | SuperStudent v2</p>
+                <p>For support, contact: <a href="mailto:support@saileducation.com">support@saileducation.com</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const hamburger = document.getElementById('hamburger');
+        const sidebar = document.getElementById('sidebar');
+
+        hamburger.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        function closeMobileMenu() {
+            sidebar.classList.remove('active');
+        }
+
+        // Collapsible sections
+        function toggleCollapsible(element) {
+            element.classList.toggle('active');
+            const content = element.nextElementSibling;
+            if (content && content.classList.contains('collapsible-content')) {
+                content.classList.toggle('active');
+            }
+        }
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        searchInput.addEventListener('keyup', () => {
+            const query = searchInput.value.toLowerCase();
+            navLinks.forEach(link => {
+                const text = link.textContent.toLowerCase();
+                link.style.display = text.includes(query) ? 'block' : 'none';
+            });
+        });
+
+        // Set active nav link on scroll
+        window.addEventListener('scroll', () => {
+            let current = '';
+            const sections = document.querySelectorAll('section');
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

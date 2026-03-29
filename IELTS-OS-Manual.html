@@ -1,0 +1,2139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS-OS Manual | SAIL Education</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* === ANIMATIONS === */
+@keyframes float-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.4; }
+  50% { transform: translateY(-20px) translateX(10px); opacity: 0.8; }
+}
+@keyframes float-delayed-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.3; }
+  50% { transform: translateY(-15px) translateX(-10px); opacity: 0.7; }
+}
+@keyframes float-slow-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.2; }
+  50% { transform: translateY(-25px) translateX(5px); opacity: 0.6; }
+}
+@keyframes drift {
+  0% { transform: translateX(0px); }
+  100% { transform: translateX(20px); }
+}
+@keyframes orbit {
+  0% { transform: rotate(0deg) translateX(30px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
+}
+@keyframes breathing {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.1); }
+}
+@keyframes breathing-delayed {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.05); }
+}
+@keyframes rotate-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes slideInLeft {
+  0% { opacity: 0; transform: translateX(-50px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInDown {
+  0% { opacity: 0; transform: translateY(-30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.1); }
+  50% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), 0 0 30px rgba(255, 255, 255, 0.1); }
+}
+
+/* === RESET & BASE === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); border-radius: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: rgba(255,255,255,0.85);
+  background: #000;
+  line-height: 1.7;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* === IMMERSIVE BACKGROUND === */
+.immersive-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.immersive-bg .gradient-base {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1e1b4b 0%, #3b0764 40%, #0f172a 100%);
+}
+
+.immersive-bg .bg-image {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/8d0c8cab-aafd-4759-951d-82f748461c75_3840w.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.4;
+}
+
+/* Floating particles */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(1px);
+}
+.particle-1 { top: 25%; left: 33%; width: 2px; height: 2px; background: rgba(96,165,250,0.4); animation: float-glow 4s ease-in-out infinite; }
+.particle-2 { top: 75%; right: 25%; width: 1px; height: 1px; background: rgba(167,139,250,0.5); animation: float-delayed-glow 5s ease-in-out infinite; }
+.particle-3 { bottom: 33%; left: 50%; width: 1.5px; height: 1.5px; background: rgba(244,114,182,0.3); animation: float-slow-glow 6s ease-in-out infinite; }
+.particle-4 { top: 50%; right: 33%; width: 1px; height: 1px; background: rgba(34,211,238,0.4); animation: drift 8s ease-in-out infinite alternate; }
+.particle-5 { bottom: 25%; left: 25%; width: 2px; height: 2px; background: rgba(129,140,248,0.3); animation: orbit 15s linear infinite; }
+
+/* Ambient orbs */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+}
+.orb-1 { top: -50px; right: -50px; width: 384px; height: 384px; background: radial-gradient(circle, rgba(59,130,246,0.15), transparent); animation: breathing 4s ease-in-out infinite; }
+.orb-2 { bottom: -50px; left: -50px; width: 320px; height: 320px; background: radial-gradient(circle, rgba(168,85,247,0.2), transparent); animation: breathing-delayed 4s ease-in-out infinite 2s; }
+.orb-3 { top: 50%; left: 50%; width: 256px; height: 256px; background: radial-gradient(circle, rgba(236,72,153,0.1), transparent); animation: rotate-slow 20s linear infinite; }
+
+/* === LAYOUT === */
+.container {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* === GLASS SIDEBAR === */
+.sidebar, aside.sidebar {
+  width: 300px;
+  position: fixed;
+  top: 16px;
+  bottom: 16px;
+  left: 16px;
+  z-index: 100;
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  animation: slideInLeft 0.8s ease-out forwards;
+  transition: border-color 0.5s ease;
+  scrollbar-width: thin;
+}
+.sidebar:hover { border-color: rgba(255,255,255,0.25); }
+
+.sidebar-logo, .sidebar-header, .sidebar > div:first-child, .sidebar > h2:first-child {
+  padding: 28px 24px 16px;
+  font-size: 1.35em;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.sidebar-header h2, .sidebar-header h1 {
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: 700;
+  margin: 0;
+  padding: 0;
+  border: none;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-header p, .sidebar-header .version, .sidebar-version {
+  font-size: 0.8em;
+  color: rgba(255,255,255,0.5);
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+/* Sidebar search */
+.sidebar-search, .sidebar .search-container {
+  padding: 12px 20px 16px;
+}
+
+.sidebar-search input, .sidebar input[type="text"], .search-input {
+  width: 100%;
+  padding: 10px 14px 10px 38px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.08);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  color: #fff;
+  font-size: 0.85em;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  outline: none;
+}
+.sidebar-search input:focus, .sidebar input[type="text"]:focus, .search-input:focus {
+  border-color: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.12);
+}
+.sidebar-search input::placeholder, .sidebar input[type="text"]::placeholder, .search-input::placeholder {
+  color: rgba(255,255,255,0.4);
+}
+
+/* Sidebar navigation links - all variants */
+.sidebar-nav, .sidebar-menu, .sidebar nav, .nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px 20px;
+}
+
+.sidebar-nav a, .sidebar-menu a, .sidebar-menu li a, .sidebar nav a,
+.nav-link, .nav-item, a.nav-link, a.nav-item, button.nav-link {
+  display: block;
+  padding: 10px 16px;
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.88em;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  border: 1px solid transparent;
+  background: transparent;
+  text-align: left;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.4;
+}
+
+.sidebar-nav a:hover, .sidebar-menu a:hover, .sidebar-menu li a:hover, .sidebar nav a:hover,
+.nav-link:hover, .nav-item:hover, a.nav-link:hover, a.nav-item:hover, button.nav-link:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.9);
+  border-color: rgba(255,255,255,0.1);
+  transform: scale(1.02);
+}
+
+.sidebar-nav a.active, .sidebar-menu a.active, .sidebar-menu li a.active, .sidebar nav a.active,
+.nav-link.active, .nav-item.active, a.nav-link.active, a.nav-item.active, button.nav-link.active {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border-color: rgba(255,255,255,0.2);
+  font-weight: 600;
+  box-shadow: 0 0 15px rgba(255,255,255,0.05);
+}
+
+/* Sidebar section headings / group titles */
+.nav-section-title, .nav-group, .sidebar h3, .sidebar h4,
+.sidebar-menu > h3, .sidebar-menu > h4 {
+  font-size: 0.7em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.35);
+  padding: 18px 16px 6px;
+  margin: 0;
+  border: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.nav-section {
+  margin-bottom: 4px;
+}
+
+/* Sidebar list items without bullets */
+.sidebar-menu ul, .sidebar-menu ol, .sidebar nav ul, .sidebar nav ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* === MAIN CONTENT AREA === */
+.main-wrapper {
+  margin-left: 332px;
+  flex: 1;
+  min-height: 100vh;
+  padding: 16px 16px 16px 0;
+}
+
+.main-content, main.main-content {
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 48px 52px;
+  min-height: calc(100vh - 32px);
+  transition: border-color 0.5s ease;
+  animation: fadeIn 0.6s ease-out forwards;
+}
+.main-content:hover { border-color: rgba(255,255,255,0.25); }
+
+/* === CONTENT SECTIONS === */
+.content-section { display: none; animation: fadeIn 0.4s ease-out; }
+.content-section.active { display: block; }
+
+/* === TYPOGRAPHY === */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 2.2em;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 0.6em;
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h2 {
+  font-size: 1.6em;
+  font-weight: 600;
+  margin-top: 2em;
+  margin-bottom: 0.6em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  /* Override gradient text for h2 */
+  background: none;
+  -webkit-text-fill-color: #fff;
+}
+
+h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.4em;
+  color: rgba(255,255,255,0.95);
+}
+
+h4 {
+  font-size: 1.05em;
+  font-weight: 600;
+  margin-top: 1.2em;
+  margin-bottom: 0.3em;
+  color: rgba(255,255,255,0.9);
+}
+
+p {
+  margin-bottom: 1em;
+  color: rgba(255,255,255,0.75);
+}
+
+a { color: rgba(147,197,253,0.9); text-decoration: none; transition: color 0.3s; }
+a:hover { color: #fff; }
+
+strong, b { color: rgba(255,255,255,0.95); font-weight: 600; }
+
+code {
+  background: rgba(255,255,255,0.08);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  color: rgba(196,181,253,0.9);
+}
+
+ul, ol {
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+  color: rgba(255,255,255,0.75);
+}
+
+li { margin-bottom: 0.5em; }
+
+/* === STYLED BOXES (tip, note, ai, warning, milestone) === */
+.box {
+  padding: 20px 24px;
+  margin: 20px 0;
+  border-radius: 16px;
+  border-left: 3px solid;
+  background: rgba(255,255,255,0.04);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+}
+
+.box-title {
+  font-weight: 600;
+  color: rgba(255,255,255,0.95);
+  margin-bottom: 8px;
+}
+
+.box-tip, .box.tip {
+  border-left: 3px solid rgba(52,211,153,0.6);
+  background: rgba(52,211,153,0.06);
+}
+.box-tip::before, .box.tip::before { content: "💡 "; font-weight: bold; }
+
+.box-note, .box.note {
+  border-left: 3px solid rgba(251,191,36,0.6);
+  background: rgba(251,191,36,0.06);
+}
+.box-note::before, .box.note::before { content: "⚠️ "; font-weight: bold; }
+
+.box-ai, .box.ai-feature {
+  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15));
+  border-left: 3px solid rgba(168,85,247,0.6);
+  border: 1px solid rgba(168,85,247,0.2);
+}
+.box-ai::before, .box.ai-feature::before { content: "🤖 "; font-weight: bold; }
+.box-ai a { color: rgba(251,191,36,0.9); }
+
+.box.warning {
+  border-left: 3px solid rgba(239,68,68,0.6);
+  background: rgba(239,68,68,0.06);
+}
+
+.box.milestone {
+  border-left: 3px solid rgba(59,130,246,0.6);
+  background: rgba(59,130,246,0.06);
+}
+
+/* === STEPS === */
+.steps {
+  list-style: none;
+  padding: 0;
+  counter-reset: step-counter;
+}
+
+.steps li {
+  margin: 18px 0;
+  padding-left: 54px;
+  position: relative;
+  color: rgba(255,255,255,0.75);
+}
+
+.steps li::before {
+  content: counter(step-counter);
+  counter-increment: step-counter;
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.1);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+/* === CHECKLISTS === */
+.checklist {
+  list-style: none;
+  padding: 0;
+}
+
+.checklist li {
+  padding: 10px 0 10px 32px;
+  position: relative;
+  color: rgba(255,255,255,0.75);
+}
+
+.checklist li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: rgba(52,211,153,0.8);
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+/* === TABLES === */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 20px 0;
+  font-size: 0.9em;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+th {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.95);
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.7);
+}
+
+tr:hover td {
+  background: rgba(255,255,255,0.03);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* === ROLE BADGES === */
+.role-super-admin { color: rgba(56,189,248,0.9); font-weight: 600; }
+.role-admin { color: rgba(248,113,113,0.9); font-weight: 600; }
+.role-dept-head { color: rgba(167,139,250,0.9); font-weight: 600; }
+.role-teacher { color: rgba(52,211,153,0.9); font-weight: 600; }
+.role-student { color: rgba(129,140,248,0.9); font-weight: 600; }
+.role-parent { color: rgba(148,163,184,0.9); font-weight: 600; }
+
+.role-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.82em;
+  font-weight: 600;
+  margin-right: 5px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.role-badge.super-admin { background: rgba(56,189,248,0.12); color: rgba(56,189,248,0.9); border-color: rgba(56,189,248,0.2); }
+.role-badge.admin { background: rgba(248,113,113,0.12); color: rgba(248,113,113,0.9); border-color: rgba(248,113,113,0.2); }
+.role-badge.dept-head { background: rgba(167,139,250,0.12); color: rgba(167,139,250,0.9); border-color: rgba(167,139,250,0.2); }
+.role-badge.teacher { background: rgba(52,211,153,0.12); color: rgba(52,211,153,0.9); border-color: rgba(52,211,153,0.2); }
+.role-badge.student { background: rgba(129,140,248,0.12); color: rgba(129,140,248,0.9); border-color: rgba(129,140,248,0.2); }
+.role-badge.parent { background: rgba(148,163,184,0.12); color: rgba(148,163,184,0.9); border-color: rgba(148,163,184,0.2); }
+
+/* === COLLAPSIBLE === */
+.collapsible {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.9);
+  cursor: pointer;
+  padding: 16px 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  margin: 10px 0;
+  font-weight: 600;
+  font-size: 0.95em;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.collapsible:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  transform: scale(1.01);
+}
+
+.collapsible.active {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.25);
+  box-shadow: 0 0 20px rgba(255,255,255,0.05);
+}
+
+.collapsible-content {
+  display: none;
+  padding: 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-top: none;
+  border-radius: 0 0 14px 14px;
+  margin-top: -10px;
+}
+
+.collapsible-content.active {
+  display: block;
+}
+
+.collapsible-icon, .collapsible-arrow {
+  transition: transform 0.3s;
+  color: rgba(255,255,255,0.5);
+}
+
+.collapsible.active .collapsible-icon,
+.collapsible.active .collapsible-arrow {
+  transform: rotate(180deg);
+}
+
+/* === FEATURE GRID & CARDS === */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.feature-card {
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.feature-card h4 {
+  margin-top: 0;
+  color: rgba(255,255,255,0.95);
+}
+
+/* === ICON CIRCLE === */
+.icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+/* === FOOTER === */
+.footer {
+  background: rgba(255,255,255,0.04);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  padding: 24px;
+  margin-top: 48px;
+  border-radius: 0 0 24px 24px;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 0.85em;
+  color: rgba(255,255,255,0.4);
+}
+
+/* === UTILITY CLASSES === */
+.text-teal { color: rgba(52,211,153,0.9); }
+.text-center { text-align: center; }
+.mt-2 { margin-top: 2em; }
+.mb-2 { margin-bottom: 2em; }
+
+/* === STEP DESCRIPTION (SuperTeacher specific) === */
+.step-description {
+  color: rgba(255,255,255,0.65);
+  font-size: 0.9em;
+  margin-top: 4px;
+}
+
+/* Walkthrough step cards (SuperTeacher specific) */
+.setup-step, .step-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 12px 0;
+}
+
+/* === MOBILE RESPONSIVE === */
+@media (max-width: 900px) {
+  .sidebar, aside.sidebar {
+    position: fixed;
+    width: 280px;
+    left: -300px;
+    top: 0;
+    bottom: 0;
+    border-radius: 0 24px 24px 0;
+    transition: left 0.4s ease;
+    z-index: 200;
+  }
+  .sidebar.mobile-open { left: 0; }
+
+  .main-wrapper {
+    margin-left: 0;
+    padding: 16px;
+  }
+
+  .main-content, main.main-content {
+    padding: 28px 24px;
+    border-radius: 20px;
+  }
+
+  h1 { font-size: 1.6em; }
+  h2 { font-size: 1.3em; }
+  h3 { font-size: 1.1em; }
+
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 901px) {
+  .mobile-menu-btn { display: none !important; }
+  .mobile-overlay { display: none !important; }
+}
+
+.mobile-menu-btn {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 150;
+  width: 44px;
+  height: 44px;
+  background: rgba(255,255,255,0.1);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 14px;
+  color: #fff;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  transition: all 0.3s;
+}
+.mobile-menu-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
+
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  z-index: 150;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.mobile-overlay.active { opacity: 1; pointer-events: auto; }
+
+/* === PRINT CSS === */
+@media print {
+  .sidebar, aside.sidebar, .immersive-bg, .mobile-menu-btn, .mobile-overlay { display: none !important; }
+  .main-wrapper { margin-left: 0; }
+  .main-content, main.main-content {
+    max-width: 100%;
+    padding: 0;
+    background: #fff;
+    color: #000;
+    border: none;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  body { background: #fff; color: #000; }
+  .content-section { display: block !important; page-break-after: always; }
+  h1, h2, h3, h4 { color: #000; -webkit-text-fill-color: #000; background: none; }
+  p, li, td { color: #333; }
+  th { background: #eee; color: #000; }
+  .box { background: #f5f5f5; border-color: #ccc; }
+  .collapsible-content { display: block !important; }
+  .feature-card { background: #f5f5f5; border-color: #ddd; }
+}
+</style>
+</head>
+<body>
+<!-- Immersive Background -->
+<div class="immersive-bg">
+  <div class="gradient-base"></div>
+  <div class="bg-image"></div>
+  <div class="particle particle-1"></div>
+  <div class="particle particle-2"></div>
+  <div class="particle particle-3"></div>
+  <div class="particle particle-4"></div>
+  <div class="particle particle-5"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+<!-- Mobile Menu Button -->
+<button class="mobile-menu-btn" onclick="document.querySelector('.sidebar, aside.sidebar').classList.toggle('mobile-open'); document.querySelector('.mobile-overlay').classList.toggle('active');">☰</button>
+<div class="mobile-overlay" onclick="document.querySelector('.sidebar, aside.sidebar').classList.remove('mobile-open'); this.classList.remove('active');"></div>
+
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="logo">IELTS-OS</span>
+                <span class="tagline">AI-Powered IELTS Prep</span>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search manual...">
+            </div>
+            
+            <nav>
+                <div class="nav-section">
+                    <span class="nav-label">Getting Started</span>
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="javascript:void(0)" data-target="overview" class="nav-link">Welcome & Overview</a></li>
+                        <li class="nav-item"><a href="javascript:void(0)" data-target="getting-started" class="nav-link">Getting Started</a></li>
+                        <li class="nav-item"><a href="javascript:void(0)" data-target="diagnostic" class="nav-link">Diagnostic Assessment</a></li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <span class="nav-label">Features</span>
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="javascript:void(0)" data-target="dashboard" class="nav-link">Dashboard</a></li>
+                        <li class="nav-item"><a href="javascript:void(0)" data-target="writing" class="nav-link">Writing Studio</a></li>
+                        <li class="nav-item"><a href="javascript:void(0)" data-target="reading" class="nav-link">Reading Practice</a></li>
+                        <li class="nav-item"><a href="javascript:void(0)" data-target="listening" class="nav-link">Listening Practice</a></li>
+                        <li class="nav-item"><a href="javascript:void(0)" data-target="vocabulary" class="nav-link">Vocabulary Drills</a></li>
+                        <li class="nav-item"><a href="javascript:void(0)" data-target="upload" class="nav-link">Upload & Assess</a></li>
+                        <li class="nav-item"><a href="javascript:void(0)" data-target="speaking" class="nav-link">Speaking (Coming Soon)</a></li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <span class="nav-label">Learning</span>
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="javascript:void(0)" data-target="progress" class="nav-link">Progress Tracking</a></li>
+                        <li class="nav-item"><a href="javascript:void(0)" data-target="study-plans" class="nav-link">Study Plans & Tips</a></li>
+                        <li class="nav-item"><a href="javascript:void(0)" data-target="band-scales" class="nav-link">Band Score Guide</a></li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <span class="nav-label">Account</span>
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="javascript:void(0)" data-target="settings" class="nav-link">Settings</a></li>
+                        <li class="nav-item"><a href="javascript:void(0)" data-target="compliance" class="nav-link">Compliance & Privacy</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                <!-- Welcome & Overview -->
+                <section id="overview">
+                    <h1>IELTS-OS Manual</h1>
+                    <p style="font-size: 1.1rem; color: #8b94a7; margin-bottom: 2rem;">Complete guide to mastering the IELTS with AI-powered adaptive learning</p>
+                    
+                    <h2>What is IELTS-OS?</h2>
+                    <p>IELTS-OS is an AI-powered platform designed to prepare you for the International English Language Testing System (IELTS) exam. It combines adaptive learning technology, rubric-based AI scoring, and comprehensive multi-skill practice to help you achieve your target band score.</p>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>🎯 Adaptive Learning</h4>
+                            <p>Platform adjusts difficulty based on your performance, focusing on areas where you need improvement.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>🤖 AI Scoring</h4>
+                            <p>Instant, rubric-aligned feedback on writing and speaking using advanced Claude AI models.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>📊 Comprehensive Tracking</h4>
+                            <p>Monitor your progress across all skills with detailed analytics and trend visualization.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>📚 Full Practice Suite</h4>
+                            <p>Writing essays, reading passages, listening sections, speaking conversations, and vocabulary drills.</p>
+                        </div>
+                    </div>
+                    
+                    <h2>How IELTS-OS Helps You Prepare</h2>
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Adaptive Learning Paths:</strong> Each user receives personalized recommendations based on their diagnostic baseline and recent performance.</li>
+                        <li><strong>Error Tracking:</strong> AI identifies patterns in your mistakes and suggests targeted exercises.</li>
+                        <li><strong>AI Scoring System:</strong> Instant, consistent feedback aligned to official IELTS criteria.</li>
+                        <li><strong>Rubric Transparency:</strong> Understand exactly what examiners are looking for in each component.</li>
+                        <li><strong>Practice at Scale:</strong> Unlimited essay submissions, reading passages, and listening sections.</li>
+                    </ul>
+                    
+                    <h2>IELTS Test Overview</h2>
+                    <p>The IELTS exam tests English proficiency across four skills, each with specific formats and scoring:</p>
+                    
+                    <table>
+                        <tr>
+                            <th>Skill</th>
+                            <th>Duration</th>
+                            <th>Score Range</th>
+                            <th>Key Components</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Listening</strong></td>
+                            <td>~30 min</td>
+                            <td>0-40 (scaled to 1-9)</td>
+                            <td>4 sections, 40 questions, audio playback once</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Reading</strong></td>
+                            <td>60 min</td>
+                            <td>0-40 (scaled to 1-9)</td>
+                            <td>3 academic passages, 40 questions, multiple question types</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Writing</strong></td>
+                            <td>60 min</td>
+                            <td>Band 1-9</td>
+                            <td>Task 1 (20 min): 150+ words; Task 2 (40 min): 250+ words</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Speaking</strong></td>
+                            <td>11-14 min</td>
+                            <td>Band 1-9</td>
+                            <td>Interview with examiner: Part 1 (4 min), Part 2 (2 min), Part 3 (5 min)</td>
+                        </tr>
+                    </table>
+                    
+                    <h2 id="band-scales">Band Score Scale (1.0-9.0)</h2>
+                    <p>IELTS scores range from 1.0 (non-user) to 9.0 (expert user). Here's what each band represents:</p>
+                    
+                    <table>
+                        <tr>
+                            <th>Band</th>
+                            <th>Description</th>
+                            <th>Typical Characteristics</th>
+                        </tr>
+                        <tr>
+                            <td><strong>9.0</strong></td>
+                            <td>Expert User</td>
+                            <td>Fluent, accurate, sophisticated English. Rare for non-natives.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>8.0-8.5</strong></td>
+                            <td>Very Good User</td>
+                            <td>Fluent with occasional errors. Strong vocabulary and grammar.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>7.0-7.5</strong></td>
+                            <td>Good User</td>
+                            <td>Generally fluent. Some errors in complex structures. Acceptable for most universities.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>6.0-6.5</strong></td>
+                            <td>Competent User</td>
+                            <td>Adequate performance. Some errors but generally understood. Common target.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>5.0-5.5</strong></td>
+                            <td>Modest User</td>
+                            <td>Manages mostly simple language. Frequent errors in complex structures.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4.0-4.5</strong></td>
+                            <td>Limited User</td>
+                            <td>Basic communication. Limited vocabulary and grammatical range.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>1.0-3.5</strong></td>
+                            <td>Non/Minimal User</td>
+                            <td>Minimal English ability. Significant communication barriers.</td>
+                        </tr>
+                    </table>
+                </section>
+                
+                <!-- Getting Started -->
+                <section id="getting-started">
+                    <h2>Getting Started with IELTS-OS</h2>
+                    
+                    <h3>Creating Your Account</h3>
+                    <p>Follow these steps to set up your IELTS-OS account:</p>
+                    
+                    <ol class="steps">
+                        <li>Visit the IELTS-OS login page</li>
+                        <li>Click "Sign Up" or "Create Account"</li>
+                        <li>Enter your email address (this will be your login credential)</li>
+                        <li>Create a strong password (minimum 8 characters recommended)</li>
+                        <li>Enter your full name as it appears in official documents</li>
+                        <li>Select your country and timezone</li>
+                        <li>Click "Create Account" to proceed</li>
+                        <li>Check your email for verification link and click to confirm</li>
+                    </ol>
+                    
+                    <div class="tip-box">
+                        <strong>Tip:</strong> Use a memorable email address. This is how we'll contact you about your progress and send periodic reports.
+                    </div>
+                    
+                    <h3>Privacy Consent & GDPR</h3>
+                    <p>After email verification, you'll be asked to review and accept our privacy policy. This is an important step to ensure compliance with GDPR regulations.</p>
+                    
+                    <div class="note-box">
+                        <strong>Important:</strong> Your data controller is SAIL Education. We collect only essential information to provide the service. You can export or delete your data anytime from Settings.
+                    </div>
+                    
+                    <button class="collapsible">Detailed Privacy Consent Flow</button>
+                    <div class="collapsible-content">
+                        <ol class="steps">
+                            <li>Review "Terms of Service" (standard user agreement)</li>
+                            <li>Review "Privacy Policy" (how we collect and use data)</li>
+                            <li>Review "Cookie Policy" (optional tracking and analytics)</li>
+                            <li>Select checkboxes for each policy you accept</li>
+                            <li>Optional: Download PDF copies for your records</li>
+                            <li>Click "I Accept" to proceed</li>
+                            <li>Your consent timestamp is recorded for compliance</li>
+                        </ol>
+                        
+                        <p><strong>Data Protection Officer:</strong> privacy@saileducation.com</p>
+                        <p>You can withdraw consent anytime from Settings → Privacy → Consent History.</p>
+                    </div>
+                    
+                    <h3>Taking the Diagnostic Assessment</h3>
+                    <p>The diagnostic assessment establishes your baseline band score and informs your personalized learning path.</p>
+                    
+                    <ol class="steps">
+                        <li>After creating your account, you'll be prompted to begin the Diagnostic Assessment</li>
+                        <li>The assessment takes approximately 45-60 minutes (you can pause and resume)</li>
+                        <li>You'll complete mini-sections across all skills: Listening (8 min), Reading (12 min), Writing (20 min), Vocabulary (10 min)</li>
+                        <li>Submit your work when completed</li>
+                        <li>AI processes your responses and calculates your baseline band</li>
+                        <li>Your dashboard populates with recommendations</li>
+                    </ol>
+                    
+                    <div class="ai-box">
+                        <strong>How Band is Calculated:</strong> Your diagnostic band is determined by weighted average of all components, using official IELTS rubric criteria. This ensures accuracy and consistency with real exam scoring.
+                    </div>
+                    
+                    <h3>Setting Your Target Band</h3>
+                    <p>After the diagnostic assessment, you'll be prompted to set your target band score. This helps personalize your study recommendations.</p>
+                    
+                    <div class="tip-box">
+                        <strong>Recommendation:</strong> Set a realistic target 0.5-1.5 bands above your diagnostic. For example, if you scored 5.5, aim for 6.5-7.0. This provides motivation while remaining achievable.
+                    </div>
+                    
+                    <h3>Understanding Your Dashboard</h3>
+                    <p>Once your account is complete, you'll land on your personalized dashboard. Here's what you'll see:</p>
+                </section>
+                
+                <!-- Dashboard -->
+                <section id="dashboard">
+                    <h2>Dashboard Overview</h2>
+                    
+                    <h3>Band Ring Display</h3>
+                    <p>The center of your dashboard features a visual "band ring" showing your progress toward your target.</p>
+                    
+                    <div class="band-ring">
+                        <div>
+                            <div class="ring" style="background: conic-gradient(#0D9A7C 0deg, #0D9A7C 180deg, #2a3444 180deg, #2a3444 360deg);">
+                                <div class="ring-inner">
+                                    <div class="ring-value">6.5</div>
+                                    <div class="ring-label">Current</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="color: #8b94a7; font-size: 1.5rem;">→</div>
+                        <div>
+                            <div class="ring" style="background: conic-gradient(#F5A623 0deg, #F5A623 45deg, #2a3444 45deg, #2a3444 360deg);">
+                                <div class="ring-inner">
+                                    <div class="ring-value">7.5</div>
+                                    <div class="ring-label">Target</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p>The ring shows your current band (filled) and target band (goal). As you complete practice activities, your current band updates based on performance.</p>
+                    
+                    <h3>Quick Stats Card</h3>
+                    <p>Below the band ring, you'll see your progress metrics:</p>
+                    
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Tests Completed:</strong> Total number of full practice tests you've submitted</li>
+                        <li><strong>Practice Hours:</strong> Cumulative time spent on all learning activities</li>
+                        <li><strong>Study Streak:</strong> Consecutive days you've practiced (encourages consistency)</li>
+                        <li><strong>Band Trend:</strong> Arrow indicator showing whether your band is trending up, stable, or down</li>
+                    </ul>
+                    
+                    <h3>Skill Access Cards</h3>
+                    <p>Six large, clickable cards provide quick access to each practice area:</p>
+                    
+                    <table>
+                        <tr>
+                            <th>Card</th>
+                            <th>What You Can Do</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Writing Studio</strong></td>
+                            <td>Practice Task 1 & Task 2 essays with AI scoring</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Reading Practice</strong></td>
+                            <td>Timed academic reading sections with 40 questions</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Listening Practice</strong></td>
+                            <td>4-section listening tests with audio controls</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vocabulary Drills</strong></td>
+                            <td>Spaced repetition word learning at your band level</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Upload & Assess</strong></td>
+                            <td>Upload essays or reports for AI scoring</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Speaking (Soon)</strong></td>
+                            <td>AI conversation partner and fluency tracking (coming)</td>
+                        </tr>
+                    </table>
+                    
+                    <h3>Progress Preview Chart</h3>
+                    <p>A mini line chart shows your last 5 assessment results, helping you visualize trend direction (improving, stable, declining).</p>
+                    
+                    <h3>Recommended Next Action</h3>
+                    <p>Based on your diagnostic and recent activity, IELTS-OS suggests which skill to focus on. For example: "Your Reading score dropped 0.5 bands. Try 2 reading sections this week."</p>
+                    
+                    <h3>Study Streak Counter</h3>
+                    <p>A calendar heatmap shows which days you've studied. Consistency is key to improvement; aim for 5-6 days per week.</p>
+                </section>
+                
+                <!-- Writing Studio -->
+                <section id="writing">
+                    <h2>Writing Studio</h2>
+                    
+                    <h3>Overview</h3>
+                    <p>Writing Studio is where you practice both IELTS Task 1 (descriptive writing: 150+ words, 20 minutes) and Task 2 (argumentative/discursive essay: 250+ words, 40 minutes). Each submission receives instant AI scoring and detailed rubric feedback.</p>
+                    
+                    <div class="ai-box">
+                        <strong>AI Scoring:</strong> Your essays are scored using Claude AI aligned with official IELTS Writing rubric criteria: Task Achievement/Response, Coherence & Cohesion, Lexical Resource, and Grammatical Range & Accuracy.
+                    </div>
+                    
+                    <h3>Step-by-Step Writing Walkthrough</h3>
+                    
+                    <ol class="steps">
+                        <li><strong>Select an Essay Topic:</strong> Click "New Essay" and choose from the essay bank. Topics are tagged by difficulty (Band 5-6, 6-7, 7-8, 8-9) and task type (Task 1 or Task 2).</li>
+                        
+                        <li><strong>Set Writing Time:</strong> Choose a timer (20 min for Task 1, 40 min for Task 2, or custom). The timer starts when you begin typing and can be paused.</li>
+                        
+                        <li><strong>Compose Your Essay:</strong> Use the rich-text editor to write. Features include:
+                            <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                                <li>Live word count (stays visible)</li>
+                                <li>Minimal distraction—full-screen mode available</li>
+                                <li>Auto-save every 30 seconds</li>
+                                <li>Basic formatting: bold, italic, underline</li>
+                                <li>No spell-check (mimics real exam conditions)</li>
+                            </ul>
+                        </li>
+                        
+                        <li><strong>Submit for Assessment:</strong> Click "Submit Essay" to send for AI scoring. Processing typically takes 30-60 seconds.</li>
+                        
+                        <li><strong>Receive Band Score & Rubric Breakdown:</strong> After processing, you'll see:
+                            <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                                <li>Overall Band Score (e.g., 6.5)</li>
+                                <li>Scores for each of the 4 criteria</li>
+                                <li>Written feedback on strengths and areas for improvement</li>
+                                <li>Example corrections for language errors</li>
+                            </ul>
+                        </li>
+                        
+                        <li><strong>View Model Answer Comparison:</strong> IELTS-OS shows a model answer for the same topic (Band 7-8 level). Compare your structure, vocabulary, and grammar to understand expectations.</li>
+                        
+                        <li><strong>Rewrite and Resubmit:</strong> Make improvements based on feedback and submit again. Each submission is tracked in your history.</li>
+                    </ol>
+                    
+                    <h3>IELTS Writing Rubric Explained</h3>
+                    <p>Your essays are scored on these 4 criteria, each equally weighted (25% each):</p>
+                    
+                    <button class="collapsible">Task Achievement / Response</button>
+                    <div class="collapsible-content">
+                        <p><strong>What it measures:</strong> How well you address the task prompt and provide relevant information.</p>
+                        <p><strong>Band 7-9:</strong> Fully addresses the task with accurate, well-developed information. Task 2: takes clear position and supports with detailed examples. Task 1: describes all main features.</p>
+                        <p><strong>Band 5-6:</strong> Addresses most of the task. Information is mostly accurate but may lack development. Minor irrelevancies.</p>
+                        <p><strong>Band 4:</strong> Attempts the task but misses key aspects. Information may be inaccurate or underdeveloped.</p>
+                        <p><strong>Tips to improve:</strong> Reread the prompt twice before writing. Ensure every paragraph directly answers the question. Include specific examples.</p>
+                    </div>
+                    
+                    <button class="collapsible">Coherence & Cohesion</button>
+                    <div class="collapsible-content">
+                        <p><strong>What it measures:</strong> How logically organized your ideas are and how well sentences/paragraphs connect.</p>
+                        <p><strong>Band 7-9:</strong> Clear progression of ideas. Paragraphs are well-structured. Transitions between ideas are smooth (however, therefore, furthermore). Pronouns and referencing are clear.</p>
+                        <p><strong>Band 5-6:</strong> Ideas are organized but progression may be unclear. Some conjunctions and transitions present but not always accurate. Mostly clear references.</p>
+                        <p><strong>Band 4:</strong> Limited organization. Few transitional phrases. Some confusing references or pronoun errors.</p>
+                        <p><strong>Tips to improve:</strong> Use a clear structure: intro (1 para) → body (2-3 para, each with one main idea) → conclusion. Use topic sentences. Use transitional words (firstly, moreover, in conclusion, etc.). Check that "it" and "this" clearly refer to something.</p>
+                    </div>
+                    
+                    <button class="collapsible">Lexical Resource</button>
+                    <div class="collapsible-content">
+                        <p><strong>What it measures:</strong> Your vocabulary range and accuracy of word choice.</p>
+                        <p><strong>Band 7-9:</strong> Wide vocabulary range. Uses less common words accurately. Shows awareness of synonyms and registers (formal/informal). Correct spelling and word forms.</p>
+                        <p><strong>Band 5-6:</strong> Adequate vocabulary for the task. Some variety but often repetitive. May use common phrases. Minor spelling/word-form errors.</p>
+                        <p><strong>Band 4:</strong> Limited vocabulary. Frequent repetition. Common errors in word choice or spelling.</p>
+                        <p><strong>Tips to improve:</strong> Learn collocations (common word pairs: "strong evidence," "significant increase"). Use synonyms to avoid repetition. Check word forms (noun, verb, adjective, adverb). Study academic vocabulary lists.</p>
+                    </div>
+                    
+                    <button class="collapsible">Grammatical Range & Accuracy</button>
+                    <div class="collapsible-content">
+                        <p><strong>What it measures:</strong> Complexity of sentence structures and accuracy of grammar.</p>
+                        <p><strong>Band 7-9:</strong> Uses complex sentences with multiple clauses accurately. Various tenses used correctly. Rare errors that don't impede communication. Strong control of grammar.</p>
+                        <p><strong>Band 5-6:</strong> Mostly correct simple and some complex sentences. Generally accurate tenses but occasional errors in more complex structures. Most errors don't affect understanding.</p>
+                        <p><strong>Band 4:</strong> Simple sentences mostly correct. Frequent errors in tense, subject-verb agreement, or complex structures. Errors sometimes obstruct meaning.</p>
+                        <p><strong>Tips to improve:</strong> Practice complex sentences with dependent clauses (using "although," "because," "which," etc.). Review tense usage: simple present for facts, present perfect for recent actions, conditionals for hypotheticals. Proofread for subject-verb agreement and prepositions.</p>
+                    </div>
+                    
+                    <h3>Task 1 vs Task 2 Differences</h3>
+                    
+                    <table>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Task 1 (Academic)</th>
+                            <th>Task 2</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Time Limit</strong></td>
+                            <td>20 minutes</td>
+                            <td>40 minutes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Word Count</strong></td>
+                            <td>Minimum 150 words</td>
+                            <td>Minimum 250 words</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Task Type</strong></td>
+                            <td>Describe a visual: chart, graph, table, diagram, map, or process</td>
+                            <td>Write an essay: Agree/Disagree, Discuss Both Views, Problem/Solution, or Opinion</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Style</strong></td>
+                            <td>Formal, objective, factual</td>
+                            <td>Formal, argumentative, personal stance</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Focus</strong></td>
+                            <td>Describe accurately; highlight key features</td>
+                            <td>Persuade with arguments; support with examples</td>
+                        </tr>
+                    </table>
+                    
+                    <div class="tip-box">
+                        <strong>Pro Tip:</strong> Task 1 is worth 33% of Writing band; Task 2 is 67%. However, many test-takers rush Task 1 to finish Task 2. Instead, allocate time: spend 20 min on Task 1 (including planning), 40 min on Task 2 (including planning and checking).
+                    </div>
+                    
+                    <h3>Tips for Improving Your Writing Score</h3>
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Plan Before Writing:</strong> Spend 2-3 minutes noting your main ideas and structure before you start. This prevents rambling.</li>
+                        <li><strong>Write in Paragraphs:</strong> Each paragraph should have one main idea. Use topic sentences and supporting sentences.</li>
+                        <li><strong>Vary Sentence Length:</strong> Mix short punchy sentences with longer complex ones. This shows grammatical range.</li>
+                        <li><strong>Check Word Counts:</strong> Task 1 minimum 150 words, Task 2 minimum 250 words. Going under means penalty.</li>
+                        <li><strong>Avoid Casual Language:</strong> IELTS Writing requires formal register. Replace "kids" with "children," "cause" (verb) with "result in," etc.</li>
+                        <li><strong>Use Passive Voice Sparingly:</strong> Task 1 (graphs/charts) may need passive voice. Task 2: overuse of passive voice suggests limited grammatical range.</li>
+                        <li><strong>Practice Tense Consistency:</strong> Task 1 uses simple present (graph shows...). Task 2: review your tense choices (past for examples, present for general truths).</li>
+                        <li><strong>Proofread (Last 2-3 min):</strong> Check for typos, missing articles (a, the), subject-verb agreement, prepositions.</li>
+                    </ul>
+                </section>
+                
+                <!-- Reading Practice -->
+                <section id="reading">
+                    <h2>Reading Practice</h2>
+                    
+                    <h3>Overview</h3>
+                    <p>IELTS Reading requires you to answer 40 questions across three academic passages within 60 minutes. IELTS-OS provides practice sets at multiple difficulty levels with instant feedback.</p>
+                    
+                    <h3>Question Types Explained</h3>
+                    
+                    <button class="collapsible">Multiple Choice (A/B/C/D)</button>
+                    <div class="collapsible-content">
+                        <p><strong>Format:</strong> Question with 4 options (A, B, C, D). Select one correct answer.</p>
+                        <p><strong>Skill tested:</strong> Understanding main ideas, details, and implications.</p>
+                        <p><strong>Strategy:</strong> Read the question carefully. Skim the passage for key terms from the question. Reread that section. Eliminate obviously wrong answers first.</p>
+                    </div>
+                    
+                    <button class="collapsible">True / False / Not Given</button>
+                    <div class="collapsible-content">
+                        <p><strong>Format:</strong> Statement about the passage. Choose True (directly states), False (contradicts), or Not Given (not mentioned).</p>
+                        <p><strong>Skill tested:</strong> Distinguishing between information in the passage, opposite information, and absent information.</p>
+                        <p><strong>Strategy:</strong> "Not Given" is different from "False." If the passage doesn't mention something, it's Not Given (not False). Look for exact or paraphrased matches in the passage.</p>
+                    </div>
+                    
+                    <button class="collapsible">Matching Headings</button>
+                    <div class="collapsible-content">
+                        <p><strong>Format:</strong> List of headings (usually more than needed). Match each paragraph to its best heading.</p>
+                        <p><strong>Skill tested:</strong> Identifying main ideas of paragraphs.</p>
+                        <p><strong>Strategy:</strong> Read each paragraph quickly and note its main idea. Find the heading that best summarizes it (not just a detail). Headings are often paraphrased, not word-for-word.</p>
+                    </div>
+                    
+                    <button class="collapsible">Sentence Completion</button>
+                    <div class="collapsible-content">
+                        <p><strong>Format:</strong> Incomplete sentence. Complete it using words from the passage (word limit given: usually 1-3 words).</p>
+                        <p><strong>Skill tested:</strong> Locating and extracting specific information.</p>
+                        <p><strong>Strategy:</strong> Underline the key terms in the incomplete sentence. Find them in the passage. Copy the exact words that fit (including spelling and grammar).</p>
+                    </div>
+                    
+                    <button class="collapsible">Short Answer Questions</button>
+                    <div class="collapsible-content">
+                        <p><strong>Format:</strong> Question that requires a brief answer in 1-3 words from the passage.</p>
+                        <p><strong>Skill tested:</strong> Locating and extracting specific factual information.</p>
+                        <p><strong>Strategy:</strong> Similar to sentence completion. Find the relevant sentence in the passage and extract the answer word-for-word.</p>
+                    </div>
+                    
+                    <h3>Step-by-Step Reading Practice Walkthrough</h3>
+                    
+                    <ol class="steps">
+                        <li><strong>Select a Passage Set:</strong> Click "New Reading Test" and choose difficulty (Band 5-6, 6-7, 7-8, 8-9). You can also filter by question type mix.</li>
+                        
+                        <li><strong>Start the Timed Section:</strong> Click "Begin Test." A 60-minute timer starts. You'll see all 3 passages with 40 questions total.</li>
+                        
+                        <li><strong>Read First Passage & Answer Questions:</strong> Read passage 1 (typically 700-800 words). Then answer questions 1-13 (approximately). You can scroll between the passage and questions.</li>
+                        
+                        <li><strong>Move Through Passages 2 & 3:</strong> Repeat for passages 2 and 3. Manage your time: aim for ~20 minutes per passage.</li>
+                        
+                        <li><strong>Submit Answers:</strong> Click "Submit Test" when finished or time expires. System automatically grades all answers.</li>
+                        
+                        <li><strong>View Immediate Feedback:</strong> You'll see:
+                            <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                                <li>Marked answer sheet (correct/incorrect)</li>
+                                <li>Correct answers highlighted</li>
+                                <li>Explanations for each question</li>
+                                <li>Section score out of 40</li>
+                                <li>Converted band score (0-40 scales to Band 1-9)</li>
+                            </ul>
+                        </li>
+                        
+                        <li><strong>Review Explanations:</strong> Click any question to see detailed explanation. Understand why incorrect answers were wrong.</li>
+                    </ol>
+                    
+                    <h3>Reading Strategies & Tips</h3>
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Skim Before Deep Reading:</strong> Quickly read the first sentence of each paragraph to understand the passage structure. Then tackle questions.</li>
+                        <li><strong>Underline Key Terms in Questions:</strong> Before searching the passage, note important words. This speeds up location finding.</li>
+                        <li><strong>Match Paraphrases:</strong> The passage rarely uses exact question wording. Recognize synonyms and rephrasing.</li>
+                        <li><strong>Avoid Over-Inference:</strong> Base answers strictly on the passage. Don't use outside knowledge, even if you think it's correct.</li>
+                        <li><strong>Manage Time Carefully:</strong> If stuck on a question, mark it and move on. Come back if you have time. 40 questions in 60 min ≈ 1.5 min per question.</li>
+                        <li><strong>Use Passage Numbers:</strong> Questions usually follow passage order. Passage 1 questions appear first, then passage 2, etc. Use this to predict where to search.</li>
+                    </ul>
+                    
+                    <h3>Time Management for Reading</h3>
+                    <div class="band-box">
+                        <p><strong>Recommended Time Allocation:</strong></p>
+                        <ul style="margin-left: 2rem;">
+                            <li><strong>Passage 1 (minutes 0-20):</strong> Skim (2 min) → Answer questions (18 min)</li>
+                            <li><strong>Passage 2 (minutes 20-40):</strong> Skim (2 min) → Answer questions (18 min)</li>
+                            <li><strong>Passage 3 (minutes 40-55):</strong> Skim (2 min) → Answer questions (13 min)</li>
+                            <li><strong>Buffer (minutes 55-60):</strong> Review flagged questions, check answers</li>
+                        </ul>
+                    </div>
+                </section>
+                
+                <!-- Listening Practice -->
+                <section id="listening">
+                    <h2>Listening Practice</h2>
+                    
+                    <h3>Overview</h3>
+                    <p>IELTS Listening has 4 sections with different themes and question types. You hear each section once (no replay), so focus is critical. IELTS-OS provides unlimited practice with transcript access and instant marking.</p>
+                    
+                    <h3>The 4 Listening Sections</h3>
+                    
+                    <button class="collapsible">Section 1: Conversation (Social Context)</button>
+                    <div class="collapsible-content">
+                        <p><strong>Format:</strong> Conversation between 2 people in everyday situations (e.g., booking accommodation, inquiring about a course, making a complaint).</p>
+                        <p><strong>Length:</strong> ~3 minutes</p>
+                        <p><strong>Focus:</strong> Specific information, details, spelling, numbers.</p>
+                        <p><strong>Question types:</strong> Form completion, note-taking, multiple choice</p>
+                        <p><strong>Tip:</strong> Listen for keywords and speaker's purpose. The first speaker sets context; the second asks questions or provides information.</p>
+                    </div>
+                    
+                    <button class="collapsible">Section 2: Monologue (Social Context)</button>
+                    <div class="collapsible-content">
+                        <p><strong>Format:</strong> One speaker (e.g., tour guide, event organizer, announcer) presenting information to a group.</p>
+                        <p><strong>Length:</strong> ~3 minutes</p>
+                        <p><strong>Focus:</strong> Main information, supporting details, descriptions.</p>
+                        <p><strong>Question types:</strong> Matching, sentence completion, multiple choice, plan/map labeling</p>
+                        <p><strong>Tip:</strong> Predict what information will come (dates, prices, locations). Focus on transitions (the next thing..., before that...).</p>
+                    </div>
+                    
+                    <button class="collapsible">Section 3: Academic Discussion</button>
+                    <div class="collapsible-content">
+                        <p><strong>Format:</strong> Conversation between 2-3 people (typically student and tutor) discussing an academic topic or project.</p>
+                        <p><strong>Length:</strong> ~3-4 minutes</p>
+                        <p><strong>Focus:</strong> Understanding discussion flow, opinions, conclusions, academic vocabulary.</p>
+                        <p><strong>Question types:</strong> Multiple choice, matching, form/table completion</p>
+                        <p><strong>Tip:</strong> Recognize disagreements and changes of mind ("Actually, I think..."). Note academic terms and how they're used.</p>
+                    </div>
+                    
+                    <button class="collapsible">Section 4: Academic Lecture</button>
+                    <div class="collapsible-content">
+                        <p><strong>Format:</strong> One speaker delivering an academic lecture on a topic in science, history, geography, etc.</p>
+                        <p><strong>Length:</strong> ~3-4 minutes</p>
+                        <p><strong>Focus:</strong> Main ideas, explanations, examples, definitions.</p>
+                        <p><strong>Question types:</strong> Sentence completion, note-taking, summary completion, classification</p>
+                        <p><strong>Tip:</strong> Listen for signposts ("There are three main causes..."). Predict what comes after ("Let's look at the first one...").</p>
+                    </div>
+                    
+                    <h3>Common Question Types</h3>
+                    
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Multiple Choice:</strong> Choose the best answer from A, B, C, or D.</li>
+                        <li><strong>Short Answer:</strong> Answer in 1-3 words (from the audio, not your knowledge).</li>
+                        <li><strong>Form Completion:</strong> Fill in a form with information you hear (names, numbers, dates, prices).</li>
+                        <li><strong>Sentence Completion:</strong> Complete sentences using words from the audio (word limit usually 1-3 words).</li>
+                        <li><strong>Matching:</strong> Match ideas, people, or activities to descriptions from the audio.</li>
+                        <li><strong>Summary/Classification:</strong> Classify statements or summarize information heard.</li>
+                    </ul>
+                    
+                    <h3>Audio Controls & Features</h3>
+                    <p>When you start a listening test, you'll have these controls:</p>
+                    
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Play/Pause Button:</strong> Start and pause the audio (you control when to listen).</li>
+                        <li><strong>Progress Bar:</strong> Shows where you are in the section.</li>
+                        <li><strong>Speed Control:</strong> Slow down to 0.8x or 0.9x if needed (not available on real exam, so use sparingly).</li>
+                        <li><strong>Volume:</strong> Adjust volume as needed.</li>
+                        <li><strong>Skip to Section:</strong> Jump directly to Section 2, 3, or 4 (after Section 1 is answered).</li>
+                        <li><strong>Question Navigator:</strong> See all questions and click to jump between them.</li>
+                    </ul>
+                    
+                    <h3>After Completion: Transcripts & Marking</h3>
+                    <p>Once you submit your listening test:</p>
+                    
+                    <ol class="steps">
+                        <li>Your answers are instantly marked (correct/incorrect).</li>
+                        <li>You can toggle on the full audio transcript to read what you heard.</li>
+                        <li>Correct answers are highlighted; explanations provided for wrong answers.</li>
+                        <li>Your raw score (out of 40) is converted to IELTS Band (1-9).</li>
+                        <li>Breakdown by section shows which sections need improvement.</li>
+                    </ol>
+                    
+                    <h3>Listening Tips & Strategies</h3>
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Read Questions First:</strong> Before audio plays, read questions and underline key words. This preps your mind for what to listen for.</li>
+                        <li><strong>Predict Answers:</strong> Based on the question and context, predict what kind of answer to expect (a name, a number, a reason).</li>
+                        <li><strong>Write Quickly:</strong> Don't worry about grammar or spelling during the test. Write keywords. You can refine later.</li>
+                        <li><strong>Don't Pause Repeatedly:</strong> Try to listen in natural flow. Constant pausing disrupts comprehension.</li>
+                        <li><strong>Check Spelling & Grammar:</strong> In the 10-minute transfer time (real exam), check your written answers for spelling and grammar. This can prevent "wrong" answers due to typos.</li>
+                        <li><strong>Listen for Synonyms:</strong> The audio rarely uses exact question wording. Listen for similar meanings and paraphrasing.</li>
+                        <li><strong>Note Numbers Carefully:</strong> Listening tests often have numbers (prices, quantities, years). Listen very carefully to these.</li>
+                    </ul>
+                </section>
+                
+                <!-- Vocabulary Drills -->
+                <section id="vocabulary">
+                    <h2>Vocabulary Drills</h2>
+                    
+                    <h3>Overview</h3>
+                    <p>Vocabulary is essential for IELTS success. IELTS-OS uses spaced repetition (showing words at optimal intervals) to ensure long-term retention. Vocabulary is organized by band level to match your goals.</p>
+                    
+                    <h3>Practice Modes</h3>
+                    
+                    <button class="collapsible">Definition Matching</button>
+                    <div class="collapsible-content">
+                        <p>A word is shown with 4 possible definitions. Select the correct one.</p>
+                        <p><strong>Skill:</strong> Understanding word meaning.</p>
+                        <p><strong>Strategy:</strong> If you're unsure, eliminate obviously wrong definitions. Think about word families and roots.</p>
+                    </div>
+                    
+                    <button class="collapsible">Sentence Completion</button>
+                    <div class="collapsible-content">
+                        <p>A sentence with a blank appears. Select the correct word to complete it (from 4 options).</p>
+                        <p><strong>Skill:</strong> Understanding word usage in context.</p>
+                        <p><strong>Strategy:</strong> Read the full sentence for context clues. Even if you don't know the word, context may help.</p>
+                    </div>
+                    
+                    <button class="collapsible">Word Family Building</button>
+                    <div class="collapsible-content">
+                        <p>Given a word (e.g., "contribute"), generate its word family (contributes, contributor, contribution, contributory). You type the variants.</p>
+                        <p><strong>Skill:</strong> Understanding how words change form (noun, verb, adjective, adverb).</p>
+                        <p><strong>Strategy:</strong> Know common suffixes: -tion (noun), -ent/-ing (adjective), -ly (adverb), -able (adjective).</p>
+                    </div>
+                    
+                    <button class="collapsible">Context-Based Selection</button>
+                    <div class="collapsible-content">
+                        <p>A short passage is given with a blank. Choose the word that best fits (from 4 options).</p>
+                        <p><strong>Skill:</strong> Using broader context to understand word usage.</p>
+                        <p><strong>Strategy:</strong> Read the full passage, not just the sentence with the blank. Context helps disambiguate.</p>
+                    </div>
+                    
+                    <h3>Band-Level Vocabulary Tiers</h3>
+                    
+                    <table>
+                        <tr>
+                            <th>Band Level</th>
+                            <th>Word Count Target</th>
+                            <th>Focus</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Band 5-6</strong></td>
+                            <td>2,000 common words</td>
+                            <td>Everyday vocabulary, basic academic words, common phrasal verbs</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Band 6-7</strong></td>
+                            <td>2,500 words</td>
+                            <td>Less common words, more phrasal verbs, topic-specific vocabulary</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Band 7-8</strong></td>
+                            <td>3,000+ words</td>
+                            <td>Sophisticated vocabulary, synonyms, nuanced word choices, advanced collocations</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Band 8-9</strong></td>
+                            <td>3,500+ words</td>
+                            <td>Rare and specialized vocabulary, deep word knowledge, precise word selection</td>
+                        </tr>
+                    </table>
+                    
+                    <h3>Academic Collocations</h3>
+                    <p>Collocations are words that frequently appear together (e.g., "strong evidence," "significant increase"). IELTS-OS includes a dedicated collocation module for each band level.</p>
+                    
+                    <div class="tip-box">
+                        <strong>Tip:</strong> Learning collocations is more valuable than isolated words. In writing, using correct collocations shows advanced vocabulary knowledge and earns higher scores.
+                    </div>
+                    
+                    <h3>Progress Tracking Per Word</h3>
+                    <p>Each word you drill shows:</p>
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Mastery Level:</strong> Not started → Learning → Familiar → Mastered (based on correct/incorrect responses)</li>
+                        <li><strong>Times Seen:</strong> How many times you've encountered the word</li>
+                        <li><strong>Last Reviewed:</strong> When you last saw this word (spaced repetition schedules next review)</li>
+                        <li><strong>Confidence:</strong> Your self-assessed confidence on this word (optional)</li>
+                    </ul>
+                    
+                    <h3>Custom Word Lists</h3>
+                    <p>You can create personal word lists:</p>
+                    <ol class="steps">
+                        <li>Click "Create Custom List" and name it (e.g., "Medical Terms," "Business Vocab").</li>
+                        <li>Add words by typing or pasting (one per line).</li>
+                        <li>Add definitions, examples, and notes.</li>
+                        <li>Practice this list like any other (all modes available).</li>
+                    </ol>
+                    
+                    <h3>Streak & Mastery Tracking</h3>
+                    <p>A calendar heatmap shows your vocabulary study consistency. A "Mastery Score" (0-100%) tracks the percentage of your chosen word list that you've mastered. Aim for 95%+ mastery before taking an IELTS test.</p>
+                </section>
+                
+                <!-- Upload & Assess -->
+                <section id="upload">
+                    <h2>Upload & Assess</h2>
+                    
+                    <h3>What You Can Upload</h3>
+                    <p>IELTS-OS lets you upload documents beyond structured practice. Supported formats:</p>
+                    <ul style="margin-left: 2rem;">
+                        <li>Essays (Task 1 & Task 2 style)</li>
+                        <li>Reports or business writing</li>
+                        <li>Letters (complaint, formal request, etc.)</li>
+                        <li>.txt, .doc, .docx, .pdf files (plain text preferred)</li>
+                    </ul>
+                    
+                    <h3>Step-by-Step Upload & Assessment</h3>
+                    
+                    <ol class="steps">
+                        <li><strong>Click "Upload & Assess":</strong> From the dashboard, click this card or go to Upload from the sidebar.</li>
+                        
+                        <li><strong>Select File:</strong> Click "Choose File" and select your document from your computer.</li>
+                        
+                        <li><strong>Confirm Assignment Type:</strong> Select whether this is a Task 1 essay, Task 2 essay, Letter, Report, or Other.</li>
+                        
+                        <li><strong>Add Context (Optional):</strong> If you want feedback on a specific aspect, add a note (e.g., "Focus on coherence"). This doesn't affect scoring but helps guide feedback.</li>
+                        
+                        <li><strong>Submit for Assessment:</strong> Click "Submit." Processing typically takes 1-2 minutes.</li>
+                        
+                        <li><strong>Receive Detailed Feedback Report:</strong> Your assessment report includes:
+                            <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                                <li>Overall Band Score (e.g., 6.5)</li>
+                                <li>Scores for the 4 IELTS Writing criteria</li>
+                                <li>Written feedback (strengths and areas for improvement)</li>
+                                <li>Specific error examples with explanations</li>
+                                <li>Suggestions for revision</li>
+                            </ul>
+                        </li>
+                        
+                        <li><strong>Download Rubric Report:</strong> Export a detailed PDF rubric showing your scores across all criteria. Great for tracking progress over multiple submissions.</li>
+                        
+                        <li><strong>Revise & Resubmit:</strong> Make improvements and upload again. Each submission is versioned (Upload 1, Upload 2, etc.), and you can compare scores over time.</li>
+                    </ol>
+                    
+                    <h3>Rubric Categories (Same as Writing Studio)</h3>
+                    <p>Uploads are assessed using the official IELTS Writing rubric:</p>
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Task Achievement / Response (25%)</strong></li>
+                        <li><strong>Coherence & Cohesion (25%)</strong></li>
+                        <li><strong>Lexical Resource (25%)</strong></li>
+                        <li><strong>Grammatical Range & Accuracy (25%)</strong></li>
+                    </ul>
+                    
+                    <h3>Submission History & Versioning</h3>
+                    <p>All your uploads are saved in your Submission History. For each submission, you can:</p>
+                    <ul style="margin-left: 2rem;">
+                        <li>View the feedback report (anytime)</li>
+                        <li>Download the PDF rubric</li>
+                        <li>View the original file you submitted</li>
+                        <li>See submission date and band score</li>
+                        <li>Compare scores across multiple submissions (useful for tracking improvement)</li>
+                    </ul>
+                </section>
+                
+                <!-- Speaking -->
+                <section id="speaking">
+                    <h2>Speaking (Coming Soon)</h2>
+                    
+                    <h3>What to Expect</h3>
+                    <p>IELTS-OS Speaking module is currently in development and will be available in Q2 2026. This section will provide AI-powered speaking practice aligned with the IELTS Speaking exam.</p>
+                    
+                    <h3>Planned Features</h3>
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>AI Conversation Partner:</strong> Chat with an AI that simulates an IELTS examiner or real-life conversation scenarios.</li>
+                        <li><strong>Fluency Tracking:</strong> Monitor your speech speed, pause frequency, filler words (um, like, you know).</li>
+                        <li><strong>Pronunciation Feedback:</strong> AI analyzes your pronunciation and suggests improvements (available with microphone access).</li>
+                        <li><strong>Band Score Estimation:</strong> After conversations, receive an estimated speaking band based on fluency, vocabulary, grammar, and pronunciation.</li>
+                    </ul>
+                    
+                    <h3>How to Prepare in the Meantime</h3>
+                    <ul style="margin-left: 2rem;">
+                        <li>Use the Vocabulary Drills to build speaking vocabulary.</li>
+                        <li>Read the Speaking Tips section (below) and practice speaking aloud on those topics.</li>
+                        <li>Record yourself speaking and listen for errors.</li>
+                        <li>Practice with a partner or tutor if possible.</li>
+                    </ul>
+                </section>
+                
+                <!-- Progress Tracking -->
+                <section id="progress">
+                    <h2>Progress Tracking & Analytics</h2>
+                    
+                    <h3>Band Progression Over Time</h3>
+                    <p>A main chart on your Analytics page shows your overall band score trend (line graph). Each point represents a full test or submitted essay. This helps you visualize improvement trajectory.</p>
+                    
+                    <div class="tip-box">
+                        <strong>Tip:</strong> Improvement typically plateaus around Bands 6-7. Expect slower progress at higher levels. Don't be discouraged if your band plateaus; this is normal and means you're reaching advanced proficiency.
+                    </div>
+                    
+                    <h3>Per-Skill Breakdown</h3>
+                    <p>A four-panel chart shows separate trend lines for:</p>
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Writing:</strong> Average of all essay submissions</li>
+                        <li><strong>Reading:</strong> Average of all reading tests</li>
+                        <li><strong>Listening:</strong> Average of all listening tests</li>
+                        <li><strong>Vocabulary:</strong> Mastery % of selected word list</li>
+                    </ul>
+                    
+                    <h3>Current vs Target vs Diagnostic Comparison</h3>
+                    <p>A three-way bar chart compares:</p>
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Diagnostic Band:</strong> Your baseline (shown in gray)</li>
+                        <li><strong>Target Band:</strong> Your goal (shown in amber)</li>
+                        <li><strong>Current Band:</strong> Your latest overall score (shown in teal)</li>
+                    </ul>
+                    <p>This gives you a quick visual of how far you've come and how far to go.</p>
+                    
+                    <h3>Recommended Focus Areas</h3>
+                    <p>Based on your recent scores, IELTS-OS suggests 1-3 skills to focus on this week. For example:</p>
+                    <ul style="margin-left: 2rem;">
+                        <li>"Your Reading score dropped 0.5 bands. Focus on improving sentence completion and matching questions."</li>
+                        <li>"Your Writing Coherence & Cohesion is below target. Practice paragraph transitions and linking words."</li>
+                    </ul>
+                    
+                    <h3>Study Hour Accumulation</h3>
+                    <p>A counter shows total practice hours logged. This helps you track consistency. Most students need 100-150 hours of focused prep to improve 1.5 bands.</p>
+                    
+                    <h3>Streak Calendar</h3>
+                    <p>A heatmap calendar shows which days you studied (green) vs didn't (gray). Consistency matters more than marathon sessions. Aim for 5-6 days per week of practice.</p>
+                    
+                    <h3>Achievement Badges</h3>
+                    <p>Unlock badges as you hit milestones:</p>
+                    <ul style="margin-left: 2rem;">
+                        <li>"First Essay" — Submit your first essay</li>
+                        <li>"Streak Week" — 7 consecutive days of practice</li>
+                        <li>"Band Climber" — Improve 1.0 band from diagnostic</li>
+                        <li>"Vocabulary Master" — Achieve 95%+ mastery on a 500-word list</li>
+                        <li>"Test Ready" — Complete 10+ full practice tests</li>
+                    </ul>
+                </section>
+                
+                <!-- Study Plans & Tips -->
+                <section id="study-plans">
+                    <h2>Study Plans & Tips</h2>
+                    
+                    <h3>Recommended Weekly Schedule</h3>
+                    <p>For students targeting 1.0 band improvement, here's a balanced weekly schedule:</p>
+                    
+                    <table>
+                        <tr>
+                            <th>Day</th>
+                            <th>Focus Area</th>
+                            <th>Duration</th>
+                            <th>Activity</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Monday</strong></td>
+                            <td>Writing</td>
+                            <td>60 min</td>
+                            <td>Task 2 essay (40 min writing, 20 min review)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tuesday</strong></td>
+                            <td>Vocabulary</td>
+                            <td>45 min</td>
+                            <td>Drill target band word list (definition matching + sentence completion)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Wednesday</strong></td>
+                            <td>Reading</td>
+                            <td>70 min</td>
+                            <td>Full reading test (60 min + 10 min review)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Thursday</strong></td>
+                            <td>Listening</td>
+                            <td>60 min</td>
+                            <td>Full listening test (30 min + 10 min transcript review + 20 min error analysis)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Friday</strong></td>
+                            <td>Writing</td>
+                            <td>60 min</td>
+                            <td>Task 1 practice (20 min writing, 40 min review and rewrite)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Saturday</strong></td>
+                            <td>Comprehensive</td>
+                            <td>90 min</td>
+                            <td>Full mock test (all 4 skills) or focus on weakest area</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sunday</strong></td>
+                            <td>Review</td>
+                            <td>30-45 min</td>
+                            <td>Vocabulary drills or review past feedback; light practice</td>
+                        </tr>
+                    </table>
+                    
+                    <p><strong>Total weekly commitment:</strong> ~375-420 minutes (6-7 hours). Adjust based on your baseline and goals.</p>
+                    
+                    <h3>Skill Balance Strategy</h3>
+                    <p>Different skills require different approaches. Here's how to allocate your effort:</p>
+                    
+                    <button class="collapsible">Balanced Approach (Equal Across Skills)</button>
+                    <div class="collapsible-content">
+                        <p><strong>Best for:</strong> Beginners (Band 4-5) who need to improve all skills equally.</p>
+                        <p><strong>Allocation:</strong> 25% Writing, 25% Reading, 25% Listening, 25% Vocabulary.</p>
+                        <p><strong>Rationale:</strong> Building a solid foundation across all areas prevents weak spots.</p>
+                    </div>
+                    
+                    <button class="collapsible">Weighted Approach (Focus on Weakest)</button>
+                    <div class="collapsible-content">
+                        <p><strong>Best for:</strong> Intermediate students (Band 6-7) with one notably weak skill.</p>
+                        <p><strong>Example allocation:</strong> If Reading is 1.5 bands below your other skills: 20% Writing, 40% Reading, 20% Listening, 20% Vocabulary.</p>
+                        <p><strong>Rationale:</strong> Intensive focus on your weakest skill brings up the overall band faster.</p>
+                    </div>
+                    
+                    <button class="collapsible">Sequential Approach (Master One, Then Next)</button>
+                    <div class="collapsible-content">
+                        <p><strong>Best for:</strong> Very limited time; learners who prefer deep focus.</p>
+                        <p><strong>Example:</strong> Week 1-3 focus on Writing, Week 4-6 focus on Reading, etc.</p>
+                        <p><strong>Rationale:</strong> Mastering one skill fully can boost confidence and momentum. However, this approach risks neglecting other skills, so include maintenance sessions.</p>
+                    </div>
+                    
+                    <h3>Common Mistakes by Band Level</h3>
+                    
+                    <button class="collapsible">Band 4-5 Level Mistakes</button>
+                    <div class="collapsible-content">
+                        <ul style="margin-left: 2rem;">
+                            <li><strong>Writing:</strong> Not understanding the task (writing irrelevant content), using too much informal language, major grammar errors that obscure meaning.</li>
+                            <li><strong>Reading:</strong> Not recognizing paraphrasing; looking for exact keyword matches; not finishing all 40 questions due to slow reading.</li>
+                            <li><strong>Listening:</strong> Anxiety causing you to miss the answer while worrying about previous questions; not reading questions first.</li>
+                            <li><strong>Vocabulary:</strong> Trying to memorize word lists without context; not learning word families and collocations.</li>
+                        </ul>
+                    </div>
+                    
+                    <button class="collapsible">Band 6-7 Level Mistakes</button>
+                    <div class="collapsible-content">
+                        <ul style="margin-left: 2rem;">
+                            <li><strong>Writing:</strong> Unclear paragraph organization; repetitive vocabulary despite knowing better words; over-reliance on templates; minor grammar errors not caught in proofreading.</li>
+                            <li><strong>Reading:</strong> Careless errors (misreading a key word); rushing on easy sections; not using time management effectively; confusion between "Not Given" and "False."</li>
+                            <li><strong>Listening:</strong> Missing details due to focusing only on main ideas; spelling errors on proper nouns or numbers; difficulty with British/American accent variation.</li>
+                            <li><strong>Vocabulary:</strong> Knowing the word but choosing wrong definition based on first letter or partial memory; not reviewing collocation mistakes.</li>
+                        </ul>
+                    </div>
+                    
+                    <button class="collapsible">Band 7+ Level Mistakes</button>
+                    <div class="collapsible-content">
+                        <ul style="margin-left: 2rem;">
+                            <li><strong>Writing:</strong> Over-complicating sentences; subtle grammar errors (article misuse in complex contexts); less common spelling mistakes; minor issues with register or formality.</li>
+                            <li><strong>Reading:</strong> Tricky multiple-choice questions where 2-3 answers seem correct; missing nuanced meanings or implications; time pressure causing rushed final questions.</li>
+                            <li><strong>Listening:</strong> Advanced speakers using rapid speech or heavy accents; understanding individual words but not grasping the intended meaning; overconfidence leading to careless mistakes.</li>
+                            <li><strong>Vocabulary:</strong> Confusing near-synonyms (effect vs affect); subtle collocation errors (strong opinion vs firm opinion); rare word recognition without deep context.</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Time Management Exam Tips</h3>
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Reading (60 min):</strong> Allocate 20 min per passage including reading and answering. Use the last 5-10 min to check answers and fill any blanks.</li>
+                        <li><strong>Writing (60 min):</strong> Allocate 20 min to Task 1 (including 2-3 min planning, 15 min writing, 2-3 min checking) and 40 min to Task 2 (including 3-5 min planning, 30-32 min writing, 2-3 min checking).</li>
+                        <li><strong>Listening (~30 min):</strong> You don't control the pace; audio plays once. Plan to listen carefully the first time. Use the 10-minute transfer time to check spelling.</li>
+                        <li><strong>Speaking (11-14 min):</strong> Part 1 (4 min): Answer personal questions naturally. Part 2 (2 min): Speak non-stop if possible. Part 3 (5-6 min): Discuss abstract ideas. No planning time for Parts 1 and 3, only Part 2 (1 minute to plan).</li>
+                    </ul>
+                    
+                    <h3>Writing Templates for Task 1 and Task 2</h3>
+                    
+                    <button class="collapsible">Task 1 (Academic Writing - Describing Visual)</button>
+                    <div class="collapsible-content">
+                        <p><strong>Recommended structure:</strong></p>
+                        <p><strong>Paragraph 1 (Intro):</strong> "The chart/graph/diagram illustrates [main idea]. The data covers [time period/categories]. Key observations include [1-2 main points]."</p>
+                        <p><strong>Paragraph 2 (Main feature 1):</strong> Describe the most notable feature with specific numbers/percentages.</p>
+                        <p><strong>Paragraph 3 (Main feature 2):</strong> Describe the second most notable feature. Compare if relevant ("In contrast to... while...").</p>
+                        <p><strong>Paragraph 4 (Conclusion):</strong> "Overall, [summary of main trends]. This suggests [implication or significance]."</p>
+                        <p><strong>Word count:</strong> 150-180 words (not much more unless justified).</p>
+                    </div>
+                    
+                    <button class="collapsible">Task 2 (Academic Writing - Argumentative Essay)</button>
+                    <div class="collapsible-content">
+                        <p><strong>Recommended structure:</strong></p>
+                        <p><strong>Paragraph 1 (Intro):</strong> Paraphrase the topic in 1-2 sentences. State your position/thesis in 1-2 sentences. ("While some argue X, I believe Y because...").</p>
+                        <p><strong>Paragraph 2 (Argument 1):</strong> Main argument with supporting evidence and example. Topic sentence → explanation → concrete example → concluding sentence linking back to thesis.</p>
+                        <p><strong>Paragraph 3 (Argument 2):</strong> Second argument, same structure. Consider counterargument and refutation if relevant.</p>
+                        <p><strong>Paragraph 4 (Argument 3, optional):</strong> If space/time allows, add a third argument or address counterargument.</p>
+                        <p><strong>Paragraph 5 (Conclusion):</strong> Restate thesis (paraphrased). Summarize main points. Add wider implication or recommendation.</p>
+                        <p><strong>Word count:</strong> 280-320 words. Avoid excessive length.</p>
+                    </div>
+                </section>
+                
+                <!-- Settings -->
+                <section id="settings">
+                    <h2>Settings & Account Management</h2>
+                    
+                    <h3>Profile Settings</h3>
+                    <p>Update your account information:</p>
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Full Name:</strong> Your official name (used on test certificates)</li>
+                        <li><strong>Email Address:</strong> Your login email and contact for notifications</li>
+                        <li><strong>Target Band:</strong> Your goal band score (can be changed anytime)</li>
+                        <li><strong>Country & Timezone:</strong> Used for scheduling and localization</li>
+                        <li><strong>First Language:</strong> Helps personalize feedback (e.g., highlighting common L1 errors)</li>
+                    </ul>
+                    
+                    <h3>Privacy Settings</h3>
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Consent History:</strong> View and manage your consent to privacy policy, terms, cookies. Withdraw consent anytime.</li>
+                        <li><strong>Data Export:</strong> Request a downloadable copy of all your data (essays, scores, progress) in CSV or JSON format (GDPR right).</li>
+                        <li><strong>Cookies & Analytics:</strong> Toggle optional cookies for analytics and personalization.</li>
+                    </ul>
+                    
+                    <h3>Preferences</h3>
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Language:</strong> Interface language (English, Simplified Chinese, Mandarin, Spanish, French, German)</li>
+                        <li><strong>Timezone:</strong> Used for daily reminders and streak calculations</li>
+                        <li><strong>Email Notifications:</strong> Toggle weekly progress emails, suggestions, reminders</li>
+                        <li><strong>Dark/Light Mode:</strong> Toggle dark theme (default) or light theme</li>
+                    </ul>
+                    
+                    <h3>Reset Diagnostic</h3>
+                    <p>If you want to retake the diagnostic assessment to see if you've improved:</p>
+                    <ol class="steps">
+                        <li>Go to Settings → Diagnostics</li>
+                        <li>Click "Reset Diagnostic Assessment"</li>
+                        <li>Confirm you want to reset (this will schedule a new diagnostic in the next 24 hours)</li>
+                        <li>Complete the new diagnostic when ready</li>
+                        <li>Your new band becomes your "current" band; past band is archived for comparison</li>
+                    </ol>
+                    
+                    <h3>Account Deletion</h3>
+                    <p>If you wish to delete your account permanently:</p>
+                    <ol class="steps">
+                        <li>Go to Settings → Account</li>
+                        <li>Scroll to "Danger Zone" section</li>
+                        <li>Click "Delete Account"</li>
+                        <li>You'll be asked to confirm by typing your email address (to prevent accidental deletion)</li>
+                        <li>Your account, all essays, scores, and data will be permanently deleted within 30 days</li>
+                    </ol>
+                    
+                    <div class="note-box">
+                        <strong>Important:</strong> Account deletion is permanent and cannot be reversed. Download your data beforehand if you need a record.
+                    </div>
+                    
+                    <h3>Cache Management</h3>
+                    <p>IELTS-OS stores some data locally on your device for fast performance:</p>
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Clear Cache:</strong> Removes temporary files (like downloaded essays). This can free up device storage. Your account data is NOT deleted.</li>
+                        <li><strong>Offline Mode:</strong> Some features (vocabulary drills, reading) can work offline if you've downloaded them. Once back online, your progress syncs automatically.</li>
+                    </ul>
+                </section>
+                
+                <!-- Compliance & Privacy -->
+                <section id="compliance">
+                    <h2>Compliance & Privacy</h2>
+                    
+                    <h3>GDPR Compliance</h3>
+                    <p>IELTS-OS is fully compliant with the General Data Protection Regulation (GDPR). Here's what that means:</p>
+                    
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Consent:</strong> You must explicitly consent to terms before using the platform. Consent is documented and timestamped.</li>
+                        <li><strong>Data Controller:</strong> SAIL Education is responsible for how your data is used. Any data processing is lawful and transparent.</li>
+                        <li><strong>Data Protection Officer:</strong> Contact privacy@saileducation.com for privacy questions or complaints.</li>
+                        <li><strong>Right to Access:</strong> You can request a copy of all data IELTS-OS holds about you (within 30 days).</li>
+                        <li><strong>Right to Deletion:</strong> You can request your data be deleted. We comply within 30 days (except where retention is legally required).</li>
+                        <li><strong>Right to Portability:</strong> You can request your data in a machine-readable format (CSV, JSON) to transfer to another service.</li>
+                        <li><strong>Right to Object:</strong> You can object to certain data uses (e.g., email marketing).</li>
+                    </ul>
+                    
+                    <h3>WCAG 2.1 AA Accessibility</h3>
+                    <p>IELTS-OS is designed to be accessible to all users, including those with disabilities:</p>
+                    
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Color Contrast:</strong> All text meets WCAG AA standards (contrast ratio 4.5:1 for normal text, 3:1 for large text).</li>
+                        <li><strong>Keyboard Navigation:</strong> All features are keyboard accessible. No mouse required.</li>
+                        <li><strong>Screen Reader Support:</strong> Content is structured to work with screen readers (NVDA, JAWS, VoiceOver). Alternative text for images.</li>
+                        <li><strong>Font Sizing:</strong> Resizable text (up to 200%) without content cut-off.</li>
+                        <li><strong>Audio Transcripts:</strong> Listening sections include full transcripts for deaf/hard-of-hearing users.</li>
+                        <li><strong>Focus Indicators:</strong> Clear focus indicators for keyboard navigation.</li>
+                    </ul>
+                    
+                    <h3>Data Storage</h3>
+                    <p>Your data is stored securely:</p>
+                    
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Local-First Approach:</strong> Some data (vocabulary progress, essay drafts) is stored locally on your device first, then synced to our servers.</li>
+                        <li><strong>Encryption:</strong> Data in transit uses TLS/SSL encryption (HTTPS). Data at rest is AES-256 encrypted.</li>
+                        <li><strong>Servers:</strong> Hosted on EU-based servers to comply with GDPR (data residency).</li>
+                        <li><strong>Backups:</strong> Daily automated backups ensure data is never lost.</li>
+                    </ul>
+                    
+                    <h3>AI Transparency: Claude AI Scoring</h3>
+                    <p>IELTS-OS uses Claude AI (by Anthropic) for essay and writing assessment. Here's what you should know:</p>
+                    
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>How It Works:</strong> Your essay is sent to Claude API with an IELTS rubric prompt. Claude evaluates your writing against each criterion and returns a score + feedback.</li>
+                        <li><strong>Data Privacy:</strong> Your essays are processed by Anthropic's Claude API but are not used to train Claude models. We don't share personal identifiers with Anthropic.</li>
+                        <li><strong>Accuracy:</strong> Claude's scoring correlates highly (R² > 0.85) with real IELTS examiners on a validation set. However, it's not 100% accurate. Treat AI scores as guidance, not final judgment.</li>
+                        <li><strong>Limitations:</strong> Claude may miss subtle errors, misinterpret intent, or score harshly on unconventional writing. Always review feedback critically.</li>
+                        <li><strong>Request Explanation:</strong> If you disagree with an AI score, you can request a detailed explanation of how each criterion was evaluated.</li>
+                    </ul>
+                    
+                    <h3>Content Moderation Framework</h3>
+                    <p>To maintain a safe and fair platform:</p>
+                    
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>Prohibited Content:</strong> Essays containing hate speech, illegal content, or severe harassment are flagged and may be removed.</li>
+                        <li><strong>AI Safeguards:</strong> Claude is configured to decline scoring if it detects harmful content, spam, or cheating (e.g., copied essays).</li>
+                        <li><strong>User Reporting:</strong> If you encounter inappropriate content from another user, report it to support@saileducation.com.</li>
+                        <li><strong>Appeal Process:</strong> If your essay is moderated, you can appeal the decision with context.</li>
+                    </ul>
+                </section>
+                
+                <!-- Full Feature List -->
+                <section id="features">
+                    <h2>Complete Feature List</h2>
+                    <p>Here's a comprehensive table of all IELTS-OS features organized by skill area:</p>
+                    
+                    <table>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Skill(s)</th>
+                            <th>Availability</th>
+                            <th>Cost</th>
+                        </tr>
+                        <tr>
+                            <td>Writing Studio (Task 1 & 2 practice)</td>
+                            <td>Writing</td>
+                            <td>Available</td>
+                            <td>Included</td>
+                        </tr>
+                        <tr>
+                            <td>AI Essay Scoring (Band + 4 criteria)</td>
+                            <td>Writing</td>
+                            <td>Available</td>
+                            <td>Included</td>
+                        </tr>
+                        <tr>
+                            <td>Model Answer Comparison</td>
+                            <td>Writing</td>
+                            <td>Available</td>
+                            <td>Included</td>
+                        </tr>
+                        <tr>
+                            <td>Upload & Assess (custom documents)</td>
+                            <td>Writing</td>
+                            <td>Available</td>
+                            <td>Included</td>
+                        </tr>
+                        <tr>
+                            <td>Reading Practice (full tests)</td>
+                            <td>Reading</td>
+                            <td>Available</td>
+                            <td>Included</td>
+                        </tr>
+                        <tr>
+                            <td>Reading by Question Type</td>
+                            <td>Reading</td>
+                            <td>Available</td>
+                            <td>Included</td>
+                        </tr>
+                        <tr>
+                            <td>Listening Full Tests (4 sections)</td>
+                            <td>Listening</td>
+                            <td>Available</td>
+                            <td>Included</td>
+                        </tr>
+                        <tr>
+                            <td>Transcript Toggle & Review</td>
+                            <td>Listening</td>
+                            <td>Available</td>
+                            <td>Included</td>
+                        </tr>
+                        <tr>
+                            <td>Vocabulary Drills (spaced repetition)</td>
+                            <td>Vocabulary (All)</td>
+                            <td>Available</td>
+                            <td>Included</td>
+                        </tr>
+                        <tr>
+                            <td>Band-Level Word Lists</td>
+                            <td>Vocabulary (All)</td>
+                            <td>Available</td>
+                            <td>Included</td>
+                        </tr>
+                        <tr>
+                            <td>Custom Word Lists</td>
+                            <td>Vocabulary (All)</td>
+                            <td>Available</td>
+                            <td>Included</td>
+                        </tr>
+                        <tr>
+                            <td>Collocation Practice</td>
+                            <td>Vocabulary (Writing)</td>
+                            <td>Available</td>
+                            <td>Included</td>
+                        </tr>
+                        <tr>
+                            <td>Progress Analytics Dashboard</td>
+                            <td>All</td>
+                            <td>Available</td>
+                            <td>Included</td>
+                        </tr>
+                        <tr>
+                            <td>Band Progression Chart</td>
+                            <td>All</td>
+                            <td>Available</td>
+                            <td>Included</td>
+                        </tr>
+                        <tr>
+                            <td>Study Streak Tracking</td>
+                            <td>All</td>
+                            <td>Available</td>
+                            <td>Included</td>
+                        </tr>
+                        <tr>
+                            <td>Diagnostic Assessment</td>
+                            <td>All</td>
+                            <td>Available</td>
+                            <td>Included</td>
+                        </tr>
+                        <tr>
+                            <td>Adaptive Learning Recommendations</td>
+                            <td>All</td>
+                            <td>Available</td>
+                            <td>Included</td>
+                        </tr>
+                        <tr>
+                            <td>Speaking AI Partner</td>
+                            <td>Speaking</td>
+                            <td>Coming Q2 2026</td>
+                            <td>TBD</td>
+                        </tr>
+                        <tr>
+                            <td>Pronunciation Feedback</td>
+                            <td>Speaking</td>
+                            <td>Coming Q2 2026</td>
+                            <td>TBD</td>
+                        </tr>
+                        <tr>
+                            <td>Fluency Analysis</td>
+                            <td>Speaking</td>
+                            <td>Coming Q2 2026</td>
+                            <td>TBD</td>
+                        </tr>
+                    </table>
+                </section>
+                
+                <footer>
+                    SAIL Education © 2026 | IELTS-OS Manual v1.0
+                </footer>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // Sidebar Navigation
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+        
+        // Collapsible Sections
+        const collapsibles = document.querySelectorAll('.collapsible');
+        
+        collapsibles.forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.classList.toggle('active');
+            });
+        });
+        
+        // Search Functionality
+        const searchInput = document.getElementById('searchInput');
+        
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const sections = document.querySelectorAll('section');
+            
+            sections.forEach(section => {
+                const text = section.textContent.toLowerCase();
+                section.style.display = text.includes(query) ? 'block' : 'none';
+            });
+        });
+        
+        // Set first nav link as active on load
+        if (navLinks.length > 0) {
+            navLinks[0].classList.add('active');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,2750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compass Counsellor Manual - SAIL Education</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* === ANIMATIONS === */
+@keyframes float-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.4; }
+  50% { transform: translateY(-20px) translateX(10px); opacity: 0.8; }
+}
+@keyframes float-delayed-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.3; }
+  50% { transform: translateY(-15px) translateX(-10px); opacity: 0.7; }
+}
+@keyframes float-slow-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.2; }
+  50% { transform: translateY(-25px) translateX(5px); opacity: 0.6; }
+}
+@keyframes drift {
+  0% { transform: translateX(0px); }
+  100% { transform: translateX(20px); }
+}
+@keyframes orbit {
+  0% { transform: rotate(0deg) translateX(30px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
+}
+@keyframes breathing {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.1); }
+}
+@keyframes breathing-delayed {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.05); }
+}
+@keyframes rotate-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes slideInLeft {
+  0% { opacity: 0; transform: translateX(-50px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInDown {
+  0% { opacity: 0; transform: translateY(-30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.1); }
+  50% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), 0 0 30px rgba(255, 255, 255, 0.1); }
+}
+
+/* === RESET & BASE === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); border-radius: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: rgba(255,255,255,0.85);
+  background: #000;
+  line-height: 1.7;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* === IMMERSIVE BACKGROUND === */
+.immersive-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.immersive-bg .gradient-base {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1e1b4b 0%, #3b0764 40%, #0f172a 100%);
+}
+
+.immersive-bg .bg-image {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/8d0c8cab-aafd-4759-951d-82f748461c75_3840w.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.4;
+}
+
+/* Floating particles */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(1px);
+}
+.particle-1 { top: 25%; left: 33%; width: 2px; height: 2px; background: rgba(96,165,250,0.4); animation: float-glow 4s ease-in-out infinite; }
+.particle-2 { top: 75%; right: 25%; width: 1px; height: 1px; background: rgba(167,139,250,0.5); animation: float-delayed-glow 5s ease-in-out infinite; }
+.particle-3 { bottom: 33%; left: 50%; width: 1.5px; height: 1.5px; background: rgba(244,114,182,0.3); animation: float-slow-glow 6s ease-in-out infinite; }
+.particle-4 { top: 50%; right: 33%; width: 1px; height: 1px; background: rgba(34,211,238,0.4); animation: drift 8s ease-in-out infinite alternate; }
+.particle-5 { bottom: 25%; left: 25%; width: 2px; height: 2px; background: rgba(129,140,248,0.3); animation: orbit 15s linear infinite; }
+
+/* Ambient orbs */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+}
+.orb-1 { top: -50px; right: -50px; width: 384px; height: 384px; background: radial-gradient(circle, rgba(59,130,246,0.15), transparent); animation: breathing 4s ease-in-out infinite; }
+.orb-2 { bottom: -50px; left: -50px; width: 320px; height: 320px; background: radial-gradient(circle, rgba(168,85,247,0.2), transparent); animation: breathing-delayed 4s ease-in-out infinite 2s; }
+.orb-3 { top: 50%; left: 50%; width: 256px; height: 256px; background: radial-gradient(circle, rgba(236,72,153,0.1), transparent); animation: rotate-slow 20s linear infinite; }
+
+/* === LAYOUT === */
+.container {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* === GLASS SIDEBAR === */
+.sidebar, aside.sidebar {
+  width: 300px;
+  position: fixed;
+  top: 16px;
+  bottom: 16px;
+  left: 16px;
+  z-index: 100;
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  animation: slideInLeft 0.8s ease-out forwards;
+  transition: border-color 0.5s ease;
+  scrollbar-width: thin;
+}
+.sidebar:hover { border-color: rgba(255,255,255,0.25); }
+
+.sidebar-logo, .sidebar-header, .sidebar > div:first-child, .sidebar > h2:first-child {
+  padding: 28px 24px 16px;
+  font-size: 1.35em;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.sidebar-header h2, .sidebar-header h1 {
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: 700;
+  margin: 0;
+  padding: 0;
+  border: none;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-header p, .sidebar-header .version, .sidebar-version {
+  font-size: 0.8em;
+  color: rgba(255,255,255,0.5);
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+/* Sidebar search */
+.sidebar-search, .sidebar .search-container {
+  padding: 12px 20px 16px;
+}
+
+.sidebar-search input, .sidebar input[type="text"], .search-input {
+  width: 100%;
+  padding: 10px 14px 10px 38px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.08);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  color: #fff;
+  font-size: 0.85em;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  outline: none;
+}
+.sidebar-search input:focus, .sidebar input[type="text"]:focus, .search-input:focus {
+  border-color: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.12);
+}
+.sidebar-search input::placeholder, .sidebar input[type="text"]::placeholder, .search-input::placeholder {
+  color: rgba(255,255,255,0.4);
+}
+
+/* Sidebar navigation links - all variants */
+.sidebar-nav, .sidebar-menu, .sidebar nav, .nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px 20px;
+}
+
+.sidebar-nav a, .sidebar-menu a, .sidebar-menu li a, .sidebar nav a,
+.nav-link, .nav-item, a.nav-link, a.nav-item, button.nav-link {
+  display: block;
+  padding: 10px 16px;
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.88em;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  border: 1px solid transparent;
+  background: transparent;
+  text-align: left;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.4;
+}
+
+.sidebar-nav a:hover, .sidebar-menu a:hover, .sidebar-menu li a:hover, .sidebar nav a:hover,
+.nav-link:hover, .nav-item:hover, a.nav-link:hover, a.nav-item:hover, button.nav-link:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.9);
+  border-color: rgba(255,255,255,0.1);
+  transform: scale(1.02);
+}
+
+.sidebar-nav a.active, .sidebar-menu a.active, .sidebar-menu li a.active, .sidebar nav a.active,
+.nav-link.active, .nav-item.active, a.nav-link.active, a.nav-item.active, button.nav-link.active {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border-color: rgba(255,255,255,0.2);
+  font-weight: 600;
+  box-shadow: 0 0 15px rgba(255,255,255,0.05);
+}
+
+/* Sidebar section headings / group titles */
+.nav-section-title, .nav-group, .sidebar h3, .sidebar h4,
+.sidebar-menu > h3, .sidebar-menu > h4 {
+  font-size: 0.7em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.35);
+  padding: 18px 16px 6px;
+  margin: 0;
+  border: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.nav-section {
+  margin-bottom: 4px;
+}
+
+/* Sidebar list items without bullets */
+.sidebar-menu ul, .sidebar-menu ol, .sidebar nav ul, .sidebar nav ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* === MAIN CONTENT AREA === */
+.main-wrapper {
+  margin-left: 332px;
+  flex: 1;
+  min-height: 100vh;
+  padding: 16px 16px 16px 0;
+}
+
+.main-content, main.main-content {
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 48px 52px;
+  min-height: calc(100vh - 32px);
+  transition: border-color 0.5s ease;
+  animation: fadeIn 0.6s ease-out forwards;
+}
+.main-content:hover { border-color: rgba(255,255,255,0.25); }
+
+/* === CONTENT SECTIONS === */
+.content-section { display: none; animation: fadeIn 0.4s ease-out; }
+.content-section.active { display: block; }
+
+/* === TYPOGRAPHY === */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 2.2em;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 0.6em;
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h2 {
+  font-size: 1.6em;
+  font-weight: 600;
+  margin-top: 2em;
+  margin-bottom: 0.6em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  /* Override gradient text for h2 */
+  background: none;
+  -webkit-text-fill-color: #fff;
+}
+
+h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.4em;
+  color: rgba(255,255,255,0.95);
+}
+
+h4 {
+  font-size: 1.05em;
+  font-weight: 600;
+  margin-top: 1.2em;
+  margin-bottom: 0.3em;
+  color: rgba(255,255,255,0.9);
+}
+
+p {
+  margin-bottom: 1em;
+  color: rgba(255,255,255,0.75);
+}
+
+a { color: rgba(147,197,253,0.9); text-decoration: none; transition: color 0.3s; }
+a:hover { color: #fff; }
+
+strong, b { color: rgba(255,255,255,0.95); font-weight: 600; }
+
+code {
+  background: rgba(255,255,255,0.08);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  color: rgba(196,181,253,0.9);
+}
+
+ul, ol {
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+  color: rgba(255,255,255,0.75);
+}
+
+li { margin-bottom: 0.5em; }
+
+/* === STYLED BOXES (tip, note, ai, warning, milestone) === */
+.box {
+  padding: 20px 24px;
+  margin: 20px 0;
+  border-radius: 16px;
+  border-left: 3px solid;
+  background: rgba(255,255,255,0.04);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+}
+
+.box-title {
+  font-weight: 600;
+  color: rgba(255,255,255,0.95);
+  margin-bottom: 8px;
+}
+
+.box-tip, .box.tip {
+  border-left: 3px solid rgba(52,211,153,0.6);
+  background: rgba(52,211,153,0.06);
+}
+.box-tip::before, .box.tip::before { content: "💡 "; font-weight: bold; }
+
+.box-note, .box.note {
+  border-left: 3px solid rgba(251,191,36,0.6);
+  background: rgba(251,191,36,0.06);
+}
+.box-note::before, .box.note::before { content: "⚠️ "; font-weight: bold; }
+
+.box-ai, .box.ai-feature {
+  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15));
+  border-left: 3px solid rgba(168,85,247,0.6);
+  border: 1px solid rgba(168,85,247,0.2);
+}
+.box-ai::before, .box.ai-feature::before { content: "🤖 "; font-weight: bold; }
+.box-ai a { color: rgba(251,191,36,0.9); }
+
+.box.warning {
+  border-left: 3px solid rgba(239,68,68,0.6);
+  background: rgba(239,68,68,0.06);
+}
+
+.box.milestone {
+  border-left: 3px solid rgba(59,130,246,0.6);
+  background: rgba(59,130,246,0.06);
+}
+
+/* === STEPS === */
+.steps {
+  list-style: none;
+  padding: 0;
+  counter-reset: step-counter;
+}
+
+.steps li {
+  margin: 18px 0;
+  padding-left: 54px;
+  position: relative;
+  color: rgba(255,255,255,0.75);
+}
+
+.steps li::before {
+  content: counter(step-counter);
+  counter-increment: step-counter;
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.1);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+/* === CHECKLISTS === */
+.checklist {
+  list-style: none;
+  padding: 0;
+}
+
+.checklist li {
+  padding: 10px 0 10px 32px;
+  position: relative;
+  color: rgba(255,255,255,0.75);
+}
+
+.checklist li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: rgba(52,211,153,0.8);
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+/* === TABLES === */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 20px 0;
+  font-size: 0.9em;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+th {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.95);
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.7);
+}
+
+tr:hover td {
+  background: rgba(255,255,255,0.03);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* === ROLE BADGES === */
+.role-super-admin { color: rgba(56,189,248,0.9); font-weight: 600; }
+.role-admin { color: rgba(248,113,113,0.9); font-weight: 600; }
+.role-dept-head { color: rgba(167,139,250,0.9); font-weight: 600; }
+.role-teacher { color: rgba(52,211,153,0.9); font-weight: 600; }
+.role-student { color: rgba(129,140,248,0.9); font-weight: 600; }
+.role-parent { color: rgba(148,163,184,0.9); font-weight: 600; }
+
+.role-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.82em;
+  font-weight: 600;
+  margin-right: 5px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.role-badge.super-admin { background: rgba(56,189,248,0.12); color: rgba(56,189,248,0.9); border-color: rgba(56,189,248,0.2); }
+.role-badge.admin { background: rgba(248,113,113,0.12); color: rgba(248,113,113,0.9); border-color: rgba(248,113,113,0.2); }
+.role-badge.dept-head { background: rgba(167,139,250,0.12); color: rgba(167,139,250,0.9); border-color: rgba(167,139,250,0.2); }
+.role-badge.teacher { background: rgba(52,211,153,0.12); color: rgba(52,211,153,0.9); border-color: rgba(52,211,153,0.2); }
+.role-badge.student { background: rgba(129,140,248,0.12); color: rgba(129,140,248,0.9); border-color: rgba(129,140,248,0.2); }
+.role-badge.parent { background: rgba(148,163,184,0.12); color: rgba(148,163,184,0.9); border-color: rgba(148,163,184,0.2); }
+
+/* === COLLAPSIBLE === */
+.collapsible {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.9);
+  cursor: pointer;
+  padding: 16px 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  margin: 10px 0;
+  font-weight: 600;
+  font-size: 0.95em;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.collapsible:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  transform: scale(1.01);
+}
+
+.collapsible.active {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.25);
+  box-shadow: 0 0 20px rgba(255,255,255,0.05);
+}
+
+.collapsible-content {
+  display: none;
+  padding: 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-top: none;
+  border-radius: 0 0 14px 14px;
+  margin-top: -10px;
+}
+
+.collapsible-content.active {
+  display: block;
+}
+
+.collapsible-icon, .collapsible-arrow {
+  transition: transform 0.3s;
+  color: rgba(255,255,255,0.5);
+}
+
+.collapsible.active .collapsible-icon,
+.collapsible.active .collapsible-arrow {
+  transform: rotate(180deg);
+}
+
+/* === FEATURE GRID & CARDS === */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.feature-card {
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.feature-card h4 {
+  margin-top: 0;
+  color: rgba(255,255,255,0.95);
+}
+
+/* === ICON CIRCLE === */
+.icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+/* === FOOTER === */
+.footer {
+  background: rgba(255,255,255,0.04);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  padding: 24px;
+  margin-top: 48px;
+  border-radius: 0 0 24px 24px;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 0.85em;
+  color: rgba(255,255,255,0.4);
+}
+
+/* === UTILITY CLASSES === */
+.text-teal { color: rgba(52,211,153,0.9); }
+.text-center { text-align: center; }
+.mt-2 { margin-top: 2em; }
+.mb-2 { margin-bottom: 2em; }
+
+/* === STEP DESCRIPTION (SuperTeacher specific) === */
+.step-description {
+  color: rgba(255,255,255,0.65);
+  font-size: 0.9em;
+  margin-top: 4px;
+}
+
+/* Walkthrough step cards (SuperTeacher specific) */
+.setup-step, .step-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 12px 0;
+}
+
+/* === MOBILE RESPONSIVE === */
+@media (max-width: 900px) {
+  .sidebar, aside.sidebar {
+    position: fixed;
+    width: 280px;
+    left: -300px;
+    top: 0;
+    bottom: 0;
+    border-radius: 0 24px 24px 0;
+    transition: left 0.4s ease;
+    z-index: 200;
+  }
+  .sidebar.mobile-open { left: 0; }
+
+  .main-wrapper {
+    margin-left: 0;
+    padding: 16px;
+  }
+
+  .main-content, main.main-content {
+    padding: 28px 24px;
+    border-radius: 20px;
+  }
+
+  h1 { font-size: 1.6em; }
+  h2 { font-size: 1.3em; }
+  h3 { font-size: 1.1em; }
+
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 901px) {
+  .mobile-menu-btn { display: none !important; }
+  .mobile-overlay { display: none !important; }
+}
+
+.mobile-menu-btn {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 150;
+  width: 44px;
+  height: 44px;
+  background: rgba(255,255,255,0.1);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 14px;
+  color: #fff;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  transition: all 0.3s;
+}
+.mobile-menu-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
+
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  z-index: 150;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.mobile-overlay.active { opacity: 1; pointer-events: auto; }
+
+/* === PRINT CSS === */
+@media print {
+  .sidebar, aside.sidebar, .immersive-bg, .mobile-menu-btn, .mobile-overlay { display: none !important; }
+  .main-wrapper { margin-left: 0; }
+  .main-content, main.main-content {
+    max-width: 100%;
+    padding: 0;
+    background: #fff;
+    color: #000;
+    border: none;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  body { background: #fff; color: #000; }
+  .content-section { display: block !important; page-break-after: always; }
+  h1, h2, h3, h4 { color: #000; -webkit-text-fill-color: #000; background: none; }
+  p, li, td { color: #333; }
+  th { background: #eee; color: #000; }
+  .box { background: #f5f5f5; border-color: #ccc; }
+  .collapsible-content { display: block !important; }
+  .feature-card { background: #f5f5f5; border-color: #ddd; }
+}
+</style>
+</head>
+<body>
+<!-- Immersive Background -->
+<div class="immersive-bg">
+  <div class="gradient-base"></div>
+  <div class="bg-image"></div>
+  <div class="particle particle-1"></div>
+  <div class="particle particle-2"></div>
+  <div class="particle particle-3"></div>
+  <div class="particle particle-4"></div>
+  <div class="particle particle-5"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+<!-- Mobile Menu Button -->
+<button class="mobile-menu-btn" onclick="document.querySelector('.sidebar, aside.sidebar').classList.toggle('mobile-open'); document.querySelector('.mobile-overlay').classList.toggle('active');">☰</button>
+<div class="mobile-overlay" onclick="document.querySelector('.sidebar, aside.sidebar').classList.remove('mobile-open'); this.classList.remove('active');"></div>
+
+    <div class="container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">CC</div>
+                <div class="logo-subtitle">Compass Counsellor</div>
+                <input type="text" class="search-box" id="searchBox" placeholder="Search manual...">
+            </div>
+
+            <nav class="nav-sections">
+                <div class="nav-section">
+                    <div class="nav-section-title">Getting Started</div>
+                    <div class="nav-links">
+                        <button class="nav-link active" data-section="welcome">Welcome & Overview</button>
+                        <button class="nav-link" data-section="onboarding">Getting Started</button>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Core Features</div>
+                    <div class="nav-links">
+                        <button class="nav-link" data-section="connecting">Connecting to Students</button>
+                        <button class="nav-link" data-section="dashboard">My Students Dashboard</button>
+                        <button class="nav-link" data-section="student-detail">Student Detail Panel</button>
+                        <button class="nav-link" data-section="what-you-see">What You Can & Cannot See</button>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Management</div>
+                    <div class="nav-links">
+                        <button class="nav-link" data-section="managing">Managing Connections</button>
+                        <button class="nav-link" data-section="targets">Target Tracking</button>
+                        <button class="nav-link" data-section="interventions">Interventions</button>
+                        <button class="nav-link" data-section="outcomes">Outcomes & Decisions</button>
+                        <button class="nav-link" data-section="schedule">Schedule & Appointments</button>
+                        <button class="nav-link" data-section="reports">Reports & Export</button>
+                        <button class="nav-link" data-section="safeguarding">Safeguarding Log</button>
+                        <button class="nav-link" data-section="settings">Settings & Account</button>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Compliance</div>
+                    <div class="nav-links">
+                        <button class="nav-link" data-section="obligations">Data Obligations</button>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Support</div>
+                    <div class="nav-links">
+                        <button class="nav-link" data-section="faq">Help & FAQ</button>
+                        <button class="nav-link" data-section="features">Feature List</button>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main">
+            <div class="content-wrapper">
+
+                <!-- WELCOME & OVERVIEW -->
+                <section id="welcome" class="section active">
+                    <h1>Welcome to Compass Counsellor</h1>
+                    <p class="intro-text">Your trusted read-only dashboard for monitoring connected students' college application progress.</p>
+
+                    <h2>What is Compass Counsellor?</h2>
+                    <p>Compass Counsellor is a secure, read-only dashboard designed exclusively for school counsellors. It enables you to monitor the college application progress of students who have consented to share their information with you through the Compass student application.</p>
+
+                    <p>Unlike traditional access to student files, Compass Counsellor provides:</p>
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>Real-time visibility</strong> into student readiness scores and application milestones</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Structured insights</strong> across five key dimensions: language, academics, activities, essays, and milestones</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Privacy-first design</strong> with explicit student consent and immediate revocation on disconnect</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Compliance by default</strong> with FERPA, GDPR, COPPA, PDPA, and other global regulations</li>
+                    </ul>
+
+                    <div class="box note">
+                        <div class="box-title">📋 What's the Connection to Compass?</div>
+                        <p>Compass is a student-facing application that helps learners track and prepare for college applications. When a student invites you as a counsellor in Compass and you accept, you gain access to their Compass Counsellor dashboard—but only to the extent they've authorized. Students can revoke access instantly at any time.</p>
+                    </div>
+
+                    <h2>Your Role as a Counsellor</h2>
+                    <p>As a school counsellor using Compass Counsellor, you are an <strong>authorized processor of education records</strong>. This means:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;">You access student data for a <strong>legitimate educational interest</strong>: supporting college application readiness</li>
+                        <li style="margin-bottom: 0.5rem;">You have a <strong>duty of confidentiality</strong> and cannot re-disclose data to unauthorized parties</li>
+                        <li style="margin-bottom: 0.5rem;">You must <strong>follow applicable data protection laws</strong> in your jurisdiction</li>
+                        <li style="margin-bottom: 0.5rem;">You are responsible for <strong>security of your account</strong> and must not share access with others</li>
+                    </ul>
+
+                    <h2>Key Principles</h2>
+
+                    <div class="box tip">
+                        <div class="box-title">✨ Read-Only Access</div>
+                        <p>You cannot modify, delete, or export student data from Compass Counsellor. All changes to student records must be made directly in Compass by the student.</p>
+                    </div>
+
+                    <div class="box tip">
+                        <div class="box-title">✨ Student Consent Required</div>
+                        <p>Students must actively invite you and accept your connection request. Access is never granted by default. Every student connection is voluntary.</p>
+                    </div>
+
+                    <div class="box warning">
+                        <div class="box-title">⚠️ Immediate Revocation</div>
+                        <p>Students can disconnect from you at any time. When they do, your access is revoked <strong>immediately and permanently</strong> until they re-invite you. This is a core safeguarding principle.</p>
+                    </div>
+
+                    <div class="box note">
+                        <div class="box-title">📋 Data Protection is Your Responsibility</div>
+                        <p>You are a data processor under FERPA, GDPR, PDPA, and other frameworks. You must handle student data securely, maintain strong passwords, log out on shared devices, and report breaches within 72 hours to compliance@sailedu.co.</p>
+                    </div>
+                </section>
+
+                <!-- GETTING STARTED -->
+                <section id="onboarding" class="section">
+                    <h1>Getting Started with Compass Counsellor</h1>
+                    <p class="intro-text">Set up your account and understand your dashboard in five steps.</p>
+
+                    <h2>Sign Up</h2>
+                    <p>To create your Compass Counsellor account:</p>
+
+                    <ol class="steps">
+                        <li><strong>Navigate to Compass Counsellor login page</strong> and select "Sign Up"</li>
+                        <li><strong>Enter your email address</strong> (use your school domain if available)</li>
+                        <li><strong>Provide your full name</strong> as you wish it to appear to students</li>
+                        <li><strong>Enter your school or organisation</strong> name</li>
+                        <li><strong>Create a strong password</strong> (minimum 8 characters, mix of upper/lowercase, numbers, symbols)</li>
+                        <li><strong>Review and accept the Data Obligations modal</strong> (see Data Obligations section for full details)</li>
+                        <li><strong>Confirm your email address</strong> via the verification link sent to your inbox</li>
+                        <li><strong>Log in</strong> with your credentials</li>
+                    </ol>
+
+                    <div class="box tip">
+                        <div class="box-title">💡 Email Verification</div>
+                        <p>Check your spam folder if you don't see the verification email within 5 minutes. Resend the email from the sign-up page.</p>
+                    </div>
+
+                    <h2>Data Obligations Acceptance</h2>
+                    <p>During sign-up, you must review and accept a modal summarizing your data protection responsibilities. You can re-read this modal at any time from Settings → Data Obligations.</p>
+
+                    <div class="box warning">
+                        <div class="box-title">⚠️ Mandatory Review</div>
+                        <p>This is not optional. By accepting, you confirm you understand your role as a data processor under FERPA, GDPR, COPPA, PDPA, PIPEDA, and other applicable laws. See the Data Obligations section for comprehensive details.</p>
+                    </div>
+
+                    <h2>Understanding Your Dashboard</h2>
+                    <p>After sign-up, you'll see your main dashboard with three primary tabs:</p>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>1. My Students</h4>
+                        <p>Your list of connected students. Shows readiness scores, target countries, grades, and status. This is your primary workspace.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>2. Requests</h4>
+                        <p>Incoming and outgoing connection requests. Send requests to students by email, track request status, and manage pending or declined requests.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>3. Help & Manual</h4>
+                        <p>Quick access to this manual, FAQs, compliance info, and contact details.</p>
+                    </div>
+
+                    <h2>Navigation Basics</h2>
+                    <p>Use the left sidebar to navigate between sections. The search box at the top allows you to find students by name or email quickly. All data is refreshed in real-time as students update their Compass profiles.</p>
+
+                    <div class="box note">
+                        <div class="box-title">📋 Real-Time Sync</div>
+                        <p>Compass Counsellor updates every few minutes as students make changes in Compass. Refreshing your browser ensures you see the latest data.</p>
+                    </div>
+                </section>
+
+                <!-- CONNECTING TO STUDENTS -->
+                <section id="connecting" class="section">
+                    <h1>Connecting to Students</h1>
+                    <p class="intro-text">Invite students to share their application progress with you through secure, consent-based requests.</p>
+
+                    <h2>Sending a Connection Request</h2>
+                    <p>To connect with a student, follow these steps:</p>
+
+                    <ol class="steps">
+                        <li><strong>Navigate to the "Requests" tab</strong> in your dashboard</li>
+                        <li><strong>Click "Send Connection Request"</strong></li>
+                        <li><strong>Enter the student's email address</strong> (the email they used to create their Compass account)</li>
+                        <li><strong>Review the validation checks</strong> (the system confirms the email is registered in Compass)</li>
+                        <li><strong>Click "Send Request"</strong></li>
+                        <li><strong>Wait for the student to accept</strong> (you'll see status updates in real-time)</li>
+                    </ol>
+
+                    <div class="box tip">
+                        <div class="box-title">💡 Pro Tip</div>
+                        <p>You can send multiple requests simultaneously. However, each student can only accept one request per counsellor. If a student is already connected to you, trying to send another request will show an error.</p>
+                    </div>
+
+                    <h2>What Happens When You Send a Request</h2>
+                    <p>When you send a connection request:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;">The student receives a <strong>notification in Compass</strong> that you've requested access</li>
+                        <li style="margin-bottom: 0.5rem;">They can <strong>review a summary</strong> of what you'll be able to see (readiness score, milestone progress, etc.)</li>
+                        <li style="margin-bottom: 0.5rem;">They have the <strong>choice to accept or decline</strong></li>
+                        <li style="margin-bottom: 0.5rem;">You receive <strong>real-time notification</strong> of their response</li>
+                        <li style="margin-bottom: 0.5rem;">If accepted, you <strong>immediately gain access</strong> to their dashboard</li>
+                    </ul>
+
+                    <h2>Request Statuses</h2>
+                    <p>Each request has one of four statuses:</p>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4><span class="badge">Pending</span></h4>
+                        <p>The student has been invited but has not yet responded. The request is active for 30 days. After 30 days, the request expires automatically.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4><span class="badge good">Accepted</span></h4>
+                        <p>The student has accepted your request. You now have access to their dashboard. This status remains active until the student disconnects or you manually remove the connection.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4><span class="badge early">Declined</span></h4>
+                        <p>The student has declined your request. You cannot see their data. You can send another request, but the student must explicitly accept it.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4><span class="badge">Expired</span></h4>
+                        <p>The request was not responded to within 30 days and has automatically expired. You can resend the request at any time.</p>
+                    </div>
+
+                    <h2>Validation Rules</h2>
+                    <p>Before a connection request is sent, the system validates several conditions:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>Student must have a Compass account</strong> registered with that email address</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>No duplicate requests:</strong> You cannot send multiple pending requests to the same student</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Valid email format</strong> (proper @ and domain structure)</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Your account must be in good standing</strong> (not suspended or flagged)</li>
+                    </ul>
+
+                    <h2>Error Messages Explained</h2>
+
+                    <button class="collapsible">
+                        <span>"Email not found in Compass" <span class="collapsible-icon">▼</span></span>
+                    </button>
+                    <div class="collapsible-content">
+                        <p>The email address you entered is not registered with a Compass account. Verify the email is correct and ask the student to confirm it matches their Compass registration.</p>
+                    </div>
+
+                    <button class="collapsible">
+                        <span>"You already have a pending request with this student" <span class="collapsible-icon">▼</span></span>
+                    </button>
+                    <div class="collapsible-content">
+                        <p>You've already sent a request to this student and are waiting for their response. If the request has expired (30+ days), you can resend it. Otherwise, wait for the student to respond or decline the pending request first.</p>
+                    </div>
+
+                    <button class="collapsible">
+                        <span>"Already connected to this student" <span class="collapsible-icon">▼</span></span>
+                    </button>
+                    <div class="collapsible-content">
+                        <p>You have an active connection with this student. You can see their dashboard. If you wish to disconnect, manage the connection from "My Students" or wait for the student to disconnect.</p>
+                    </div>
+
+                    <button class="collapsible">
+                        <span>"Invalid email format" <span class="collapsible-icon">▼</span></span>
+                    </button>
+                    <div class="collapsible-content">
+                        <p>The email address you entered doesn't follow the standard format (name@domain.com). Check for typos or extra spaces.</p>
+                    </div>
+
+                    <h2>Resending Declined Requests</h2>
+                    <p>If a student has declined your request, you can send another request at any time. However:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;">There is <strong>no cool-down period</strong>—you can resend immediately</li>
+                        <li style="margin-bottom: 0.5rem;">It's advisable to <strong>reach out personally</strong> to discuss why they declined and reassure them about privacy</li>
+                        <li style="margin-bottom: 0.5rem;">The student will see another notification in Compass</li>
+                        <li style="margin-bottom: 0.5rem;">Multiple declined requests may signal that the student is not comfortable sharing; respect their decision</li>
+                    </ul>
+
+                    <div class="box note">
+                        <div class="box-title">📋 Student Privacy & Choice</div>
+                        <p>If a student repeatedly declines, do not pressure them to accept. Their decision to decline is valid and reflects their comfort level with sharing. Focus on building trust through direct conversations about how you can support their applications.</p>
+                    </div>
+                </section>
+
+                <!-- MY STUDENTS DASHBOARD -->
+                <section id="dashboard" class="section">
+                    <h1>My Students Dashboard</h1>
+                    <p class="intro-text">Monitor your connected students' college application readiness at a glance.</p>
+
+                    <h2>Dashboard Overview</h2>
+                    <p>Your "My Students" tab is your primary workspace. It displays all students with whom you have an active connection, alongside key metrics for quick assessment.</p>
+
+                    <h2>Summary Strip</h2>
+                    <p>At the top of your dashboard, you'll see four high-level metrics:</p>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Total Students</h4>
+                        <p>Count of all students currently connected to you. This updates instantly when a student accepts or disconnects.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Average Readiness</h4>
+                        <p>The mean readiness score across all connected students (0–100 scale). Helps you gauge overall class cohort readiness.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>On Track</h4>
+                        <p>Number of students with a readiness score of 45 or above. These students are making solid progress toward applications.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>At Risk</h4>
+                        <p>Number of students with a readiness score below 45. These may need more support or early intervention.</p>
+                    </div>
+
+                    <h2>Sorting Options</h2>
+                    <p>Use the toolbar above the student list to sort by:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>Readiness Score (High to Low / Low to High)</strong> — Quickly identify high-performing and at-risk students</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Student Name (A–Z / Z–A)</strong> — Alphabetical order</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Grade Level</strong> — Group by year</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Last Check-In (Most Recent / Oldest)</strong> — See who's actively engaged</li>
+                    </ul>
+
+                    <h2>Searching Students</h2>
+                    <p>Use the search box in the sidebar or dashboard toolbar to find students by:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;">Full name or last name</li>
+                        <li style="margin-bottom: 0.5rem;">Email address</li>
+                        <li style="margin-bottom: 0.5rem;">Grade level (e.g., "Grade 11")</li>
+                    </ul>
+
+                    <p style="margin-top: 1rem;">Search is real-time—start typing and results filter instantly.</p>
+
+                    <h2>Per-Student Row Display</h2>
+                    <p>Each student in your list appears as a row with the following columns:</p>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Student Name</h4>
+                        <p>Full name as registered in Compass. Click to open the Student Detail Panel for in-depth information.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Grade</h4>
+                        <p>Current grade level (e.g., Grade 11, Grade 12, Year 13, etc.).</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Readiness Score</h4>
+                        <p>0–100 numeric score. See Student Detail Panel for breakdown of this score across five dimensions.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Target Countries</h4>
+                        <p>Countries where the student is applying (e.g., USA, UK, Canada, Australia). Hover to see full list if truncated.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Last Check-In</h4>
+                        <p>Date and time of the student's most recent activity in Compass (last login or profile update). Helps you identify engaged students.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Status</h4>
+                        <p>Quick status badge: "Strong Profile" (≥70), "Good Progress" (45–69), "Early Stage" (&lt;45), or "Inactive" (no updates in 60 days).</p>
+                    </div>
+
+                    <div class="box tip">
+                        <div class="box-title">💡 Interactive Rows</div>
+                        <p>Click any student row to open their full detail panel. Right-click for a context menu with options to disconnect, send a reminder message, or view historical progress.</p>
+                    </div>
+                </section>
+
+                <!-- STUDENT DETAIL PANEL -->
+                <section id="student-detail" class="section">
+                    <h1>Student Detail Panel</h1>
+                    <p class="intro-text">Deep-dive into a single student's application profile, readiness score breakdown, school list, and milestone progress.</p>
+
+                    <h2>Opening Student Details</h2>
+                    <p>Click any student row in "My Students" to open their detail panel. The panel slides in from the right and shows comprehensive information about their application progress.</p>
+
+                    <h2>Readiness Score Ring</h2>
+                    <p>At the top of the detail panel, you'll see a circular progress ring displaying the student's overall readiness score (0–100).</p>
+
+                    <div class="score-ring">
+                        <div class="score-ring-inner">
+                            <div class="score-value">72</div>
+                            <div class="score-max">/ 100</div>
+                        </div>
+                    </div>
+
+                    <p>The ring is color-coded:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>Green (80–100):</strong> Excellent readiness. Student is well-prepared and on track.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Purple (60–79):</strong> Good readiness. Solid progress with some areas to address.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Yellow (40–59):</strong> Moderate readiness. Some progress made; significant work remains.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Red (0–39):</strong> Early stage. Student is just beginning; intensive support may be beneficial.</li>
+                    </ul>
+
+                    <h2>Profile Status Labels</h2>
+                    <p>Below the score ring, you'll see a profile status badge:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><span class="badge strong">Strong Profile</span> — Readiness ≥ 70. Student has completed significant preparation.</li>
+                        <li style="margin-bottom: 0.5rem;"><span class="badge good">Good Progress</span> — Readiness 45–69. Student is on track with clear momentum.</li>
+                        <li style="margin-bottom: 0.5rem;"><span class="badge early">Early Stage</span> — Readiness &lt; 45. Student is in early phases; ongoing support recommended.</li>
+                    </ul>
+
+                    <h2>Score Breakdown (5 Components)</h2>
+                    <p>Your readiness score is composed of five key dimensions, each with a maximum value:</p>
+
+                    <h3>Language (0–20 points)</h3>
+                    <p>Proficiency in English or other languages required for applications. Measured by:</p>
+                    <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                        <li>Test scores (TOEFL, IELTS, CAE, etc.) if applicable</li>
+                        <li>Self-assessment of language skills</li>
+                        <li>Native English speaker status</li>
+                    </ul>
+
+                    <div class="breakdown">
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Language</div>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-fill" style="width: 75%;"></div>
+                            </div>
+                            <div class="breakdown-value">15 / 20</div>
+                        </div>
+                    </div>
+
+                    <h3>Academic (0–20 points)</h3>
+                    <p>Strength of academic record and transcript. Measured by:</p>
+                    <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                        <li>GPA or equivalent (e.g., IB scores, A-level grades)</li>
+                        <li>Trend in grades over time</li>
+                        <li>Rigour of coursework (AP, IB, Honors, etc.)</li>
+                    </ul>
+
+                    <div class="breakdown">
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Academic</div>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-fill" style="width: 85%;"></div>
+                            </div>
+                            <div class="breakdown-value">17 / 20</div>
+                        </div>
+                    </div>
+
+                    <h3>Activities (0–25 points)</h3>
+                    <p>Breadth and depth of extracurricular involvement. Measured by:</p>
+                    <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                        <li>Number and variety of activities</li>
+                        <li>Leadership roles and responsibility</li>
+                        <li>Depth of commitment (years, hours)</li>
+                        <li>Impact and recognition</li>
+                    </ul>
+
+                    <div class="breakdown">
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Activities</div>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-fill" style="width: 60%;"></div>
+                            </div>
+                            <div class="breakdown-value">15 / 25</div>
+                        </div>
+                    </div>
+
+                    <h3>Essays (0–15 points)</h3>
+                    <p>Progress on college application essays. Measured by:</p>
+                    <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                        <li>Number of essays completed and submitted</li>
+                        <li>Completeness (draft vs. final)</li>
+                        <li>Estimated quality (tracked by student self-assessment)</li>
+                    </ul>
+
+                    <p style="margin-top: 1rem;"><strong>Note:</strong> You cannot see the content of essays for privacy reasons. You only see completion status and progress indicators.</p>
+
+                    <div class="breakdown">
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Essays</div>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-fill" style="width: 73%;"></div>
+                            </div>
+                            <div class="breakdown-value">11 / 15</div>
+                        </div>
+                    </div>
+
+                    <h3>Milestones (0–10 points)</h3>
+                    <p>Completion of application deadlines and key milestones. Measured by:</p>
+                    <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                        <li>Number of upcoming milestones (deadlines)</li>
+                        <li>Percentage of milestones on track vs. overdue</li>
+                        <li>Early submission bonus (submitted ahead of deadline)</li>
+                    </ul>
+
+                    <div class="breakdown">
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Milestones</div>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-fill" style="width: 80%;"></div>
+                            </div>
+                            <div class="breakdown-value">8 / 10</div>
+                        </div>
+                    </div>
+
+                    <div class="box note">
+                        <div class="box-title">📋 How Scores Are Calculated</div>
+                        <p>Readiness scores are calculated dynamically based on data the student enters in Compass. As they update their profile, complete essays, log activities, and track milestones, their score adjusts in real-time. You see the most current score in Compass Counsellor.</p>
+                    </div>
+
+                    <h2>School List</h2>
+                    <p>Below the score breakdown, you'll see a list of schools where the student is applying. Each school is tagged with a tier:</p>
+
+                    <div style="margin: 1.5rem 0;">
+                        <p><span class="tag reach">Reach</span> (Red) — Competitive schools where admission is uncertain. Good for aspirational applications.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <p><span class="tag match">Match</span> (Purple) — Schools aligned with the student's profile. Strong fit.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <p><span class="tag safe">Safe</span> (Green) — Schools where admission is likely. Important for balanced applications.</p>
+                    </div>
+
+                    <p>Each school entry shows:</p>
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li>School name and location</li>
+                        <li>Tier (Reach, Match, Safe)</li>
+                        <li>Application status (Not Started, In Progress, Submitted, Decision Received)</li>
+                        <li>Deadline date (if visible)</li>
+                    </ul>
+
+                    <h2>Application Statuses</h2>
+                    <p>Each school application has a status:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>Not Started</strong> — Student has not begun this application.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>In Progress</strong> — Student has started the application but not submitted.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Submitted</strong> — Application has been sent to the school.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Decision Received</strong> — School has made an admission decision (Accepted, Waitlisted, Rejected).</li>
+                    </ul>
+
+                    <h2>Overdue Milestones</h2>
+                    <p>A critical section at the bottom of the detail panel highlights <strong>overdue milestones</strong>. Milestones are college application deadlines and checkpoints. If a milestone's weight is ≥ 8 and it has passed without being completed, it appears here in red.</p>
+
+                    <p><strong>Top 5 overdue milestones are displayed.</strong> Examples include:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;">SAT/ACT test date (if test was required)</li>
+                        <li style="margin-bottom: 0.5rem;">Application deadline for a school</li>
+                        <li style="margin-bottom: 0.5rem;">Recommendation letter submission</li>
+                        <li style="margin-bottom: 0.5rem;">Financial aid deadline (FAFSA, CSS, etc.)</li>
+                    </ul>
+
+                    <div class="box warning">
+                        <div class="box-title">⚠️ Overdue Milestones Require Action</div>
+                        <p>If a student has overdue milestones, reach out to them directly. Overdue application deadlines are critical—missing them can result in missed opportunities. Offer support, clarify next steps, and consider setting a follow-up check-in.</p>
+                    </div>
+
+                    <h2>Last Check-In Date</h2>
+                    <p>At the bottom of the detail panel, you'll see when the student last logged into Compass or updated their profile. This helps you gauge engagement:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>Within the last week:</strong> Student is actively engaged.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>1–2 weeks ago:</strong> Student has been active recently but not consistently.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>1–3 months ago:</strong> Student may need a gentle nudge to re-engage.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>3+ months ago:</strong> Consider reaching out to check in on application progress.</li>
+                    </ul>
+                </section>
+
+                <!-- WHAT YOU CAN & CANNOT SEE -->
+                <section id="what-you-see" class="section">
+                    <h1>What You Can & Cannot See</h1>
+                    <p class="intro-text">Understanding access boundaries protects student privacy and ensures FERPA, GDPR, and other compliance requirements are met.</p>
+
+                    <h2>What You CAN See</h2>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>✓ Readiness Score (Overall & Breakdown)</h4>
+                        <p>Complete readiness scores across all five dimensions: Language, Academic, Activities, Essays, Milestones. This is central to your role as a counsellor.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>✓ Test Scores & Results</h4>
+                        <p>SAT, ACT, TOEFL, IELTS, CAE, IB, A-level, AP, and other standardized test scores (if the student has logged them in Compass).</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>✓ Extracurricular Activities</h4>
+                        <p>List of activities, roles, hours committed, and years of involvement. You see the breadth and depth of a student's engagement.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>✓ School List & Application Status</h4>
+                        <p>Schools where the student is applying, tier classifications (Reach, Match, Safe), and application status (Not Started, In Progress, Submitted, Decision).</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>✓ Milestone Progress & Overdue Milestones</h4>
+                        <p>All upcoming deadlines, completion status, and flagged overdue milestones. This is essential for accountability.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>✓ Profile Status & Last Check-In Date</h4>
+                        <p>Overall status (Strong Profile, Good Progress, Early Stage), and the date/time of the student's most recent Compass login.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>✓ Grade Level & Target Countries</h4>
+                        <p>Basic demographic info and geographic preferences for college search.</p>
+                    </div>
+
+                    <h2>What You CANNOT See</h2>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>✗ Essay Content</h4>
+                        <p>You cannot view the text of any college essays or personal statements. You see only completion status ("Draft," "In Progress," "Submitted") but not the actual content. This protects student intellectual property and privacy.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>✗ Journal Entries & Reflections</h4>
+                        <p>Compass allows students to journal privately about their application journey. These entries are never shared with counsellors, even if connected.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>✗ Monthly Check-In Responses</h4>
+                        <p>Students fill out monthly self-reflection forms about their progress and emotions. These are confidential and not visible to you.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>✗ Passwords & Authentication Data</h4>
+                        <p>You never see any passwords, authentication tokens, or security credentials.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>✗ Parent / Guardian Information</h4>
+                        <p>If a parent has an account linked to a student, you cannot see parent records or communications.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>✗ Previous Years' Data (if applicable)</h4>
+                        <p>You see only the student's current Compass record. Historical data from prior years is not accessible.</p>
+                    </div>
+
+                    <h2>Why This Matters</h2>
+
+                    <div class="box note">
+                        <div class="box-title">📋 Student Privacy & Trust</div>
+                        <p>The boundaries between what you can and cannot see are intentional. They balance your legitimate need to monitor application progress with the student's right to privacy. Journal entries and monthly reflections are therapeutic spaces; essays are intellectual property. Respecting these boundaries builds trust and models healthy data practices.</p>
+                    </div>
+
+                    <div class="box note">
+                        <div class="box-title">📋 Safeguarding Principle</div>
+                        <p>Access limitations protect vulnerable students. Some students may disclose sensitive information (mental health concerns, family stress) in essays or journal entries. By not sharing these, we ensure the counsellor role remains focused on application readiness, not therapy.</p>
+                    </div>
+
+                    <div class="box warning">
+                        <div class="box-title">⚠️ Do Not Request Restricted Data</div>
+                        <p>As a counsellor, you may be tempted to ask students for essay drafts or journal reflections directly. While you can request these voluntarily through direct conversation, you must not pressure students or threaten to revoke support if they decline. Respect their boundaries.</p>
+                    </div>
+
+                    <h2>Accessing Information Outside Compass Counsellor</h2>
+                    <p>If you need information beyond what Compass Counsellor displays (e.g., a student's essay draft), you have two options:</p>
+
+                    <ol class="steps">
+                        <li><strong>Ask the student directly</strong> in a separate conversation (in-person, email, etc.). They can choose to share or not.</li>
+                        <li><strong>Have the student share it through Compass</strong> — They can upload documents or notes to Compass, which may sync to the shared dashboard.</li>
+                    </ol>
+
+                    <p>Never demand access to private data. The student's consent and comfort are paramount.</p>
+                </section>
+
+                <!-- MANAGING CONNECTIONS -->
+                <section id="managing" class="section">
+                    <h1>Managing Connections</h1>
+                    <p class="intro-text">Understand how connections work, how students can disconnect, and how to manage multiple student relationships.</p>
+
+                    <h2>Student-Initiated Disconnect</h2>
+                    <p>Students have the right to disconnect from you at any time, for any reason. When they disconnect:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>Your access is revoked immediately.</strong> You can no longer see their dashboard.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>The connection is permanent</strong> until the student re-invites you.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>You receive a notification</strong> that the student has disconnected.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>The student appears as "Disconnected"</strong> in your Requests tab (you can optionally send a new request).</li>
+                    </ul>
+
+                    <div class="box note">
+                        <div class="box-title">📋 Why Students Disconnect</div>
+                        <p>Students may disconnect for various reasons: changed mind about sharing, privacy concerns, or they're no longer working with you. Always respect their decision. If you believe a disconnection was accidental, reach out personally (not through Compass).</p>
+                    </div>
+
+                    <h2>What Happens When a Student Disconnects</h2>
+                    <p>From your perspective:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;">The student's row in "My Students" changes to "Disconnected" status.</li>
+                        <li style="margin-bottom: 0.5rem;">You no longer see real-time updates to their dashboard.</li>
+                        <li style="margin-bottom: 0.5rem;">You can view a snapshot of their final recorded data (for 30 days), then it's archived.</li>
+                        <li style="margin-bottom: 0.5rem;">You cannot contact them through Compass Counsellor.</li>
+                        <li style="margin-bottom: 0.5rem;">You can send a new connection request if you wish to reconnect later.</li>
+                    </ul>
+
+                    <div class="box warning">
+                        <div class="box-title">⚠️ No Re-access Without Re-invite</div>
+                        <p>Once a student disconnects, you cannot access their data again unless they explicitly re-invite you. You cannot force or re-establish the connection unilaterally.</p>
+                    </div>
+
+                    <h2>Counsellor-Initiated Disconnect (Optional Feature)</h2>
+                    <p>In some configurations, you may have the ability to initiate a disconnect on your own (e.g., if a student graduates or transfers). If this feature is enabled:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;">Open the student's detail panel.</li>
+                        <li style="margin-bottom: 0.5rem;">Click the three-dot menu → "Disconnect."</li>
+                        <li style="margin-bottom: 0.5rem;">Confirm the action (this is permanent).</li>
+                        <li style="margin-bottom: 0.5rem;">The student receives a notification that you have disconnected.</li>
+                    </ul>
+
+                    <div class="box note">
+                        <div class="box-title">📋 When to Disconnect</div>
+                        <p>Use this feature thoughtfully. Common scenarios: student graduates, transfers to another school, or you are no longer their assigned counsellor. Always notify the student directly (outside Compass) before disconnecting if possible.</p>
+                    </div>
+
+                    <h2>Managing Multiple Students</h2>
+                    <p>There is <strong>no limit</strong> to the number of students you can connect with. You can:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>Add students incrementally</strong> as they accept requests</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Monitor entire cohorts</strong> on a single dashboard</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Sort and filter</strong> by grade, readiness score, or school list</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Track summary metrics</strong> (average readiness, at-risk count) across all students</li>
+                    </ul>
+
+                    <p style="margin-top: 1rem;">Use the search and sort features to keep your cohort organized as your roster grows.</p>
+
+                    <h2>Connection Lifecycle</h2>
+                    <p>Here's a visual summary of a connection's lifecycle:</p>
+
+                    <ol class="steps">
+                        <li><strong>You send a request</strong> → Status: Pending</li>
+                        <li><strong>Student accepts</strong> → Status: Connected (Active)</li>
+                        <li><strong>You monitor their progress</strong> → Real-time dashboard updates</li>
+                        <li><strong>Student disconnects (or request expires)</strong> → Status: Disconnected / Expired</li>
+                        <li><strong>Optional: Send a new request</strong> → Status: Pending (returns to Step 1)</li>
+                    </ol>
+
+                    <div class="box tip">
+                        <div class="box-title">💡 Pro Tip: Document the Date</div>
+                        <p>Keep a record of when you connect with each student (external to Compass Counsellor). This helps you track cohort changes and remember context if a student later reconnects.</p>
+                    </div>
+                </section>
+
+                <!-- DATA OBLIGATIONS -->
+                <section id="obligations" class="section">
+                    <h1>Data Obligations & Compliance</h1>
+                    <p class="intro-text">As a counsellor using Compass Counsellor, you are a data processor with specific legal and ethical responsibilities. This section details all 14 obligations.</p>
+
+                    <div class="box warning">
+                        <div class="box-title">⚠️ Critical: You Accepted These on Sign-Up</div>
+                        <p>By creating your account, you confirmed you understand and accept these obligations. Failure to comply may result in account suspension, legal liability, or harm to students. Review this section carefully and consult your school's legal or IT department if you have questions.</p>
+                    </div>
+
+                    <!-- Obligation 1 -->
+                    <h2 style="margin-top: 2.5rem;">1. Data Controller Role</h2>
+                    <p>You are a <strong>data controller</strong> (or <strong>authorized processor</strong>) under data protection laws:</p>
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;">You determine what student data to access and how to use it.</li>
+                        <li style="margin-bottom: 0.5rem;">You are accountable for compliance with regulations in your jurisdiction.</li>
+                        <li style="margin-bottom: 0.5rem;">Your school or organisation may share responsibility (consult your Data Protection Officer).</li>
+                    </ul>
+
+                    <!-- Obligation 2 -->
+                    <h2 style="margin-top: 2.5rem;">2. FERPA (Family Educational Rights & Privacy Act)</h2>
+                    <p>If you operate in the United States (or serve US students):</p>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Legitimate Educational Interest</h4>
+                        <p>You may access student records only if you have a <strong>legitimate educational interest</strong>—defined as a need to perform your duties as a counsellor (e.g., monitoring college application progress). General curiosity is not sufficient.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Re-Disclosure Prohibition</h4>
+                        <p>You <strong>cannot disclose student data to third parties</strong> without the student's written consent. This includes:</p>
+                        <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                            <li>Other teachers or staff (unless they also have a legitimate educational interest)</li>
+                            <li>Parents or guardians (unless authorized by the student or school policy)</li>
+                            <li>Colleges or universities (unless the student explicitly consents)</li>
+                            <li>The media, social networks, or public communications</li>
+                        </ul>
+                    </div>
+
+                    <div class="box warning">
+                        <div class="box-title">⚠️ FERPA Violations Are Serious</div>
+                        <p>Breaching FERPA can result in loss of federal funding, legal action, and personal liability. When in doubt, do not share student data.</p>
+                    </div>
+
+                    <!-- Obligation 3 -->
+                    <h2 style="margin-top: 2.5rem;">3. COPPA (Children's Online Privacy Protection Act)</h2>
+                    <p>If you serve students under 13 years old (rare for college prep, but possible):</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>School exception applies:</strong> Schools can collect data on children under 13 without parental consent for educational purposes.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>You must be a school agent:</strong> Only school employees or contractors (not private advisors) may collect data this way.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Parent notification recommended:</strong> Even though not legally required, notifying parents builds trust and transparency.</li>
+                    </ul>
+
+                    <!-- Obligation 4 -->
+                    <h2 style="margin-top: 2.5rem;">4. GDPR (General Data Protection Regulation)</h2>
+                    <p>If you serve students in the EU or UK:</p>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Lawful Basis: Consent</h4>
+                        <p>GDPR requires a <strong>lawful basis</strong> for processing personal data. For Compass Counsellor, the basis is <strong>explicit student consent</strong>:</p>
+                        <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                            <li>The student must actively invite you and accept your connection.</li>
+                            <li>Consent must be informed (student understands what data they're sharing).</li>
+                            <li>Consent is freely given (no coercion or pressure).</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Data Subject Rights</h4>
+                        <p>Students have rights under GDPR:</p>
+                        <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                            <li><strong>Right to access:</strong> Student can request all data you hold.</li>
+                            <li><strong>Right to rectification:</strong> Student can correct inaccurate data.</li>
+                            <li><strong>Right to erasure:</strong> Student can request deletion (subject to retention obligations).</li>
+                            <li><strong>Right to withdraw consent:</strong> Disconnect at any time (equivalent to erasure).</li>
+                        </ul>
+                    </div>
+
+                    <div class="box note">
+                        <div class="box-title">📋 GDPR Compliance Checklist</div>
+                        <p>✓ Student has given explicit consent (accepted connection request)<br>
+                        ✓ You process data only for college application support<br>
+                        ✓ You do not share data with third parties without consent<br>
+                        ✓ You keep data secure (strong password, no sharing)<br>
+                        ✓ You respect withdrawal of consent (disconnect)</p>
+                    </div>
+
+                    <!-- Obligation 5 -->
+                    <h2 style="margin-top: 2.5rem;">5. PDPA (Singapore Personal Data Protection Act)</h2>
+                    <p>If you serve students in Singapore:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>Consent-based:</strong> Like GDPR, PDPA requires consent. Student's acceptance of your connection request satisfies this.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Purpose limitation:</strong> Use data only for college counselling; do not repurpose it.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Security obligations:</strong> Maintain strong access controls and encryption.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Notification requirement:</strong> If a breach occurs, notify the Personal Data Protection Commission within 30 days.</li>
+                    </ul>
+
+                    <!-- Obligation 6 -->
+                    <h2 style="margin-top: 2.5rem;">6. Data Access Scope</h2>
+                    <p>You commit to accessing <strong>only the data displayed in Compass Counsellor</strong>:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>Do not attempt to access Compass student accounts.</strong> You do not have login credentials and should never try to obtain them.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Do not access backend systems or APIs.</strong> Use only the Compass Counsellor interface provided.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Honour access restrictions.</strong> Some data (essays, journal entries, check-ins) is intentionally hidden. Do not circumvent these.</li>
+                    </ul>
+
+                    <!-- Obligation 7 -->
+                    <h2 style="margin-top: 2.5rem;">7. Data Retention & Deletion</h2>
+                    <p>You must manage data retention responsibly:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>Retain for counselling purposes only:</strong> Keep data as long as you are actively supporting a student's college process.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Delete on disconnect:</strong> When a student disconnects or you disconnect from them, do not retain a separate copy of their data (unless required by law for record-keeping).</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Compliance with school policy:</strong> Follow your school's record retention policy (typically 3–7 years for guidance records).</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>No personal copies:</strong> Do not download or export student data to personal files (email, cloud storage, USB drives). Use Compass Counsellor as the source of truth.</li>
+                    </ul>
+
+                    <div class="box warning">
+                        <div class="box-title">⚠️ Prohibition on Exporting Data</div>
+                        <p>Compass Counsellor does not support bulk export of student data. This is intentional. If you need to share information about a student (e.g., with parents, the school principal), do so verbally or in writing based on your memory—do not copy/paste from Compass.</p>
+                    </div>
+
+                    <!-- Obligation 8 -->
+                    <h2 style="margin-top: 2.5rem;">8. AI Processing Disclosure</h2>
+                    <p>Compass Counsellor may use AI to calculate readiness scores and provide insights:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>Automated scoring:</strong> Readiness scores are calculated by algorithms, not humans. They are advisory, not definitive.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>No profiling:</strong> AI is not used to make decisions about student potential or recommend actions. Those decisions are yours.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Transparency:</strong> Students are informed in Compass that scores are AI-calculated.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Human review obligation:</strong> You must review scores in context of the student's full profile before acting on them.</li>
+                    </ul>
+
+                    <div class="box note">
+                        <div class="box-title">📋 Interpreting Scores Responsibly</div>
+                        <p>A student with a score of 42 ("Early Stage") is not "low-achieving." The score reflects readiness progress, not ability. Students often start low and improve rapidly. Use scores as a conversation starter, not a label.</p>
+                    </div>
+
+                    <!-- Obligation 9 -->
+                    <h2 style="margin-top: 2.5rem;">9. Security Obligations</h2>
+                    <p>You are responsible for securing your account and the data you access:</p>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Strong Passwords</h4>
+                        <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                            <li>Minimum 8 characters</li>
+                            <li>Mix of uppercase, lowercase, numbers, symbols</li>
+                            <li>Unique (do not reuse passwords from other sites)</li>
+                            <li>Change every 6 months or if compromised</li>
+                            <li>Never share your password with colleagues, even trusted ones</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Shared Device Security</h4>
+                        <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                            <li><strong>Always log out</strong> of Compass Counsellor when you step away from a shared computer (school lab, shared office PC).</li>
+                            <li>Set a timer reminder if you tend to forget.</li>
+                            <li>Do not access Compass Counsellor from public WiFi without a VPN.</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Physical Security</h4>
+                        <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                            <li>Lock your computer when you leave your desk.</li>
+                            <li>Do not leave written notes with student scores or readiness summaries visible on your desk.</li>
+                            <li>Close the Compass Counsellor window if colleagues or students walk by.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Obligation 10 -->
+                    <h2 style="margin-top: 2.5rem;">10. Australian Privacy Act (APPs)</h2>
+                    <p>If you serve students in Australia:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>Collection & use:</strong> Collect student data only for college counselling and disclose the purpose upfront (usually satisfied by the student's acceptance).</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Data security:</strong> Take reasonable steps to protect data from misuse and loss.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Access & correction:</strong> Students may request to see their data and correct errors.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Overseas disclosure:</strong> If data is transferred overseas (e.g., Compass servers), inform the student and ensure equivalent protections.</li>
+                    </ul>
+
+                    <!-- Obligation 11 -->
+                    <h2 style="margin-top: 2.5rem;">11. PIPEDA (Canada Personal Information Protection and Electronic Documents Act)</h2>
+                    <p>If you serve students in Canada:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>Consent:</strong> Student's acceptance of your connection request constitutes informed consent.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Use limitation:</strong> Use data only for college counselling; do not repurpose for marketing, research, or other aims.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Accuracy:</strong> Keep records accurate and up-to-date (reliance on Compass is acceptable).</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Openness:</strong> Be transparent about your data practices. Answer student questions about what you collect and how you use it.</li>
+                    </ul>
+
+                    <!-- Obligation 12 -->
+                    <h2 style="margin-top: 2.5rem;">12. UAE PDPL (Personal Data Protection Law)</h2>
+                    <p>If you serve students in the United Arab Emirates:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>Consent:</strong> Student's acceptance of your connection is valid consent.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Special categories:</strong> If you access sensitive data (health, religion, etc.), note stricter protections apply. Stick to college application data only.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Data localization:</strong> Some data may be required to stay within the UAE. Consult your school's IT department.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Breach notification:</strong> Report breaches to the UAEDPB (UAE Data Protection Bureau) and affected students within 72 hours.</li>
+                    </ul>
+
+                    <!-- Obligation 13 -->
+                    <h2 style="margin-top: 2.5rem;">13. Child Safety & Safeguarding</h2>
+                    <p>You have a duty of care to protect student welfare:</p>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>KCSIE (UK) & Equivalent Standards</h4>
+                        <p>In the UK, you must follow <strong>Keeping Children Safe in Education (KCSIE).</strong> In other countries, follow equivalent safeguarding standards (e.g., UNCRC, state-level mandates).</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>UNCRC Article 3 (Child's Best Interest)</h4>
+                        <p>All actions affecting children must prioritize the child's best interest. When interpreting student data (low readiness score, overdue milestones), consider the child's circumstances and offer support, not criticism.</p>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Mandatory Reporting</h4>
+                        <p>If a student discloses abuse, neglect, or serious harm (in Compass messages, essay content you're aware of, or a conversation with you), you have a legal duty to report:</p>
+                        <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                            <li><strong>Report to your school's safeguarding team or principal</strong> immediately.</li>
+                            <li>Do not conduct your own investigation.</li>
+                            <li>Do not tell the student you're reporting (consult your school's safeguarding policy; some require this, others advise against it).</li>
+                            <li>Keep detailed notes of what was disclosed.</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Safeguarding Protocol</h4>
+                        <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                            <li><strong>Never dismiss concerns.</strong> If a student says, "I'm really struggling," take it seriously.</li>
+                            <li><strong>Refer to specialists.</strong> If a student has mental health concerns, refer to a school counsellor or psychologist, not just your college coaching.</li>
+                            <li><strong>Maintain confidentiality.</strong> Do not gossip about student disclosures to colleagues; share only with those with a need to know.</li>
+                            <li><strong>Your role has limits.</strong> You are a college counsellor, not a therapist. Recognize when a student needs professional mental health support.</li>
+                        </ul>
+                    </div>
+
+                    <div class="box warning">
+                        <div class="box-title">⚠️ Safeguarding is Non-Negotiable</div>
+                        <p>If you ever believe a student is at risk of harm, escalate immediately. Overreporting is always safer than underreporting. Your school has safeguarding procedures; use them.</p>
+                    </div>
+
+                    <!-- Obligation 14 -->
+                    <h2 style="margin-top: 2.5rem;">14. EU AI Act (High-Risk Classification)</h2>
+                    <p>If you serve EU students, note that Compass Counsellor uses AI for readiness scoring:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>High-risk disclosure:</strong> You are informed that AI is used. This is not a hidden tool.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Advisory only:</strong> Scores are advisory, not determinative. Human judgment (yours) is essential.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Explanation obligation:</strong> If a student questions a score, you can explain the factors that contributed (language, academics, activities, essays, milestones), but the exact algorithm is proprietary.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Human reviewer obligation:</strong> You must personally review scores and data before making recommendations to students.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>No automated decisions:</strong> Never make decisions about a student (advise to retake SAT, discourage them from applying to a school) based on a score alone. Always discuss in context.</li>
+                    </ul>
+
+                    <!-- Obligation 15 -->
+                    <h2 style="margin-top: 2.5rem;">15. Content Moderation & Academic Integrity</h2>
+                    <p>As you monitor students, you may encounter content that raises concerns:</p>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Plagiarism Suspicion</h4>
+                        <p>If you suspect a student has plagiarized an essay or borrowed heavily from another source, do not accuse directly in Compass. Instead:</p>
+                        <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                            <li>Schedule a private conversation outside Compass.</li>
+                            <li>Ask the student to explain their essay (how they developed the idea, their research process).</li>
+                            <li>If plagiarism is confirmed, report to your school's academic integrity committee.</li>
+                            <li>Use Compass Counsellor tools (if available) to flag the student as at-risk academically, but do not make public accusations.</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>Harmful Content</h4>
+                        <p>If a student's essays, activities, or profile contain harmful, illegal, or hateful content, report it:</p>
+                        <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                            <li>Do not publicly shame the student in Compass.</li>
+                            <li>Report to your school's administration or compliance team.</li>
+                            <li>Contact SAIL Education compliance at compliance@sailedu.co if the issue involves the Compass platform itself.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Obligation 16 -->
+                    <h2 style="margin-top: 2.5rem;">16. Breach Notification (72-Hour Rule)</h2>
+                    <p>If you suspect a data breach (unauthorized access, lost device, hacked account), you must act immediately:</p>
+
+                    <ol class="steps">
+                        <li><strong>Stop using the account</strong> if hacked (change password immediately).</li>
+                        <li><strong>Notify your school's IT security team</strong> or Data Protection Officer.</li>
+                        <li><strong>Contact SAIL Education compliance</strong> at compliance@sailedu.co with details of the breach.</li>
+                        <li><strong>Provide affected student names</strong> and what data was accessed.</li>
+                        <li><strong>Affected students and authorities must be notified within 72 hours</strong> (per GDPR and similar laws).</li>
+                    </ol>
+
+                    <div class="box warning">
+                        <div class="box-title">⚠️ Breach Examples</div>
+                        <p>
+                            • Your Compass Counsellor password is compromised<br>
+                            • You accidentally email a student's readiness score to the wrong recipient<br>
+                            • A colleague accesses your Compass Counsellor account without permission<br>
+                            • You lose a device with Compass Counsellor notes saved locally<br>
+                            • A hacker gains access to your email (and could access Compass password reset links)
+                        </p>
+                    </div>
+
+                    <div class="box note">
+                        <div class="box-title">📋 Compliance Contact</div>
+                        <p><strong>Email:</strong> compliance@sailedu.co<br>
+                        <strong>Subject line:</strong> "[URGENT] Data Breach Report – [Your School Name]"<br>
+                        Include: names of affected students, type of data accessed, how it happened, steps taken to mitigate.</p>
+                    </div>
+                </section>
+
+                <!-- HELP & FAQ -->
+                <section id="faq" class="section">
+                    <h1>Help & FAQ</h1>
+                    <p class="intro-text">Answers to common questions about using Compass Counsellor.</p>
+
+                    <h2>Getting Started FAQ</h2>
+
+                    <button class="collapsible">
+                        <span>How do I reset my password? <span class="collapsible-icon">▼</span></span>
+                    </button>
+                    <div class="collapsible-content">
+                        <p>On the login page, click "Forgot Password?" Enter your email address and click "Send Reset Link." Check your email for a link (valid for 24 hours). Click it, enter a new password, and you're done. If you don't receive the email, check your spam folder or contact compliance@sailedu.co.</p>
+                    </div>
+
+                    <button class="collapsible">
+                        <span>Can I use one account for multiple counsellors? <span class="collapsible-icon">▼</span></span>
+                    </button>
+                    <div class="collapsible-content">
+                        <p>No. Each counsellor must have their own account with their own email address. Sharing a password violates security obligations and makes it impossible to track who accessed what data. If you're a team of counsellors, each person should sign up individually.</p>
+                    </div>
+
+                    <button class="collapsible">
+                        <span>What if I leave my school? <span class="collapsible-icon">▼</span></span>
+                    </button>
+                    <div class="collapsible-content">
+                        <p>Notify your school's IT department immediately. Your account should be deactivated so you no longer have access to student data. If you're moving to a new school with the same student cohort, ask your new school to create a fresh account for you. Do not reuse your old account across schools.</p>
+                    </div>
+
+                    <h2>Dashboard FAQ</h2>
+
+                    <button class="collapsible">
+                        <span>Why is a student's score so low? <span class="collapsible-icon">▼</span></span>
+                    </button>
+                    <div class="collapsible-content">
+                        <p>Readiness scores reflect progress, not ability. A student might be an excellent learner but new to Compass and have a low score because they haven't logged milestones or activities yet. Click into their profile to see the component breakdown (Language, Academic, Activities, Essays, Milestones). You'll likely find they've made progress in some areas and need support in others. A low score is an opportunity to help, not a judgment.</p>
+                    </div>
+
+                    <button class="collapsible">
+                        <span>How often is data updated? <span class="collapsible-icon">▼</span></span>
+                    </button>
+                    <div class="collapsible-content">
+                        <p>Compass Counsellor updates in near real-time (every few minutes) as students make changes in Compass. If you've refreshed and still see old data, try logging out and logging back in. If data is significantly out of sync, contact compliance@sailedu.co.</p>
+                    </div>
+
+                    <button class="collapsible">
+                        <span>Can I export student data? <span class="collapsible-icon">▼</span></span>
+                    </button>
+                    <div class="collapsible-content">
+                        <p>No. Compass Counsellor does not support bulk export of student data. This is by design to protect student privacy. You can take screenshots for personal note-taking, but do not share screenshots with others. If you need to share information about a student (e.g., with parents or the principal), do so verbally or in your own words, based on your observations.</p>
+                    </div>
+
+                    <h2>Connection Requests FAQ</h2>
+
+                    <button class="collapsible">
+                        <span>Why hasn't a student accepted my request? <span class="collapsible-icon">▼</span></span>
+                    </button>
+                    <div class="collapsible-content">
+                        <p>There are several reasons: (1) They haven't logged into Compass recently and haven't seen the notification. (2) They want to think about it or are hesitant. (3) They forgot. (4) They declined it (check your Requests tab). Reach out to the student directly (email, conversation) to follow up. Do not pressure them; their choice to accept or decline is valid. The request expires after 30 days if not responded to.</p>
+                    </div>
+
+                    <button class="collapsible">
+                        <span>Can I send a request to a student outside my school? <span class="collapsible-icon">▼</span></span>
+                    </button>
+                    <div class="collapsible-content">
+                        <p>Yes. Compass Counsellor works globally. If a student has a Compass account and you have a legitimate educational interest (e.g., you're a private college counsellor, international education consultant, or tutor), you can send a request. The student must still accept for access to be granted.</p>
+                    </div>
+
+                    <h2>Compliance & Legal FAQ</h2>
+
+                    <button class="collapsible">
+                        <span>What should I do if a student discloses something concerning (e.g., mental health crisis, abuse)? <span class="collapsible-icon">▼</span></span>
+                    </button>
+                    <div class="collapsible-content">
+                        <p>Immediately escalate to your school's safeguarding team, counsellor, or principal. Do not try to handle it alone. Document what the student said (as best you remember) and when. If the student is in immediate danger, contact emergency services. Your school should have a safeguarding protocol; follow it. Contact compliance@sailedu.co only if there's a question about data handling—the primary responsibility is to the student's safety.</p>
+                    </div>
+
+                    <button class="collapsible">
+                        <span>Can I use student data for research or publication? <span class="collapsible-icon">▼</span></span>
+                    </button>
+                    <div class="collapsible-content">
+                        <p>No, unless you have explicit written consent from each student and your school's IRB (Institutional Review Board) approval. Readiness scores and application data are personal information protected by FERPA, GDPR, and other laws. Even anonymized data requires consent and IRB review. Do not publish or present student information without authorization.</p>
+                    </div>
+
+                    <button class="collapsible">
+                        <span>What if a parent requests to see their child's readiness data? <span class="collapsible-icon">▼</span></span>
+                    </button>
+                    <div class="collapsible-content">
+                        <p>Check your school's policy on parent access to student records. In many schools, you can share summary information (e.g., "Your student has a readiness score of 68, which is good progress") but should direct the parent to the student themselves or to a formal parent-teacher conference. Do not grant parents direct access to Compass Counsellor; they must use Compass's own parent portal (if available). If you share any data with a parent, document it and ensure the student is aware.</p>
+                    </div>
+
+                    <button class="collapsible">
+                        <span>What if I disagree with a student's readiness score? <span class="collapsible-icon">▼</span></span>
+                    </button>
+                    <div class="collapsible-content">
+                        <p>Scores are calculated algorithmically based on data the student has entered. If the score seems misaligned with your observations, the issue is usually incomplete data (student hasn't logged all activities, milestones, or test scores yet). Review the breakdown with the student and encourage them to update their Compass profile. You can also provide qualitative feedback (e.g., "I see you as a strong candidate overall") independent of the score. Remember: the score is advisory, not definitive.</p>
+                    </div>
+
+                    <h2>Account Settings FAQ</h2>
+
+                    <button class="collapsible">
+                        <span>How do I update my name or email? <span class="collapsible-icon">▼</span></span>
+                    </button>
+                    <div class="collapsible-content">
+                        <p>Go to Settings → Account. You can update your display name anytime. Changing your email is more complex; contact compliance@sailedu.co if you need to change your registered email address.</p>
+                    </div>
+
+                    <button class="collapsible">
+                        <span>How do I enable two-factor authentication (2FA)? <span class="collapsible-icon">▼</span></span>
+                    </button>
+                    <div class="collapsible-content">
+                        <p>Go to Settings → Security. Click "Enable 2FA" and follow the prompts. You'll scan a QR code with an authenticator app (Google Authenticator, Microsoft Authenticator, etc.). Backup codes will be provided; store them in a safe place. 2FA is highly recommended for accounts with student data access.</p>
+                    </div>
+                </section>
+
+                <!-- SETTINGS -->
+                <section id="settings" class="section">
+                    <h1>Settings & Account</h1>
+                    <p class="intro-text">Manage your account, view compliance information, and contact support.</p>
+
+                    <h2>Account Display</h2>
+                    <p>In Settings → Account, you can view your registered information:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>Email Address:</strong> Your login email (contact compliance@sailedu.co to change).</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Full Name:</strong> How you appear to students and colleagues. Edit anytime.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Organisation:</strong> Your school or educational institution. Edit anytime.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Account Created:</strong> Date you signed up (read-only).</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Last Login:</strong> Your most recent access (read-only).</li>
+                    </ul>
+
+                    <h2>Security Settings</h2>
+                    <p>Go to Settings → Security to manage passwords and authentication:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>Change Password:</strong> Click to update your login password. You'll be asked for your current password and then a new one (minimum 8 characters, mixed case, numbers, symbols).</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Two-Factor Authentication (2FA):</strong> Enable to require a code from your authenticator app or SMS when logging in.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Active Sessions:</strong> View all devices currently logged into your account. Click "Sign Out" to disconnect a device remotely.</li>
+                    </ul>
+
+                    <div class="box tip">
+                        <div class="box-title">💡 Best Practice: Change Password Every 6 Months</div>
+                        <p>Even if you haven't suspected a breach, rotate your password regularly. Set a calendar reminder.</p>
+                    </div>
+
+                    <h2>Sign Out</h2>
+                    <p>Click the "Sign Out" button in the top-right corner of your dashboard (or Settings → Sign Out). You'll be logged out of Compass Counsellor immediately.</p>
+
+                    <div class="box warning">
+                        <div class="box-title">⚠️ Always Sign Out on Shared Devices</div>
+                        <p>After using Compass Counsellor on a school computer, library computer, or any device you share with others, always sign out. Do not rely on browser session timeouts.</p>
+                    </div>
+
+                    <h2>Data Obligations Re-Read</h2>
+                    <p>Go to Settings → Data Obligations to re-read the modal you accepted during sign-up. This is helpful if you want to refresh your memory on your legal responsibilities.</p>
+
+                    <h2>Contact & Support</h2>
+                    <p>If you have questions, encounter bugs, or need to report a breach:</p>
+
+                    <div style="margin: 1.5rem 0; padding: 1rem; background: rgba(124, 58, 237, 0.1); border-radius: 6px; border-left: 3px solid var(--primary);">
+                        <h4 style="margin-bottom: 0.5rem; color: var(--primary);">SAIL Education Compliance & Support</h4>
+                        <p style="margin-bottom: 0.5rem;"><strong>Email:</strong> compliance@sailedu.co</p>
+                        <p style="margin-bottom: 0.5rem;"><strong>Hours:</strong> Monday–Friday, 9 AM–5 PM UTC</p>
+                        <p><strong>Response time:</strong> 24 hours for general inquiries, 2 hours for breach reports</p>
+                    </div>
+
+                    <h2>Subject Line Templates for Support</h2>
+                    <p>To speed up support, use these subject lines:</p>
+
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;">General question: "[QUESTION] [Topic]"</li>
+                        <li style="margin-bottom: 0.5rem;">Bug report: "[BUG] [Describe Issue]"</li>
+                        <li style="margin-bottom: 0.5rem;">Breach report: "[URGENT] Data Breach Report – [Your School Name]"</li>
+                        <li style="margin-bottom: 0.5rem;">Access issue: "[ACCESS] Cannot log in / Request rejected"</li>
+                    </ul>
+                </section>
+
+                <!-- FEATURE LIST -->
+                <section id="features" class="section">
+                    <h1>Complete Feature List</h1>
+                    <p class="intro-text">A comprehensive summary of all Compass Counsellor capabilities.</p>
+
+                    <h2>Dashboard Features</h2>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>My Students Tab</strong></td>
+                                    <td>View all connected students with readiness scores, grades, target countries, last check-in</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Summary Strip</strong></td>
+                                    <td>Total students, average readiness, on-track count, at-risk count</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Sort by Score</strong></td>
+                                    <td>Rank students high-to-low or low-to-high by readiness</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Sort by Name</strong></td>
+                                    <td>Alphabetical sorting A–Z or Z–A</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Sort by Grade</strong></td>
+                                    <td>Group students by year/grade level</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Sort by Last Check-In</strong></td>
+                                    <td>Most recent activity first to identify engaged students</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Student Search</strong></td>
+                                    <td>Find students by name, email, or grade. Real-time filtering.</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Student Detail Panel</strong></td>
+                                    <td>Click a student row to open detailed profile</td>
+                                    <td>✓</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h2>Connection Features</h2>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Requests Tab</strong></td>
+                                    <td>Send and manage connection requests to students</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Send Connection Request</strong></td>
+                                    <td>Enter student email to request access to their profile</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Request Status Tracking</strong></td>
+                                    <td>Pending, Accepted, Declined, Expired statuses</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Real-Time Notifications</strong></td>
+                                    <td>Alerts when students accept or decline requests</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Request Expiry</strong></td>
+                                    <td>Requests expire after 30 days if not responded to</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Resend Declined Requests</strong></td>
+                                    <td>Send new request to students who declined</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Disconnect (Counsellor-Initiated)</strong></td>
+                                    <td>End connection with a student from your side (optional feature)</td>
+                                    <td>✓*</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h2>Student Profile Features</h2>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Readiness Score Ring</strong></td>
+                                    <td>0–100 visual progress indicator with color gradient</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Profile Status Labels</strong></td>
+                                    <td>Strong Profile, Good Progress, Early Stage badges</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Score Breakdown (5 Components)</strong></td>
+                                    <td>Language (0–20), Academic (0–20), Activities (0–25), Essays (0–15), Milestones (0–10)</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Component Progress Bars</strong></td>
+                                    <td>Visual representation of progress in each dimension</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>School List with Tiers</strong></td>
+                                    <td>Reach (red), Match (purple), Safe (green) classifications</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Application Status</strong></td>
+                                    <td>Not Started, In Progress, Submitted, Decision Received</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>School Deadlines</strong></td>
+                                    <td>Display application deadlines for schools</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Overdue Milestones</strong></td>
+                                    <td>Highlight top 5 missed deadlines (weight ≥ 8)</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Last Check-In Date</strong></td>
+                                    <td>When student last logged into Compass</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Activity Timeline</strong></td>
+                                    <td>Log of student's extracurricular involvement</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Test Score Display</strong></td>
+                                    <td>SAT, ACT, TOEFL, IELTS, IB, A-level, AP scores</td>
+                                    <td>✓</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h2>Account & Security Features</h2>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>User Registration</strong></td>
+                                    <td>Email-based sign-up with verification</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Password Management</strong></td>
+                                    <td>Create, change, reset passwords</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Two-Factor Authentication</strong></td>
+                                    <td>Optional 2FA via authenticator app or SMS</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Data Obligations Modal</strong></td>
+                                    <td>Mandatory review and acceptance of compliance terms</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Session Management</strong></td>
+                                    <td>View active sessions, sign out from remote devices</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Account Settings</strong></td>
+                                    <td>Edit name, organisation, view email</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Sign Out</strong></td>
+                                    <td>Logout functionality</td>
+                                    <td>✓</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h2>Support & Documentation Features</h2>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Help & Manual Tab</strong></td>
+                                    <td>Access this comprehensive manual in-app</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>FAQ Section</strong></td>
+                                    <td>Collapsible Q&A for quick answers</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Searchable Manual</strong></td>
+                                    <td>Sidebar search to find topics quickly</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Contact Information</strong></td>
+                                    <td>Email, hours, response time for support</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Email Support</strong></td>
+                                    <td>Send questions and breach reports to compliance@sailedu.co</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Responsive Design</strong></td>
+                                    <td>Works on desktop, tablet, and mobile devices</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Print-Friendly Manual</strong></td>
+                                    <td>Print or save as PDF</td>
+                                    <td>✓</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p style="margin-top: 2rem; font-size: 0.9rem; color: var(--text-secondary);">* Optional feature—availability depends on your school's configuration.</p>
+                </section>
+
+                <!-- TARGET TRACKING (NEW v6) -->
+                <section id="targets" class="section">
+                    <h2>Target Tracking (NEW in v6)</h2>
+
+                    <h3>What is Target Tracking?</h3>
+                    <p>Set individual readiness score targets for each student, then track their progress toward those targets. This gives you a personalized gap metric for every student—essential for tailored coaching strategies.</p>
+
+                    <h3>Setting a Target</h3>
+                    <ol style="margin-left: 1.5rem;">
+                        <li><strong>Open Student Detail Panel:</strong> Click on any student's row in the dashboard</li>
+                        <li><strong>Find "Target Score" field:</strong> In the readiness score section (right side of panel)</li>
+                        <li><strong>Enter target (0–100):</strong> e.g., "75" for a Reach school application; "85" for top-tier targets</li>
+                        <li><strong>Click Save:</strong> Target is saved to your session (you can update anytime)</li>
+                    </ol>
+
+                    <h3>Understanding Your Gap</h3>
+                    <p><strong>Gap = Target − Current Readiness Score</strong></p>
+                    <p style="margin-top: 0.5rem;">Example: Target 80, Current Score 62 → <strong>Gap: +18 points</strong></p>
+                    <p>The dashboard sorts students by gap size (largest gaps first), helping you prioritize support for students furthest from their goals.</p>
+
+                    <h3>Strategies by Gap Size</h3>
+                    <table style="margin-top: 1rem;">
+                        <tr>
+                            <th>Gap Size</th>
+                            <th>Student Status</th>
+                            <th>Coaching Focus</th>
+                        </tr>
+                        <tr>
+                            <td>0–5 points</td>
+                            <td>On track or exceeding target</td>
+                            <td>Refine weakest area; prepare finalization</td>
+                        </tr>
+                        <tr>
+                            <td>6–15 points</td>
+                            <td>Progressing well</td>
+                            <td>Accelerate two strongest areas; shore up one weak area</td>
+                        </tr>
+                        <tr>
+                            <td>16–30 points</td>
+                            <td>Needs attention</td>
+                            <td>Log interventions; identify blockers</td>
+                        </tr>
+                        <tr>
+                            <td>30+ points</td>
+                            <td>Significant gap</td>
+                            <td>Urgent intervention; consider lowering target or extending timeline</td>
+                        </tr>
+                    </table>
+
+                    <h3>Tips</h3>
+                    <div class="box tip">
+                        <strong>💡 Setting realistic targets:</strong>
+                        <ul style="margin-left: 1.5rem;">
+                            <li>For Reach schools (top 10% selectivity): 80–95</li>
+                            <li>For Match schools (realistic fit): 70–80</li>
+                            <li>For Safe schools (likely acceptance): 60–70</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- INTERVENTIONS -->
+                <section id="interventions" class="section">
+                    <h2>Interventions (NEW in v6)</h2>
+
+                    <h3>What are Interventions?</h3>
+                    <p>Log specific support actions you provide to each student—meetings, advice, resources, follow-ups. Track which interventions resolved issues, building an audit trail of your coaching.</p>
+
+                    <h3>Adding an Intervention</h3>
+                    <ol style="margin-left: 1.5rem;">
+                        <li><strong>Open Student Panel:</strong> Click on the student in the dashboard</li>
+                        <li><strong>Scroll to "Interventions" section</strong></li>
+                        <li><strong>Click "+ Add Intervention"</strong></li>
+                        <li><strong>Fill in details:</strong>
+                            <ul style="margin-left: 1.5rem;">
+                                <li><strong>Type:</strong> Choose from dropdown (see table below)</li>
+                                <li><strong>Description:</strong> What you did (e.g., "Reviewed draft 2 of personal statement, suggested reframe on leadership experience")</li>
+                                <li><strong>Date:</strong> When the intervention occurred</li>
+                            </ul>
+                        </li>
+                        <li><strong>Save:</strong> Intervention is logged with timestamp</li>
+                    </ol>
+
+                    <h3>Intervention Types</h3>
+                    <table style="margin-top: 1rem;">
+                        <tr>
+                            <th>Type</th>
+                            <th>Example Use</th>
+                        </tr>
+                        <tr>
+                            <td><strong>One-on-one meeting</strong></td>
+                            <td>Had 30-min chat about test retake strategy</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Essay feedback</strong></td>
+                            <td>Reviewed personal statement draft, feedback sent</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Test strategy</strong></td>
+                            <td>Discussed SAT retake timeline and prep resources</td>
+                        </tr>
+                        <tr>
+                            <td><strong>School research</strong></td>
+                            <td>Recommended 5 schools matching student's profile</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Resource shared</strong></td>
+                            <td>Sent link to essay workshop video</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Activity advising</strong></td>
+                            <td>Discussed how to deepen EC involvement</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Wellbeing check</strong></td>
+                            <td>Checked in on stress levels, anxiety about timeline</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Parent/family meeting</strong></td>
+                            <td>Met with parent to align on expectations</td>
+                        </tr>
+                    </table>
+
+                    <h3>Marking an Intervention as Resolved</h3>
+                    <p>Once the intervention has had its intended effect (student retook test, essay improved, etc.), mark it as resolved:</p>
+                    <ol style="margin-left: 1.5rem;">
+                        <li>Find the intervention in the list</li>
+                        <li>Click "Resolved"</li>
+                        <li>Date of resolution is logged automatically</li>
+                    </ol>
+
+                    <div class="box tip">
+                        <strong>💡 Build accountability:</strong> Students see that you're actively documenting support. This reinforces trust and shows your commitment.
+                    </div>
+                </section>
+
+                <!-- OUTCOMES -->
+                <section id="outcomes" class="section">
+                    <h2>Outcomes & Decisions (NEW in v6)</h2>
+
+                    <h3>What are Outcomes?</h3>
+                    <p>Record the final result of a student's university application to each school: offer, waitlist, rejection, or deferred decision. Track whether the student chose that school and why.</p>
+
+                    <h3>Recording an Outcome</h3>
+                    <ol style="margin-left: 1.5rem;">
+                        <li><strong>Open Student Panel</strong></li>
+                        <li><strong>Find the school in the "Schools" list</strong></li>
+                        <li><strong>Click the school row to expand</strong></li>
+                        <li><strong>Find "Outcome" dropdown:</strong> Select one:
+                            <ul style="margin-left: 1.5rem;">
+                                <li><strong>Offer:</strong> Student received an acceptance letter</li>
+                                <li><strong>Waitlist:</strong> Waitlisted; awaiting final decision</li>
+                                <li><strong>Rejection:</strong> Not accepted (or student declined)</li>
+                                <li><strong>Deferred:</strong> Early application deferred to regular round</li>
+                                <li><strong>Pending:</strong> Still waiting (application in progress)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Save outcome</strong></li>
+                    </ol>
+
+                    <h3>Student Decision (Enrollment)</h3>
+                    <p>After recording outcomes, if the student has decided which school to attend, record this:</p>
+                    <ol style="margin-left: 1.5rem;">
+                        <li><strong>Check "Student decided" box:</strong> at the top of the student panel</li>
+                        <li><strong>Select the enrolled school</strong> from dropdown</li>
+                        <li><strong>Save</strong></li>
+                    </ol>
+
+                    <h3>Tracking Outcomes Over Time</h3>
+                    <p>The dashboard shows outcome summary statistics:</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>Offers made:</strong> Total acceptances across all connected students</li>
+                        <li><strong>Enrollment rate:</strong> % of students who decided vs still choosing</li>
+                        <li><strong>Waitlist conversion:</strong> How many waitlisted students got offers in later rounds</li>
+                    </ul>
+
+                    <div class="box tip">
+                        <strong>💡 Celebrate wins:</strong> Share final enrollment data with your school leadership to show the impact of your counselling program.
+                    </div>
+                </section>
+
+                <!-- SCHEDULE & APPOINTMENTS -->
+                <section id="schedule" class="section">
+                    <h2>Schedule & Appointments (NEW in v6)</h2>
+
+                    <h3>What is the Schedule?</h3>
+                    <p>Book and manage 1-on-1 meetings with students directly in Compass Counsellor. Students receive notifications and can confirm attendance.</p>
+
+                    <h3>Creating an Appointment</h3>
+                    <ol style="margin-left: 1.5rem;">
+                        <li><strong>Open Student Panel → Schedule tab</strong></li>
+                        <li><strong>Click "+ New Appointment"</strong></li>
+                        <li><strong>Fill in:</strong>
+                            <ul style="margin-left: 1.5rem;">
+                                <li><strong>Date:</strong> Calendar picker</li>
+                                <li><strong>Time:</strong> Select time slot (15-min increments, e.g., 3:00 PM)</li>
+                                <li><strong>Duration:</strong> 15, 30, or 60 minutes</li>
+                                <li><strong>Topic:</strong> e.g., "Essay feedback", "Test strategy", "School list review"</li>
+                                <li><strong>Location/Link:</strong> "In-person", "Zoom", "Phone" + link/room number</li>
+                                <li><strong>Notes:</strong> Optional prep notes for student (e.g., "Please bring your draft to discuss")</li>
+                            </ul>
+                        </li>
+                        <li><strong>Send:</strong> Appointment is sent to student; they receive notification</li>
+                    </ol>
+
+                    <h3>Student Response</h3>
+                    <p>Student can:</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>Confirm:</strong> Accept the appointment</li>
+                        <li><strong>Decline:</strong> Reject the appointment (you get notified)</li>
+                        <li><strong>Suggest alternative time:</strong> If slot doesn't work</li>
+                    </ul>
+
+                    <h3>Appointment Reminders</h3>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>You receive a reminder 24 hours before</li>
+                        <li>Student receives a reminder 1 hour before</li>
+                        <li>You can reschedule or cancel anytime (student gets updated notification)</li>
+                    </ul>
+
+                    <div class="box tip">
+                        <strong>💡 Best practice:</strong> Schedule regular check-ins (e.g., monthly) with each student during application season to stay aligned on progress.
+                    </div>
+                </section>
+
+                <!-- REPORTS & EXPORT -->
+                <section id="reports" class="section">
+                    <h2>Reports & Export (NEW in v6)</h2>
+
+                    <h3>What are Reports?</h3>
+                    <p>Generate school-level and student-level reports summarizing readiness, progress, and outcomes. Export as PDF or text for documentation and stakeholder updates.</p>
+
+                    <h3>School-Level Report</h3>
+                    <p><strong>Overview:</strong> Aggregate report for all your students, grouped by school.</p>
+                    <p><strong>How to generate:</strong></p>
+                    <ol style="margin-left: 1.5rem;">
+                        <li>Dashboard → click "Generate Report"</li>
+                        <li>Select date range (e.g., "Last 30 days")</li>
+                        <li>Choose report type: "School Summary" or "Student Progress"</li>
+                        <li>Click "Export as PDF" or "Export as Text"</li>
+                    </ol>
+                    <p><strong>Report includes:</strong></p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Total students connected: X</li>
+                        <li>Average readiness score: Y</li>
+                        <li>School list compilation (all schools across all students)</li>
+                        <li>Application statistics (submitted, pending, accepted)</li>
+                        <li>Top challenges (most common gaps)</li>
+                        <li>Recommended interventions</li>
+                    </ul>
+
+                    <h3>Student-Level Report</h3>
+                    <p><strong>Overview:</strong> Individual summary for one student (useful for parent conferences or student check-ins).</p>
+                    <p><strong>How to generate:</strong></p>
+                    <ol style="margin-left: 1.5rem;">
+                        <li>Open Student Panel</li>
+                        <li>Click "Export Report"</li>
+                        <li>Choose "PDF" or "Text"</li>
+                    </ol>
+                    <p><strong>Report includes:</strong></p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Student name, grade, target countries</li>
+                        <li>Readiness score breakdown (all 5 components)</li>
+                        <li>Target vs current score</li>
+                        <li>School list with tiers and statuses</li>
+                        <li>Upcoming milestones</li>
+                        <li>Intervention history (resolved and pending)</li>
+                        <li>Recommendations for next steps</li>
+                    </ul>
+
+                    <h3>Printing & Sharing</h3>
+                    <p>All reports are print-friendly. You can:</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Print directly (Ctrl+P or Cmd+P)</li>
+                        <li>Save as PDF (print → "Save as PDF")</li>
+                        <li>Email to parents or student (with student permission)</li>
+                    </ul>
+
+                    <div class="box tip">
+                        <strong>💡 Documentation:</strong> Keep copies of reports for each student to document their progress and your support—valuable for program evaluation and compliance.
+                    </div>
+                </section>
+
+                <!-- SAFEGUARDING LOG -->
+                <section id="safeguarding" class="section">
+                    <h2>Safeguarding Log (NEW in v6)</h2>
+
+                    <h3>What is the Safeguarding Log?</h3>
+                    <p>A confidential per-student log for documenting concerns about a student's wellbeing, mental health, or safety. This is required in many jurisdictions (e.g., UK KCSIE, US Title IX) and helps you respond appropriately to safeguarding issues.</p>
+
+                    <h3>When to Log an Entry</h3>
+                    <p><strong>Log when you notice:</strong></p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Signs of anxiety, depression, or stress beyond typical application stress</li>
+                        <li>Self-harm language or suicidal ideation (immediate: contact emergency services)</li>
+                        <li>Pressure from parents (coercive behavior, financial threats)</li>
+                        <li>Bullying or peer pressure affecting school choices</li>
+                        <li>Substance abuse concerns</li>
+                        <li>Abuse or neglect indicators</li>
+                        <li>Unexpected behavioral changes</li>
+                        <li>Attendance patterns that suggest a problem</li>
+                    </ul>
+
+                    <h3>Creating a Log Entry</h3>
+                    <ol style="margin-left: 1.5rem;">
+                        <li><strong>Open Student Panel</strong></li>
+                        <li><strong>Scroll to "Safeguarding Log"</strong></li>
+                        <li><strong>Click "+ Add Entry"</strong></li>
+                        <li><strong>Fill in:</strong>
+                            <ul style="margin-left: 1.5rem;">
+                                <li><strong>Date & time:</strong> When you observed the concern</li>
+                                <li><strong>Severity:</strong> Low, Medium, High, Critical</li>
+                                <li><strong>Category:</strong> Mental health, Abuse, Peer, Family, Other</li>
+                                <li><strong>Observation:</strong> What you saw/heard (facts, not assumptions). E.g., "Student mentioned 'can't stop thinking about suicide' in check-in response"</li>
+                                <li><strong>Your response:</strong> What action you took (called parent, referred to counselor, contacted safeguarding lead)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Save:</strong> Entry is logged with timestamp</li>
+                    </ol>
+
+                    <h3>Privacy & Access</h3>
+                    <p><strong>Confidentiality:</strong> Safeguarding logs are:</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Encrypted and accessible only to you and designated safeguarding leads</li>
+                        <li>NOT visible to the student (even if they access their own profile)</li>
+                        <li>Retained indefinitely (do not delete)</li>
+                        <li>Shared with authorities only when legally required (abuse disclosure, imminent danger)</li>
+                    </ul>
+
+                    <h3>Escalation Protocol</h3>
+                    <p><strong>For "Critical" severity entries:</strong></p>
+                    <ol style="margin-left: 1.5rem;">
+                        <li>Contact your school's designated safeguarding lead IMMEDIATELY (not within 24 hours)</li>
+                        <li>If imminent danger (active self-harm), call emergency services</li>
+                        <li>Document your actions in the log entry</li>
+                        <li>Do NOT promise confidentiality to the student if their safety is at risk</li>
+                    </ol>
+
+                    <div class="box note">
+                        <strong>⚠️ Legal obligation:</strong> Many jurisdictions require you to report suspected abuse to child protective services, even if the student asks you not to. Consult your school's safeguarding policy and legal counsel.
+                    </div>
+
+                    <h3>Training & Resources</h3>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Your school should provide annual safeguarding training</li>
+                        <li>Contact your safeguarding lead if you're unsure whether to log an entry</li>
+                        <li>Resources: Childhelp National Hotline (US: 1-800-4-A-CHILD), NSPCC (UK), or your local equivalent</li>
+                    </ul>
+                </section>
+
+                <footer>
+                    <p>SAIL Education © 2026 | Compass Counsellor v5 | Last updated Mar 28, 2026</p>
+                    <p style="font-size: 0.85rem; margin-top: 0.5rem;">For support: compliance@sailedu.co</p>
+                </footer>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                const sectionId = this.getAttribute('data-section');
+                showSection(sectionId);
+                this.classList.add('active');
+                document.querySelectorAll('.nav-link').forEach(l => {
+                    if (l !== this) l.classList.remove('active');
+                });
+            });
+        });
+
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // Collapsible
+        document.querySelectorAll('.collapsible').forEach(button => {
+            button.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+
+        // Search
+        document.getElementById('searchBox').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            if (!query) return;
+
+            const content = document.querySelector('.content-wrapper').innerText.toLowerCase();
+            const sections = document.querySelectorAll('.section');
+
+            sections.forEach(section => {
+                if (section.innerText.toLowerCase().includes(query)) {
+                    showSection(section.id);
+                }
+            });
+        });
+
+        // Mobile menu
+        const navSections = document.querySelector('.nav-sections');
+        const logo = document.querySelector('.logo');
+
+        // Smooth scrolling for internal links (future enhancement)
+    </script>
+</body>
+</html>

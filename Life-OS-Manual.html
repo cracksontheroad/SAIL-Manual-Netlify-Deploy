@@ -1,0 +1,2387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life-OS Manual | SAIL Education</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* === ANIMATIONS === */
+@keyframes float-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.4; }
+  50% { transform: translateY(-20px) translateX(10px); opacity: 0.8; }
+}
+@keyframes float-delayed-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.3; }
+  50% { transform: translateY(-15px) translateX(-10px); opacity: 0.7; }
+}
+@keyframes float-slow-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.2; }
+  50% { transform: translateY(-25px) translateX(5px); opacity: 0.6; }
+}
+@keyframes drift {
+  0% { transform: translateX(0px); }
+  100% { transform: translateX(20px); }
+}
+@keyframes orbit {
+  0% { transform: rotate(0deg) translateX(30px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
+}
+@keyframes breathing {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.1); }
+}
+@keyframes breathing-delayed {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.05); }
+}
+@keyframes rotate-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes slideInLeft {
+  0% { opacity: 0; transform: translateX(-50px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInDown {
+  0% { opacity: 0; transform: translateY(-30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.1); }
+  50% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), 0 0 30px rgba(255, 255, 255, 0.1); }
+}
+
+/* === RESET & BASE === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); border-radius: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: rgba(255,255,255,0.85);
+  background: #000;
+  line-height: 1.7;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* === IMMERSIVE BACKGROUND === */
+.immersive-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.immersive-bg .gradient-base {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1e1b4b 0%, #3b0764 40%, #0f172a 100%);
+}
+
+.immersive-bg .bg-image {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/8d0c8cab-aafd-4759-951d-82f748461c75_3840w.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.4;
+}
+
+/* Floating particles */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(1px);
+}
+.particle-1 { top: 25%; left: 33%; width: 2px; height: 2px; background: rgba(96,165,250,0.4); animation: float-glow 4s ease-in-out infinite; }
+.particle-2 { top: 75%; right: 25%; width: 1px; height: 1px; background: rgba(167,139,250,0.5); animation: float-delayed-glow 5s ease-in-out infinite; }
+.particle-3 { bottom: 33%; left: 50%; width: 1.5px; height: 1.5px; background: rgba(244,114,182,0.3); animation: float-slow-glow 6s ease-in-out infinite; }
+.particle-4 { top: 50%; right: 33%; width: 1px; height: 1px; background: rgba(34,211,238,0.4); animation: drift 8s ease-in-out infinite alternate; }
+.particle-5 { bottom: 25%; left: 25%; width: 2px; height: 2px; background: rgba(129,140,248,0.3); animation: orbit 15s linear infinite; }
+
+/* Ambient orbs */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+}
+.orb-1 { top: -50px; right: -50px; width: 384px; height: 384px; background: radial-gradient(circle, rgba(59,130,246,0.15), transparent); animation: breathing 4s ease-in-out infinite; }
+.orb-2 { bottom: -50px; left: -50px; width: 320px; height: 320px; background: radial-gradient(circle, rgba(168,85,247,0.2), transparent); animation: breathing-delayed 4s ease-in-out infinite 2s; }
+.orb-3 { top: 50%; left: 50%; width: 256px; height: 256px; background: radial-gradient(circle, rgba(236,72,153,0.1), transparent); animation: rotate-slow 20s linear infinite; }
+
+/* === LAYOUT === */
+.container {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* === GLASS SIDEBAR === */
+.sidebar, aside.sidebar {
+  width: 300px;
+  position: fixed;
+  top: 16px;
+  bottom: 16px;
+  left: 16px;
+  z-index: 100;
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  animation: slideInLeft 0.8s ease-out forwards;
+  transition: border-color 0.5s ease;
+  scrollbar-width: thin;
+}
+.sidebar:hover { border-color: rgba(255,255,255,0.25); }
+
+.sidebar-logo, .sidebar-header, .sidebar > div:first-child, .sidebar > h2:first-child {
+  padding: 28px 24px 16px;
+  font-size: 1.35em;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.sidebar-header h2, .sidebar-header h1 {
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: 700;
+  margin: 0;
+  padding: 0;
+  border: none;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-header p, .sidebar-header .version, .sidebar-version {
+  font-size: 0.8em;
+  color: rgba(255,255,255,0.5);
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+/* Sidebar search */
+.sidebar-search, .sidebar .search-container {
+  padding: 12px 20px 16px;
+}
+
+.sidebar-search input, .sidebar input[type="text"], .search-input {
+  width: 100%;
+  padding: 10px 14px 10px 38px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.08);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  color: #fff;
+  font-size: 0.85em;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  outline: none;
+}
+.sidebar-search input:focus, .sidebar input[type="text"]:focus, .search-input:focus {
+  border-color: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.12);
+}
+.sidebar-search input::placeholder, .sidebar input[type="text"]::placeholder, .search-input::placeholder {
+  color: rgba(255,255,255,0.4);
+}
+
+/* Sidebar navigation links - all variants */
+.sidebar-nav, .sidebar-menu, .sidebar nav, .nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px 20px;
+}
+
+.sidebar-nav a, .sidebar-menu a, .sidebar-menu li a, .sidebar nav a,
+.nav-link, .nav-item, a.nav-link, a.nav-item, button.nav-link {
+  display: block;
+  padding: 10px 16px;
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.88em;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  border: 1px solid transparent;
+  background: transparent;
+  text-align: left;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.4;
+}
+
+.sidebar-nav a:hover, .sidebar-menu a:hover, .sidebar-menu li a:hover, .sidebar nav a:hover,
+.nav-link:hover, .nav-item:hover, a.nav-link:hover, a.nav-item:hover, button.nav-link:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.9);
+  border-color: rgba(255,255,255,0.1);
+  transform: scale(1.02);
+}
+
+.sidebar-nav a.active, .sidebar-menu a.active, .sidebar-menu li a.active, .sidebar nav a.active,
+.nav-link.active, .nav-item.active, a.nav-link.active, a.nav-item.active, button.nav-link.active {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border-color: rgba(255,255,255,0.2);
+  font-weight: 600;
+  box-shadow: 0 0 15px rgba(255,255,255,0.05);
+}
+
+/* Sidebar section headings / group titles */
+.nav-section-title, .nav-group, .sidebar h3, .sidebar h4,
+.sidebar-menu > h3, .sidebar-menu > h4 {
+  font-size: 0.7em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.35);
+  padding: 18px 16px 6px;
+  margin: 0;
+  border: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.nav-section {
+  margin-bottom: 4px;
+}
+
+/* Sidebar list items without bullets */
+.sidebar-menu ul, .sidebar-menu ol, .sidebar nav ul, .sidebar nav ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* === MAIN CONTENT AREA === */
+.main-wrapper {
+  margin-left: 332px;
+  flex: 1;
+  min-height: 100vh;
+  padding: 16px 16px 16px 0;
+}
+
+.main-content, main.main-content {
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 48px 52px;
+  min-height: calc(100vh - 32px);
+  transition: border-color 0.5s ease;
+  animation: fadeIn 0.6s ease-out forwards;
+}
+.main-content:hover { border-color: rgba(255,255,255,0.25); }
+
+/* === CONTENT SECTIONS === */
+.content-section { display: none; animation: fadeIn 0.4s ease-out; }
+.content-section.active { display: block; }
+
+/* === TYPOGRAPHY === */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 2.2em;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 0.6em;
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h2 {
+  font-size: 1.6em;
+  font-weight: 600;
+  margin-top: 2em;
+  margin-bottom: 0.6em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  /* Override gradient text for h2 */
+  background: none;
+  -webkit-text-fill-color: #fff;
+}
+
+h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.4em;
+  color: rgba(255,255,255,0.95);
+}
+
+h4 {
+  font-size: 1.05em;
+  font-weight: 600;
+  margin-top: 1.2em;
+  margin-bottom: 0.3em;
+  color: rgba(255,255,255,0.9);
+}
+
+p {
+  margin-bottom: 1em;
+  color: rgba(255,255,255,0.75);
+}
+
+a { color: rgba(147,197,253,0.9); text-decoration: none; transition: color 0.3s; }
+a:hover { color: #fff; }
+
+strong, b { color: rgba(255,255,255,0.95); font-weight: 600; }
+
+code {
+  background: rgba(255,255,255,0.08);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  color: rgba(196,181,253,0.9);
+}
+
+ul, ol {
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+  color: rgba(255,255,255,0.75);
+}
+
+li { margin-bottom: 0.5em; }
+
+/* === STYLED BOXES (tip, note, ai, warning, milestone) === */
+.box {
+  padding: 20px 24px;
+  margin: 20px 0;
+  border-radius: 16px;
+  border-left: 3px solid;
+  background: rgba(255,255,255,0.04);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+}
+
+.box-title {
+  font-weight: 600;
+  color: rgba(255,255,255,0.95);
+  margin-bottom: 8px;
+}
+
+.box-tip, .box.tip {
+  border-left: 3px solid rgba(52,211,153,0.6);
+  background: rgba(52,211,153,0.06);
+}
+.box-tip::before, .box.tip::before { content: "💡 "; font-weight: bold; }
+
+.box-note, .box.note {
+  border-left: 3px solid rgba(251,191,36,0.6);
+  background: rgba(251,191,36,0.06);
+}
+.box-note::before, .box.note::before { content: "⚠️ "; font-weight: bold; }
+
+.box-ai, .box.ai-feature {
+  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15));
+  border-left: 3px solid rgba(168,85,247,0.6);
+  border: 1px solid rgba(168,85,247,0.2);
+}
+.box-ai::before, .box.ai-feature::before { content: "🤖 "; font-weight: bold; }
+.box-ai a { color: rgba(251,191,36,0.9); }
+
+.box.warning {
+  border-left: 3px solid rgba(239,68,68,0.6);
+  background: rgba(239,68,68,0.06);
+}
+
+.box.milestone {
+  border-left: 3px solid rgba(59,130,246,0.6);
+  background: rgba(59,130,246,0.06);
+}
+
+/* === STEPS === */
+.steps {
+  list-style: none;
+  padding: 0;
+  counter-reset: step-counter;
+}
+
+.steps li {
+  margin: 18px 0;
+  padding-left: 54px;
+  position: relative;
+  color: rgba(255,255,255,0.75);
+}
+
+.steps li::before {
+  content: counter(step-counter);
+  counter-increment: step-counter;
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.1);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+/* === CHECKLISTS === */
+.checklist {
+  list-style: none;
+  padding: 0;
+}
+
+.checklist li {
+  padding: 10px 0 10px 32px;
+  position: relative;
+  color: rgba(255,255,255,0.75);
+}
+
+.checklist li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: rgba(52,211,153,0.8);
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+/* === TABLES === */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 20px 0;
+  font-size: 0.9em;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+th {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.95);
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.7);
+}
+
+tr:hover td {
+  background: rgba(255,255,255,0.03);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* === ROLE BADGES === */
+.role-super-admin { color: rgba(56,189,248,0.9); font-weight: 600; }
+.role-admin { color: rgba(248,113,113,0.9); font-weight: 600; }
+.role-dept-head { color: rgba(167,139,250,0.9); font-weight: 600; }
+.role-teacher { color: rgba(52,211,153,0.9); font-weight: 600; }
+.role-student { color: rgba(129,140,248,0.9); font-weight: 600; }
+.role-parent { color: rgba(148,163,184,0.9); font-weight: 600; }
+
+.role-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.82em;
+  font-weight: 600;
+  margin-right: 5px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.role-badge.super-admin { background: rgba(56,189,248,0.12); color: rgba(56,189,248,0.9); border-color: rgba(56,189,248,0.2); }
+.role-badge.admin { background: rgba(248,113,113,0.12); color: rgba(248,113,113,0.9); border-color: rgba(248,113,113,0.2); }
+.role-badge.dept-head { background: rgba(167,139,250,0.12); color: rgba(167,139,250,0.9); border-color: rgba(167,139,250,0.2); }
+.role-badge.teacher { background: rgba(52,211,153,0.12); color: rgba(52,211,153,0.9); border-color: rgba(52,211,153,0.2); }
+.role-badge.student { background: rgba(129,140,248,0.12); color: rgba(129,140,248,0.9); border-color: rgba(129,140,248,0.2); }
+.role-badge.parent { background: rgba(148,163,184,0.12); color: rgba(148,163,184,0.9); border-color: rgba(148,163,184,0.2); }
+
+/* === COLLAPSIBLE === */
+.collapsible {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.9);
+  cursor: pointer;
+  padding: 16px 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  margin: 10px 0;
+  font-weight: 600;
+  font-size: 0.95em;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.collapsible:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  transform: scale(1.01);
+}
+
+.collapsible.active {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.25);
+  box-shadow: 0 0 20px rgba(255,255,255,0.05);
+}
+
+.collapsible-content {
+  display: none;
+  padding: 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-top: none;
+  border-radius: 0 0 14px 14px;
+  margin-top: -10px;
+}
+
+.collapsible-content.active {
+  display: block;
+}
+
+.collapsible-icon, .collapsible-arrow {
+  transition: transform 0.3s;
+  color: rgba(255,255,255,0.5);
+}
+
+.collapsible.active .collapsible-icon,
+.collapsible.active .collapsible-arrow {
+  transform: rotate(180deg);
+}
+
+/* === FEATURE GRID & CARDS === */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.feature-card {
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.feature-card h4 {
+  margin-top: 0;
+  color: rgba(255,255,255,0.95);
+}
+
+/* === ICON CIRCLE === */
+.icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+/* === FOOTER === */
+.footer {
+  background: rgba(255,255,255,0.04);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  padding: 24px;
+  margin-top: 48px;
+  border-radius: 0 0 24px 24px;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 0.85em;
+  color: rgba(255,255,255,0.4);
+}
+
+/* === UTILITY CLASSES === */
+.text-teal { color: rgba(52,211,153,0.9); }
+.text-center { text-align: center; }
+.mt-2 { margin-top: 2em; }
+.mb-2 { margin-bottom: 2em; }
+
+/* === STEP DESCRIPTION (SuperTeacher specific) === */
+.step-description {
+  color: rgba(255,255,255,0.65);
+  font-size: 0.9em;
+  margin-top: 4px;
+}
+
+/* Walkthrough step cards (SuperTeacher specific) */
+.setup-step, .step-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 12px 0;
+}
+
+/* === MOBILE RESPONSIVE === */
+@media (max-width: 900px) {
+  .sidebar, aside.sidebar {
+    position: fixed;
+    width: 280px;
+    left: -300px;
+    top: 0;
+    bottom: 0;
+    border-radius: 0 24px 24px 0;
+    transition: left 0.4s ease;
+    z-index: 200;
+  }
+  .sidebar.mobile-open { left: 0; }
+
+  .main-wrapper {
+    margin-left: 0;
+    padding: 16px;
+  }
+
+  .main-content, main.main-content {
+    padding: 28px 24px;
+    border-radius: 20px;
+  }
+
+  h1 { font-size: 1.6em; }
+  h2 { font-size: 1.3em; }
+  h3 { font-size: 1.1em; }
+
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 901px) {
+  .mobile-menu-btn { display: none !important; }
+  .mobile-overlay { display: none !important; }
+}
+
+.mobile-menu-btn {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 150;
+  width: 44px;
+  height: 44px;
+  background: rgba(255,255,255,0.1);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 14px;
+  color: #fff;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  transition: all 0.3s;
+}
+.mobile-menu-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
+
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  z-index: 150;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.mobile-overlay.active { opacity: 1; pointer-events: auto; }
+
+/* === PRINT CSS === */
+@media print {
+  .sidebar, aside.sidebar, .immersive-bg, .mobile-menu-btn, .mobile-overlay { display: none !important; }
+  .main-wrapper { margin-left: 0; }
+  .main-content, main.main-content {
+    max-width: 100%;
+    padding: 0;
+    background: #fff;
+    color: #000;
+    border: none;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  body { background: #fff; color: #000; }
+  .content-section { display: block !important; page-break-after: always; }
+  h1, h2, h3, h4 { color: #000; -webkit-text-fill-color: #000; background: none; }
+  p, li, td { color: #333; }
+  th { background: #eee; color: #000; }
+  .box { background: #f5f5f5; border-color: #ccc; }
+  .collapsible-content { display: block !important; }
+  .feature-card { background: #f5f5f5; border-color: #ddd; }
+}
+</style>
+</head>
+<body>
+<!-- Immersive Background -->
+<div class="immersive-bg">
+  <div class="gradient-base"></div>
+  <div class="bg-image"></div>
+  <div class="particle particle-1"></div>
+  <div class="particle particle-2"></div>
+  <div class="particle particle-3"></div>
+  <div class="particle particle-4"></div>
+  <div class="particle particle-5"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+<!-- Mobile Menu Button -->
+<button class="mobile-menu-btn" onclick="document.querySelector('.sidebar, aside.sidebar').classList.toggle('mobile-open'); document.querySelector('.mobile-overlay').classList.toggle('active');">☰</button>
+<div class="mobile-overlay" onclick="document.querySelector('.sidebar, aside.sidebar').classList.remove('mobile-open'); this.classList.remove('active');"></div>
+
+    <div class="container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>Life-OS</h2>
+                <p style="font-size: 0.85em; margin-top: 0.5rem; opacity: 0.7;">Personal Life Operating System</p>
+            </div>
+            <ul class="sidebar-nav">
+                <li class="section-title">Getting Started</li>
+                <li><a href="javascript:void(0)" data-target="welcome" onclick="navigateTo('welcome')">Welcome to Life-OS</a></li>
+                <li><a href="javascript:void(0)" data-target="onboarding" onclick="navigateTo('onboarding')">Onboarding Process</a></li>
+                <li><a href="javascript:void(0)" data-target="dashboard" onclick="navigateTo('dashboard')">Home Dashboard</a></li>
+
+                <li class="section-title">The Five Coaches</li>
+                <li><a href="javascript:void(0)" data-target="coaches-overview" onclick="navigateTo('coaches-overview')">Coach Overview</a></li>
+                <li><a href="javascript:void(0)" data-target="clarity" onclick="navigateTo('clarity')">◈ Clarity</a></li>
+                <li><a href="javascript:void(0)" data-target="capital" onclick="navigateTo('capital')">◎ Capital</a></li>
+                <li><a href="javascript:void(0)" data-target="momentum" onclick="navigateTo('momentum')">◆ Momentum</a></li>
+                <li><a href="javascript:void(0)" data-target="fuel" onclick="navigateTo('fuel')">◉ Fuel</a></li>
+                <li><a href="javascript:void(0)" data-target="anchor" onclick="navigateTo('anchor')">◍ Anchor</a></li>
+
+                <li class="section-title">Core Features</li>
+                <li><a href="javascript:void(0)" data-target="daily-checkins" onclick="navigateTo('daily-checkins')">Daily Check-ins</a></li>
+                <li><a href="javascript:void(0)" data-target="storm-mode" onclick="navigateTo('storm-mode')">Storm Mode</a></li>
+                <li><a href="javascript:void(0)" data-target="fear-setting" onclick="navigateTo('fear-setting')">Fear Setting</a></li>
+                <li><a href="javascript:void(0)" data-target="hard-questions" onclick="navigateTo('hard-questions')">Hard Questions</a></li>
+                <li><a href="javascript:void(0)" data-target="life-map" onclick="navigateTo('life-map')">Life Map</a></li>
+
+                <li class="section-title">Tools & Planning</li>
+                <li><a href="javascript:void(0)" data-target="finance" onclick="navigateTo('finance')">Finance & Retirement</a></li>
+                <li><a href="javascript:void(0)" data-target="goals" onclick="navigateTo('goals')">Goals & Non-Negotiables</a></li>
+                <li><a href="javascript:void(0)" data-target="rhythm" onclick="navigateTo('rhythm')">Weekly & Monthly Rhythm</a></li>
+                <li><a href="javascript:void(0)" data-target="settings" onclick="navigateTo('settings')">Settings</a></li>
+
+                <li class="section-title">Reference</li>
+                <li><a href="javascript:void(0)" data-target="features" onclick="navigateTo('features')">Complete Feature List</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <div class="search-container">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search manual...">
+                    <button onclick="performSearch()">Search</button>
+                </div>
+            </div>
+
+            <div class="content-wrapper">
+                <!-- WELCOME SECTION -->
+                <section id="welcome" class="section-content active">
+                    <h1>Welcome to Life-OS</h1>
+                    <p class="subheading">Your Personal Operating System for Life Optimization</p>
+
+                    <p><strong>Life-OS</strong> is a comprehensive personal optimization platform designed to help you achieve a 12-month transformation across five critical life domains. Unlike generic self-help tools, Life-OS provides you with five specialized AI coaches—each an expert in their domain—working together to support your integrated growth.</p>
+
+                    <h3>What is Life-OS?</h3>
+                    <p>Life-OS is your personal operating system. Just as your computer has an OS that manages resources and coordinates processes, Life-OS helps you:</p>
+                    <ul>
+                        <li><strong>Optimize across domains</strong>: Mental clarity, financial health, business momentum, physical fuel, and relationship anchors all grow in concert</li>
+                        <li><strong>Track measurable progress</strong>: Daily check-ins, weekly rhythms, and monthly reviews create a feedback loop</li>
+                        <li><strong>Navigate obstacles</strong>: Storm Mode protects your non-negotiables during crisis; Fear Setting helps you process anxiety</li>
+                        <li><strong>Stay accountable</strong>: Five specialized coaches challenge assumptions, ask hard questions, and celebrate wins</li>
+                        <li><strong>Think long-term</strong>: Your Future Self Statement and retirement planning anchor decisions in your 5-10 year vision</li>
+                    </ul>
+
+                    <div class="coach-feature-box clarity">
+                        <h4>Designed for 12-Month Transformation</h4>
+                        <p>Life-OS operates on an annual cycle. By engaging with your coaches daily, maintaining your non-negotiables, and reviewing your progress quarterly, you'll build momentum that compounds over 12 months into measurable life transformation.</p>
+                    </div>
+                </section>
+
+                <!-- ONBOARDING SECTION -->
+                <section id="onboarding" class="section-content">
+                    <h1>Onboarding Process</h1>
+                    <p class="subheading">Seven Steps to Activate Your Life-OS</p>
+
+                    <p>The onboarding process takes approximately 15-20 minutes and sets the foundation for your entire Life-OS journey. Complete all seven steps in order.</p>
+
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Welcome Screen</h4>
+                                <p>Read the Life-OS manifesto and philosophy. This is your moment to commit to 12 months of intentional growth. Click "I'm Ready" to proceed.</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Profile Setup</h4>
+                                <p>Enter your basic information: full name, date of birth, and primary location. This data helps the coaches personalize their approach and understand your context.</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Future Self Statement</h4>
+                                <p>Write a vivid description of your life at your target age (typically 5-10 years from now) <span class="highlight">in present tense</span>. For example: "I am a thriving EdTech founder with $2M annual revenue. I sleep 8 hours nightly. My marriage is deeply connected. I run a sub-7-minute mile." Be specific, ambitious, and write in present tense as if it's already true.</p>
+                                <div class="tip-box">
+                                    <strong>Tip:</strong> Your Future Self Statement becomes a north star for all five coaches. Make it vivid, specific, and emotionally resonant.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Coach Foundational Questions</h4>
+                                <p>Each coach asks you one custom question to establish baseline understanding:</p>
+                                <ul>
+                                    <li><strong>Clarity:</strong> "What emotional pattern shows up most when you're stressed?"</li>
+                                    <li><strong>Capital:</strong> "What's your biggest money anxiety right now?"</li>
+                                    <li><strong>Momentum:</strong> "What's the biggest blocker to your business goals?"</li>
+                                    <li><strong>Fuel:</strong> "How's your sleep? (hours/quality)"</li>
+                                    <li><strong>Anchor:</strong> "What's the primary relationship you want to optimize?"</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h4>Baseline Assessment</h4>
+                                <p>Rate your current state across three domains (0-10 scale):</p>
+                                <ul>
+                                    <li><strong>Mental Clarity</strong> (emotional regulation, clear thinking)</li>
+                                    <li><strong>Financial Confidence</strong> (security, growth mindset)</li>
+                                    <li><strong>Physical Vitality</strong> (energy, performance)</li>
+                                </ul>
+                                <p>This baseline helps coaches track your progress over 12 months.</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">6</div>
+                            <div class="step-content">
+                                <h4>Non-Negotiables Definition</h4>
+                                <p>Define three core commitments you will protect no matter what. Examples:</p>
+                                <ul>
+                                    <li>"8 hours sleep daily"</li>
+                                    <li>"One meaningful conversation with my partner daily"</li>
+                                    <li>"2 hours focused work on business revenue"</li>
+                                </ul>
+                                <p>Non-negotiables are your foundation. Storm Mode protects them during crisis. Choose wisely—only three, and make them non-negotiable.</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">7</div>
+                            <div class="step-content">
+                                <h4>Retirement Configuration</h4>
+                                <p>Set your retirement parameters:</p>
+                                <ul>
+                                    <li><strong>Target Age:</strong> When do you want to retire? (e.g., 55, 60)</li>
+                                    <li><strong>Annual Income Goal:</strong> How much do you need yearly? (e.g., $100K)</li>
+                                    <li><strong>Currency:</strong> Primary currency (CNY, USD, etc.)</li>
+                                    <li><strong>Location:</strong> Where will you retire?</li>
+                                </ul>
+                                <p>Capital coach uses this to model retirement scenarios and build a 12-month financial literacy plan.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="note-box">
+                        <strong>Note:</strong> You can update any of this information later in Settings. Onboarding is just the starting point—your vision and goals will evolve as you grow.
+                    </div>
+                </section>
+
+                <!-- DASHBOARD SECTION -->
+                <section id="dashboard" class="section-content">
+                    <h1>Understanding the Home Dashboard</h1>
+                    <p class="subheading">Your Central Hub for Daily Engagement</p>
+
+                    <p>The Home Dashboard is your command center. Every time you open Life-OS, you see a clean, intuitive view of:</p>
+
+                    <h3>Dashboard Sections</h3>
+                    <ul>
+                        <li><strong>Quick Stats:</strong> Your mental clarity, financial confidence, and physical vitality scores trending over the last 30 days</li>
+                        <li><strong>Today's Tasks:</strong> Morning check-in, coach sessions recommended today, evening check-in</li>
+                        <li><strong>Non-Negotiables Status:</strong> Current streak for each of your three non-negotiables (e.g., "8 days ✓")</li>
+                        <li><strong>Coach Pulse:</strong> Which coaches are available and a one-line message from each</li>
+                        <li><strong>Weekly Rhythm:</strong> Recommended coach rotation for the week (e.g., "Monday: Clarity, Wednesday: Capital, Friday: Momentum")</li>
+                        <li><strong>Upcoming Events:</strong> Monthly reviews, quarterly goal check-ins, scheduled Fear Setting sessions</li>
+                    </ul>
+
+                    <h3>Recommended Daily Flow</h3>
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Morning (5 minutes)</h4>
+                                <p>Complete Morning Check-in: mood, sleep, exercise, intentions for day</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Mid-Morning (10-15 minutes)</h4>
+                                <p>Engage with a coach session (rotate based on your rhythm)</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Evening (5 minutes)</h4>
+                                <p>Complete Evening Check-in: achievements, stress, friction tracking</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- COACHES OVERVIEW -->
+                <section id="coaches-overview" class="section-content">
+                    <h1>The Five Coaches</h1>
+                    <p class="subheading">Your Integrated Team of AI Experts</p>
+
+                    <p>Life-OS features five specialized AI coaches, each powered by Claude and trained in their domain's best methodologies. They work independently but stay coordinated through your shared vision and non-negotiables.</p>
+
+                    <div class="coach-circles">
+                        <div class="coach-circle clarity">
+                            <div class="coach-circle-name">◈ Clarity</div>
+                            <div class="coach-circle-role">Mental & Emotional</div>
+                        </div>
+                        <div class="coach-circle capital">
+                            <div class="coach-circle-name">◎ Capital</div>
+                            <div class="coach-circle-role">Finance & Retirement</div>
+                        </div>
+                        <div class="coach-circle momentum">
+                            <div class="coach-circle-name">◆ Momentum</div>
+                            <div class="coach-circle-role">Business & Growth</div>
+                        </div>
+                        <div class="coach-circle fuel">
+                            <div class="coach-circle-name">◉ Fuel</div>
+                            <div class="coach-circle-role">Health & Performance</div>
+                        </div>
+                        <div class="coach-circle anchor">
+                            <div class="coach-circle-name">◍ Anchor</div>
+                            <div class="coach-circle-role">Relationships</div>
+                        </div>
+                    </div>
+
+                    <h3>How the Coaches Work Together</h3>
+                    <ul>
+                        <li><strong>Unified Vision:</strong> All five coaches reference your Future Self Statement to align guidance</li>
+                        <li><strong>Non-Negotiables Alignment:</strong> Coaches help you protect your three core commitments across domains</li>
+                        <li><strong>Coordinated Insights:</strong> If a coach detects a domain-crossing issue (e.g., poor sleep affecting business focus), they note it</li>
+                        <li><strong>Your Weekly Rhythm:</strong> You choose which coaches to engage on which days, creating a sustainable practice</li>
+                    </ul>
+
+                    <div class="note-box">
+                        <strong>Note:</strong> You don't need to talk to all five coaches every day. The recommended rhythm is 3-4 coach sessions per week, rotating by domain.
+                    </div>
+                </section>
+
+                <!-- CLARITY COACH -->
+                <section id="clarity" class="section-content">
+                    <h1>◈ Clarity: Mental & Emotional Optimization</h1>
+                    <p class="subheading">Reduce reactivity. Process emotions. Clarify thinking.</p>
+
+                    <div class="bg-clarity" style="padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                        <h4 style="margin-top: 0; color: #6B4FBB;">Your Mental Operating System Coach</h4>
+                        <p>Clarity is your coach for emotional resilience, clear thinking, and mental flexibility. Operating from ACT (Acceptance and Commitment Therapy) principles, Clarity helps you respond instead of react, process emotions instead of suppress them, and access clarity when overwhelmed.</p>
+                    </div>
+
+                    <h3>Core Focus Areas</h3>
+                    <ul>
+                        <li><strong>Reactivity Reduction:</strong> Identify triggers; build pause between stimulus and response</li>
+                        <li><strong>Emotional Processing:</strong> Feel emotions fully rather than avoid or suppress them</li>
+                        <li><strong>Thought Clarity:</strong> Untangle assumptions; question automatic thoughts</li>
+                        <li><strong>Values Alignment:</strong> Ensure daily actions align with your deeper values</li>
+                    </ul>
+
+                    <h3>Clarity's Coaching Approach: Socratic Method</h3>
+                    <p>Clarity doesn't offer advice first. Instead, Clarity asks questions to help you discover your own wisdom:</p>
+                    <ul>
+                        <li>"What emotion are you feeling right now?"</li>
+                        <li>"What story are you telling yourself about this situation?"</li>
+                        <li>"What would someone you admire do in this moment?"</li>
+                        <li>"Is that thought true, or is it your mind protecting you?"</li>
+                    </ul>
+
+                    <div class="coach-feature-box clarity">
+                        <h4>When to Use Clarity</h4>
+                        <p><strong>Start a Clarity session when:</strong></p>
+                        <ul>
+                            <li>You're feeling overwhelmed or confused</li>
+                            <li>You notice you're in a reactive spiral</li>
+                            <li>You need to process difficult emotions</li>
+                            <li>You're unsure about a decision</li>
+                            <li>You want to explore your values and identity</li>
+                        </ul>
+                    </div>
+
+                    <h3>A Clarity Conversation (Step-by-Step)</h3>
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Check-In</h4>
+                                <p>Clarity asks: "What's on your mind today?" You share what's bothering you or what you're sitting with.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Emotion Naming</h4>
+                                <p>Clarity guides you to name the emotion precisely: "Is it anxiety, grief, anger, disappointment, shame?" Naming activates the prefrontal cortex and reduces amygdala reactivity.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Story Exploration</h4>
+                                <p>Clarity asks: "What story are you telling yourself about this?" You identify the narrative you've constructed.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Truth Testing</h4>
+                                <p>Clarity helps you question the story: "Is that definitely true? What evidence suggests otherwise? What else might be true?"</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h4>Values Alignment</h4>
+                                <p>Clarity brings it back to your values: "Regardless of this emotion or story, who do you want to be in this situation? What would that person do?"</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">6</div>
+                            <div class="step-content">
+                                <h4>Commitment</h4>
+                                <p>Clarity invites commitment: "What's one small action you'll take that aligns with your values?" You make a concrete, doable commitment.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tip-box">
+                        <strong>Pro Tip:</strong> The most powerful Clarity sessions happen when you're not in crisis. Use Clarity weekly to build emotional resilience so you're ready when hard moments arrive.
+                    </div>
+                </section>
+
+                <!-- CAPITAL COACH -->
+                <section id="capital" class="section-content">
+                    <h1>◎ Capital: Finance & Retirement Optimization</h1>
+                    <p class="subheading">Build financial literacy. Model retirement scenarios. Plan with confidence.</p>
+
+                    <div class="bg-capital" style="padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                        <h4 style="margin-top: 0; color: #B07010;">Your Financial Intelligence Coach</h4>
+                        <p>Capital is your coach for financial literacy, retirement planning, and wealth building. Currency-aware and evidence-based, Capital educates rather than advises, helping you build competence to make your own financial decisions.</p>
+                    </div>
+
+                    <h3>Core Focus Areas</h3>
+                    <ul>
+                        <li><strong>Financial Literacy:</strong> Understand investing, tax strategy, inflation, compound interest</li>
+                        <li><strong>Retirement Modeling:</strong> Scenario planning based on your target age, income, and location</li>
+                        <li><strong>Currency Management:</strong> CNY/USD tracking, exchange rate impact on retirement</li>
+                        <li><strong>Wealth Building:</strong> Strategic savings, investment philosophy, risk tolerance</li>
+                    </ul>
+
+                    <h3>Capital's Approach: Educational, Not Advisory</h3>
+                    <p>Capital teaches concepts rather than giving financial advice. You learn the principles and make your own decisions:</p>
+                    <ul>
+                        <li>"Here's how compound interest works..."</li>
+                        <li>"These are the variables in retirement modeling..."</li>
+                        <li>"Let me explain the pros and cons of this investment approach..."</li>
+                    </ul>
+
+                    <h3>Features: Currency & Retirement Tools</h3>
+                    <p><strong>Exchange Rate Tracking:</strong> Capital tracks your CNY to USD (or other currency) rate. As exchange rates shift, your retirement purchasing power changes. Capital helps you understand and model this impact.</p>
+
+                    <p><strong>School Pipeline Tracking:</strong> For entrepreneurs building EdTech (like SAIL Education context), Capital tracks your school pipeline conversion metrics and models revenue impact.</p>
+
+                    <p><strong>Finance Entries:</strong> Log financial transactions, income, investments. Capital reviews patterns and offers insights.</p>
+
+                    <p><strong>Retirement Scenario Modeling:</strong> "If I retire at 55 in Bali on $120K USD annually, here's what my portfolio needs to be... here's the monthly withdrawal rate... here's the impact of a 2% market decline..."</p>
+
+                    <div class="coach-feature-box capital">
+                        <h4>When to Use Capital</h4>
+                        <p><strong>Start a Capital session when:</strong></p>
+                        <ul>
+                            <li>You have questions about investing or retirement</li>
+                            <li>You want to understand a financial concept</li>
+                            <li>You're modeling a major financial decision</li>
+                            <li>You want to review your financial progress</li>
+                            <li>You're anxious about money and want to talk it through</li>
+                        </ul>
+                    </div>
+
+                    <h3>A Capital Conversation (Step-by-Step)</h3>
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Financial Check-In</h4>
+                                <p>Capital asks: "What's your financial question or concern today?" You share your situation.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Context Gathering</h4>
+                                <p>Capital asks clarifying questions about your timeline, risk tolerance, goals, and constraints.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Concept Teaching</h4>
+                                <p>Capital explains the relevant financial concepts or principles. You learn the framework, not just an answer.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Scenario Modeling</h4>
+                                <p>Capital models 2-3 scenarios with your numbers and shows the outcomes. "If you invest X% over Y years at Z% return, you get..."</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h4>Decision Framework</h4>
+                                <p>Capital summarizes the decision framework: "Here are the variables that matter in this decision. Here's how to think about tradeoffs."</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">6</div>
+                            <div class="step-content">
+                                <h4>Your Choice</h4>
+                                <p>Capital respects your autonomy: "Which scenario aligns best with your values and risk tolerance?" You decide.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="note-box">
+                        <strong>Important:</strong> Capital does not provide personal financial advice. Capital educates you to make informed decisions. Always consult qualified financial advisors for significant financial decisions.
+                    </div>
+                </section>
+
+                <!-- MOMENTUM COACH -->
+                <section id="momentum" class="section-content">
+                    <h1>◆ Momentum: Business & Entrepreneurship Coaching</h1>
+                    <p class="subheading">Challenge assumptions. Demand evidence. Accelerate growth.</p>
+
+                    <div class="bg-momentum" style="padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                        <h4 style="margin-top: 0; color: #2A7A45;">Your Business Acceleration Coach</h4>
+                        <p>Momentum is your coach for business strategy, entrepreneurship, and sustainable growth. Direct and evidence-focused, Momentum challenges your assumptions, demands proof, and pushes you past excuses toward revenue and impact.</p>
+                    </div>
+
+                    <h3>Core Focus Areas</h3>
+                    <ul>
+                        <li><strong>Revenue Strategy:</strong> Turn ideas into income; optimize your revenue model</li>
+                        <li><strong>Assumption Testing:</strong> Question what you think you know; demand evidence</li>
+                        <li><strong>Prioritization:</strong> Cut low-impact activities; focus on high-leverage moves</li>
+                        <li><strong>Motivation & Accountability:</strong> Push through obstacles; sustain momentum through plateaus</li>
+                    </ul>
+
+                    <h3>Momentum's Style: Direct & Challenging</h3>
+                    <p>Momentum is your toughest coach. Momentum doesn't accept excuses:</p>
+                    <ul>
+                        <li>"You say you don't have time. What are you prioritizing instead of revenue?"</li>
+                        <li>"What evidence do you have that this will work?"</li>
+                        <li>"That's a limiting belief. What would you do if you knew you couldn't fail?"</li>
+                        <li>"You've been saying this for 3 months. What's the actual blocker?"</li>
+                    </ul>
+
+                    <div class="coach-feature-box momentum">
+                        <h4>When to Use Momentum</h4>
+                        <p><strong>Start a Momentum session when:</strong></p>
+                        <ul>
+                            <li>You're stuck on a business decision</li>
+                            <li>You're avoiding a hard conversation or action</li>
+                            <li>You're not seeing the revenue progress you want</li>
+                            <li>You need to prioritize ruthlessly</li>
+                            <li>You're doubting yourself and need a reality check</li>
+                        </ul>
+                    </div>
+
+                    <h3>A Momentum Conversation (Step-by-Step)</h3>
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>State Your Situation</h4>
+                                <p>You share your business challenge: "We're not converting schools fast enough" or "I don't know if I should hire."</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Evidence Request</h4>
+                                <p>Momentum asks: "What data do you have? What's the actual metric?" You ground yourself in facts, not feelings.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Assumption Interrogation</h4>
+                                <p>Momentum challenges your assumptions: "You assume X. But is that true? What if it's actually Y?" You uncover hidden beliefs driving decisions.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Obstacle Naming</h4>
+                                <p>Momentum asks: "What's the real blocker?" You name the true obstacle, not the symptom.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h4>Action Clarity</h4>
+                                <p>Momentum helps you commit: "What's the one action that moves the needle most?" You choose the highest-leverage move.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">6</div>
+                            <div class="step-content">
+                                <h4>Accountability Check</h4>
+                                <p>Momentum holds you accountable: "When will you do this? What will I see as proof next time?" You commit to measurable progress.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tip-box">
+                        <strong>Momentum Mindset:</strong> Your business grows through evidence-based decisions and consistent high-leverage action. Momentum helps you think like an entrepreneur, not an employee.
+                    </div>
+                </section>
+
+                <!-- FUEL COACH -->
+                <section id="fuel" class="section-content">
+                    <h1>◉ Fuel: Health & Physical Performance Optimization</h1>
+                    <p class="subheading">Sleep. Movement. Energy. Performance.</p>
+
+                    <div class="bg-fuel" style="padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                        <h4 style="margin-top: 0; color: #C44B2B;">Your Physical Performance Coach</h4>
+                        <p>Fuel is your coach for sleep, movement, energy, and athletic performance. Evidence-based and terse, Fuel gives you the high-impact health practices that compound into peak physical condition.</p>
+                    </div>
+
+                    <h3>Core Focus Areas</h3>
+                    <ul>
+                        <li><strong>Sleep Optimization:</strong> 8 hours deep, restorative sleep as your foundation</li>
+                        <li><strong>Movement & Exercise:</strong> Strategic training matched to your goals</li>
+                        <li><strong>Performance Metrics:</strong> VO2 max, body composition, recovery, injury prevention</li>
+                        <li><strong>Energy Management:</strong> Fuel timing, hydration, stress recovery</li>
+                    </ul>
+
+                    <h3>Fuel's Approach: Minimal Words, Maximum Impact</h3>
+                    <p>Fuel doesn't waste words. No motivational fluff. Just the science and the practice:</p>
+                    <ul>
+                        <li>"You need 8 hours. Non-negotiable."</li>
+                        <li>"One change at a time. Master sleep first. Then add movement."</li>
+                        <li>"What's your current VO2 max? Here's how to improve it."</li>
+                    </ul>
+
+                    <div class="coach-feature-box fuel">
+                        <h4>When to Use Fuel</h4>
+                        <p><strong>Start a Fuel session when:</strong></p>
+                        <ul>
+                            <li>You want to optimize your sleep</li>
+                            <li>You're building or adjusting your exercise routine</li>
+                            <li>You want to improve an athletic metric</li>
+                            <li>You're managing energy or recovery</li>
+                            <li>You want to prevent or address an injury</li>
+                        </ul>
+                    </div>
+
+                    <h3>A Fuel Conversation (Step-by-Step)</h3>
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Data Share</h4>
+                                <p>You share your current health data: sleep hours, exercise frequency, any performance metrics you're tracking.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Gap Analysis</h4>
+                                <p>Fuel identifies gaps: "You're getting 6.5 hours. Your non-negotiable is 8. Here's the cost of that gap."</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Root Cause</h4>
+                                <p>Fuel asks: "Why aren't you sleeping 8? Bedtime too late? Wake-ups? Quality issue?" You identify the actual blocker.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>One Change</h4>
+                                <p>Fuel recommends one change: "Move bedtime 30 minutes earlier" or "No screens after 9pm." One change, not five.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h4>Implementation</h4>
+                                <p>Fuel explains the why: "Here's the science behind this change. Here's what to expect in week 1, week 2."</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">6</div>
+                            <div class="step-content">
+                                <h4>Measurement</h4>
+                                <p>Fuel sets the tracking: "Check back in 2 weeks. Tell me your sleep hours and quality. Then we add the next change."</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="note-box">
+                        <strong>Fuel's Philosophy:</strong> Sleep is the foundation. Everything else builds on it. Master sleep first. Then movement. Then performance metrics. One change at a time, two weeks at a time.
+                    </div>
+                </section>
+
+                <!-- ANCHOR COACH -->
+                <section id="anchor" class="section-content">
+                    <h1>◍ Anchor: Relationship Optimization</h1>
+                    <p class="subheading">Deepen connection. Improve communication. Heal ruptures.</p>
+
+                    <div class="bg-anchor" style="padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                        <h4 style="margin-top: 0; color: #B83B6A;">Your Relationship Wisdom Coach</h4>
+                        <p>Anchor is your coach for marriage, partnerships, and deep relationships. Rooted in Gottman research and attachment theory, Anchor helps you build secure relationships and navigate conflict with skill.</p>
+                    </div>
+
+                    <h3>Core Focus Areas</h3>
+                    <ul>
+                        <li><strong>Secure Attachment:</strong> Build safety and trust in your primary relationship</li>
+                        <li><strong>Conflict Resolution:</strong> Navigate disagreements without rupturing connection</li>
+                        <li><strong>Communication Patterns:</strong> Replace criticism with curiosity; replace defensiveness with accountability</li>
+                        <li><strong>Intimacy & Connection:</strong> Deepen emotional and physical intimacy</li>
+                    </ul>
+
+                    <h3>Anchor's Approach: Gottman-Based, Two Modes</h3>
+                    <p>Anchor offers two engagement modes:</p>
+
+                    <div class="coach-feature-box anchor">
+                        <h4>Mode 1: Solo (Individual Reflection)</h4>
+                        <p>You engage with Anchor alone to reflect on your relationship patterns, your attachment style, your communication habits, and your growth edges. Anchor asks questions like: "What do you notice yourself doing when your partner raises a conflict?" or "What do you need to feel secure in this relationship?"</p>
+                    </div>
+
+                    <div class="coach-feature-box anchor">
+                        <h4>Mode 2: Couple (Facilitated Dialogue)</h4>
+                        <p>You and your partner engage with Anchor together. Anchor facilitates structured conversations where both of you feel heard, understood, and safe to be vulnerable. Anchor might guide: "Tell your partner one thing you appreciate about them and why." Or: "Tell your partner what you need from them right now."</p>
+                    </div>
+
+                    <h3>When to Use Anchor (Solo)</h3>
+                    <ul>
+                        <li>You want to understand your attachment patterns</li>
+                        <li>You're processing conflict before talking to your partner</li>
+                        <li>You want to build your communication skills</li>
+                        <li>You want to deepen your self-awareness in relationships</li>
+                    </ul>
+
+                    <h3>When to Use Anchor (Couple)</h3>
+                    <ul>
+                        <li>You and your partner want to deepen your connection</li>
+                        <li>You're navigating a conflict and need a skilled facilitator</li>
+                        <li>You want to improve your communication as a team</li>
+                        <li>You want structured time for deep conversation</li>
+                    </ul>
+
+                    <h3>A Solo Anchor Conversation (Step-by-Step)</h3>
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Relationship Check-In</h4>
+                                <p>Anchor asks: "How's your primary relationship right now? What's alive for you?" You share what's on your mind.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Pattern Recognition</h4>
+                                <p>Anchor helps you notice patterns: "When your partner does X, you respond by Y. Is that serving you?" You see your automatic reactions.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Attachment Exploration</h4>
+                                <p>Anchor explores your attachment needs: "When you feel disconnected, what do you actually need? Safety? Reassurance? Understanding?" You clarify your deepest needs.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Skill Building</h4>
+                                <p>Anchor teaches you a communication skill: how to express a need without blame, how to receive feedback without defensiveness, how to repair after conflict.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h4>Commitment</h4>
+                                <p>Anchor invites you to try: "Next time this situation comes up, try this approach. Notice what happens." You practice the new skill.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>A Couple Anchor Conversation (Step-by-Step)</h3>
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Safe Container</h4>
+                                <p>Anchor establishes: "This is a safe space. Both of you will be heard. No interrupting. No contempt." You both agree to the agreements.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Appreciation Round</h4>
+                                <p>Anchor starts with: "Tell each other one thing you appreciate and why." You both give and receive appreciation. This creates safety.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Share & Listen</h4>
+                                <p>One partner shares their perspective. The other listens without interrupting. Anchor ensures both voices are heard.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Seek Understanding</h4>
+                                <p>Anchor guides the listening partner to ask: "What I hear you saying is... Is that right?" You confirm understanding.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h4>Shift & Repair</h4>
+                                <p>Anchor asks: "What do you need from each other moving forward?" You collaborate on solutions.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- DAILY CHECK-INS -->
+                <section id="daily-checkins" class="section-content">
+                    <h1>Daily Check-ins: Your Daily Feedback Loop</h1>
+                    <p class="subheading">5 minutes in the morning. 5 minutes in the evening. Infinite insight.</p>
+
+                    <p>Daily check-ins are the heartbeat of Life-OS. By taking 5 minutes each morning and evening to reflect on your state, you create a feedback loop that builds self-awareness and helps coaches give better guidance.</p>
+
+                    <h2>Morning Check-in (6 Cards)</h2>
+                    <p>Complete these 6 cards every morning. Takes about 5 minutes.</p>
+
+                    <h3>Card 1: Current Mood</h3>
+                    <p><strong>Prompt:</strong> "How are you feeling right now?"</p>
+                    <p>Rate your mood 1-10 (1 = terrible, 10 = amazing) and pick a word that describes it: anxious, energized, calm, overwhelmed, hopeful, etc. This gives Clarity a starting point for your emotional landscape.</p>
+
+                    <h3>Card 2: Sleep Data</h3>
+                    <p><strong>Prompt:</strong> "How did you sleep last night?"</p>
+                    <p>Report: hours slept (e.g., 7.5) and quality 1-10 (1 = terrible, 10 = perfect). Fuel uses this to track patterns and help you optimize.</p>
+
+                    <h3>Card 3: Yesterday's Exercise</h3>
+                    <p><strong>Prompt:</strong> "Did you exercise yesterday?"</p>
+                    <p>Yes or No, and if yes, what type (e.g., "30 min run", "Strength session", "Yoga"). Fuel tracks your movement consistency.</p>
+
+                    <h3>Card 4: SAIL Action for Today</h3>
+                    <p><strong>Prompt:</strong> "What's your SAIL Education priority for today?"</p>
+                    <p>One concrete action for your business. "Close 2 school demos" or "Finish sales deck." Momentum holds you accountable. (This is your Momentum non-negotiable if that's one of your three.)</p>
+
+                    <h3>Card 5: Relationship Intention</h3>
+                    <p><strong>Prompt:</strong> "What's your relationship intention for today?"</p>
+                    <p>One way you'll show up for your partner today. "I'll ask about her day" or "I'll have a 15-min conversation without my phone." Anchor tracks connection.</p>
+
+                    <h3>Card 6: Energy for Today</h3>
+                    <p><strong>Prompt:</strong> "What's your energy going into today?"</p>
+                    <p>Rate 1-10 (1 = exhausted, 10 = unstoppable). This helps coaches calibrate their intensity and helps you pace your commitments.</p>
+
+                    <div class="note-box">
+                        <strong>Morning Check-in Impact:</strong> By the end of week 1, you'll notice patterns. You'll see how sleep impacts mood impacts energy. You'll start to predict your day based on your morning check-in.
+                    </div>
+
+                    <h2>Evening Check-in (5 Cards)</h2>
+                    <p>Complete these 5 cards every evening. Takes about 5 minutes.</p>
+
+                    <h3>Card 1: SAIL Completion</h3>
+                    <p><strong>Prompt:</strong> "Did you complete your SAIL action today?"</p>
+                    <p>Yes, No, or Partial. If partial, what got in the way? Momentum wants to see completion patterns and help you remove obstacles.</p>
+
+                    <h3>Card 2: End-of-Day Energy</h3>
+                    <p><strong>Prompt:</strong> "What's your energy level now?"</p>
+                    <p>Rate 1-10. Compare to this morning. Did your energy rise, fall, or stay steady? This shows you what activities energize vs. drain you.</p>
+
+                    <h3>Card 3: Daily Stress Level</h3>
+                    <p><strong>Prompt:</strong> "What was your stress level today?"</p>
+                    <p>Rate 1-10. Clarity uses this to understand your reactivity patterns and stress drivers.</p>
+
+                    <h3>Card 4: Win/Achievement</h3>
+                    <p><strong>Prompt:</strong> "What's one win or achievement today?"</p>
+                    <p>Something you did well, learned, or accomplished. Can be big or small. "Closed a deal" or "Stayed calm during a frustration." This trains your brain to notice the good and builds positive momentum.</p>
+
+                    <h3>Card 5: Friction Tracking</h3>
+                    <p><strong>Prompt:</strong> "Any friction or difficulty today?"</p>
+                    <p>What happened, how did you respond, what do you wish you'd done differently? This is your friction log. Over time, patterns emerge. You might notice: "I get snappy with my partner after back-to-back meetings" or "I overspend when stressed."</p>
+
+                    <div class="tip-box">
+                        <strong>Friction Tracking Gold:</strong> The friction card is where self-awareness compounds. Keep doing this for 12 weeks, and you'll have a detailed map of your automatic reactions. This is pure data for Clarity and Anchor to work with.
+                    </div>
+
+                    <div class="note-box">
+                        <strong>Privacy Note:</strong> All check-in data is encrypted and visible only to you and your coaches. Use the friction card to be radically honest.
+                    </div>
+                </section>
+
+                <!-- STORM MODE -->
+                <section id="storm-mode" class="section-content">
+                    <h1>Storm Mode: Your Crisis Override</h1>
+                    <p class="subheading">When life gets intense, Storm Mode protects what matters most.</p>
+
+                    <h3>What is Storm Mode?</h3>
+                    <p>Life-OS is built for sustained daily practice. But sometimes life throws you a storm: a family crisis, a business emergency, a health issue, a major loss. Storm Mode is your emergency operating system. It simplifies everything to protect your three non-negotiables while you're in crisis.</p>
+
+                    <h3>When Storm Mode Activates</h3>
+                    <p>Storm Mode automatically activates when:</p>
+                    <ul>
+                        <li>You indicate you're unavailable for 2+ weeks</li>
+                        <li>Your stress level is 9+ for 3 consecutive days</li>
+                        <li>You manually trigger Storm Mode</li>
+                    </ul>
+
+                    <p>Once activated, you'll see the Storm Mode flow instead of your normal Life-OS home screen.</p>
+
+                    <h3>The Storm Mode Flow</h3>
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Welcome Back</h4>
+                                <p>Clarity acknowledges: "I see you're in a storm. I'm here to help you navigate. Let's focus on what matters most."</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Non-Negotiables Check</h4>
+                                <p>Fuel asks: "Can you protect your three non-negotiables right now? Which ones? Which are at risk?" You're honest about what you can and can't maintain.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Obstacle Reflection</h4>
+                                <p>Momentum asks: "What's the storm? What's your biggest obstacle right now?" You name what you're facing.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Storm Mode Practice</h4>
+                                <p>One simplified coach session on what matters most right now. Everything else pauses. You get support for the actual crisis, not the normal rhythm.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Protecting Your Non-Negotiables During Crisis</h3>
+                    <p>Storm Mode asks: which of your three non-negotiables are truly non-negotiable during the crisis?</p>
+
+                    <p><strong>Example:</strong> Your three non-negotiables are: (1) 8 hours sleep, (2) one hour SAIL work daily, (3) one meaningful conversation with partner daily.</p>
+
+                    <p>A family health crisis hits. Suddenly, (1) sleep is hard—anxiety keeps you up. (2) SAIL work feels impossible—your mind is elsewhere. (3) You're both stressed and distant.</p>
+
+                    <p>Storm Mode reprioritizes: "Let's protect #3—maybe it becomes 10 minutes of genuine connection, not an hour conversation. Let's protect sleep—here are three practices. Let's pause #2 for now. Your business will survive."</p>
+
+                    <h3>Friction Logging in Storm Mode</h3>
+                    <p>Continue logging friction even in Storm Mode. Your friction log during crisis is incredibly valuable. It helps you see patterns like: "When I'm stressed, I catastrophize" or "I snap at my partner when I'm anxious."</p>
+
+                    <p>After the storm passes, your coaches will review these patterns with you to build resilience for next time.</p>
+
+                    <div class="tip-box">
+                        <strong>Storm Mode Wisdom:</strong> You don't fail during a storm. Storms are storms. A non-negotiable is something you protect with intention, but you're human. Storm Mode recognizes that some storms require triage. You protect what you can, you give yourself grace for what you can't, and you resume as soon as the storm passes.
+                    </div>
+                </section>
+
+                <!-- FEAR SETTING -->
+                <section id="fear-setting" class="section-content">
+                    <h1>Fear Setting: Structured Fear Processing</h1>
+                    <p class="subheading">Confront your anxieties with evidence and strategy.</p>
+
+                    <h3>What is Fear Setting?</h3>
+                    <p>Fear Setting is a structured process (adapted from Tim Ferriss) for processing anxiety and fear. Instead of letting fear paralyze you, Fear Setting helps you name the fear, assess its likelihood, and build a strategy to handle it.</p>
+
+                    <p>Fear Setting is a Clarity feature. You can initiate a Fear Setting session anytime you're anxious about something (business, relationship, health, finances, etc.).</p>
+
+                    <h3>The Five Steps of Fear Setting</h3>
+
+                    <h3>Step 1: Define the Worst-Case Scenario</h3>
+                    <p><strong>Prompt:</strong> "What's the worst thing that could happen?"</p>
+                    <p>Get specific. Don't say "My business fails." Say: "I run out of capital, can't pay my team, have to shut down SAIL Education, disappoint my investors, look like a failure, and can't find another job because I'm overqualified for most roles."</p>
+
+                    <p>Write it all out. The specificity is important. Vague fears are bigger in your mind than clearly named fears.</p>
+
+                    <h3>Step 2: Assess Probability</h3>
+                    <p><strong>Prompt:</strong> "What's the percent chance this actually happens?"</p>
+                    <p>Be honest. If you're capitalized for 18 months and have a healthy pipeline, maybe it's 5%. If you have no buffer and no sales, maybe it's 40%. Don't minimize or catastrophize—just be real.</p>
+
+                    <h3>Step 3: Outline Prevention Strategies</h3>
+                    <p><strong>Prompt:</strong> "How can I prevent this scenario?"</p>
+                    <p>What actions reduce the probability? If the fear is "My relationship deteriorates," prevention might be: weekly date nights, regular deep conversations, therapy if things get rocky. List 3-5 concrete prevention actions.</p>
+
+                    <h3>Step 4: Mitigation Plan</h3>
+                    <p><strong>Prompt:</strong> "If this happens, what's my survival plan?"</p>
+                    <p>Even if the worst happens, you'll survive. For business failure: you have savings for 6 months, you can freelance, your skills are valuable. For relationship crisis: you'd go to couples therapy, you have supportive friends, you can take space to reflect. Map out your mitigation.</p>
+
+                    <h3>Step 5: Repair Plan</h3>
+                    <p><strong>Prompt:</strong> "After the event, how do I repair or reset?"</p>
+                    <p>This is underrated. Fear often includes: "And I'll never recover from this." But you will. Your repair plan is: I rebuild the business from lessons learned, or I invest in the relationship, or I take time to heal and create a new vision.</p>
+
+                    <h3>When to Use Fear Setting</h3>
+                    <ul>
+                        <li>Before a big decision (quitting, hiring, investing)</li>
+                        <li>When anxiety is holding you back</li>
+                        <li>When you're procrastinating due to fear</li>
+                        <li>When you need to move forward despite uncertainty</li>
+                    </ul>
+
+                    <div class="coach-feature-box clarity">
+                        <h4>Fear Setting Outcome</h4>
+                        <p>Most people find that after Fear Setting, the anxiety shrinks. By naming the worst case, assessing probability, and creating plans, you take your power back from the amorphous fear. You move from "What if everything goes wrong?" to "Here's what could go wrong, here's my plan, here's how I'll recover."</p>
+                    </div>
+                </section>
+
+                <!-- HARD QUESTIONS -->
+                <section id="hard-questions" class="section-content">
+                    <h1>Hard Questions: Meta-Coaching Feature</h1>
+                    <p class="subheading">When your intentions and behaviors don't match, hard questions show up.</p>
+
+                    <h3>What are Hard Questions?</h3>
+                    <p>Hard Questions are generated by your coaches when they detect an intention-behavior gap. You might say "I want to be healthier," but your sleep is 5 hours and you're not exercising. You might say "My business is my priority," but you haven't called a school in two weeks.</p>
+
+                    <p>Hard Questions are your coaches' way of lovingly calling you on the gap between what you say you value and what you're actually doing.</p>
+
+                    <p><strong>Example Hard Questions:</strong></p>
+                    <ul>
+                        <li>"You say your marriage is a priority, but you and your partner haven't had a real conversation in 10 days. What's getting in the way?"</li>
+                        <li>"You set a non-negotiable of 8 hours sleep, but you've hit it only 3 times this month. What belief is driving this gap?"</li>
+                        <li>"You're anxious about money, but you haven't talked to Capital in two weeks. What are you avoiding?"</li>
+                        <li>"You want to close schools, but you've been 'preparing' for three weeks. What's the actual blocker?"</li>
+                    </ul>
+
+                    <h3>How Hard Questions are Generated</h3>
+                    <p>Your coaches analyze three data streams:</p>
+                    <ul>
+                        <li><strong>Check-in Data:</strong> Your daily mood, stress, energy, friction, wins</li>
+                        <li><strong>Your Stated Priorities:</strong> Your Future Self Statement, non-negotiables, goals</li>
+                        <li><strong>Your Behavior:</strong> Which coaches you're visiting, what actions you're taking, what you're neglecting</li>
+                    </ul>
+
+                    <p>When there's a gap between priority and behavior, a Hard Question appears.</p>
+
+                    <h3>Engaging with Uncomfortable Questions</h3>
+                    <p>Hard Questions can sting. They're meant to. Here's how to engage:</p>
+
+                    <ol>
+                        <li><strong>Don't defend.</strong> Your first instinct is "That's not fair" or "I have a reason." Pause. Listen.</li>
+                        <li><strong>Get curious.</strong> Ask yourself: "Is this true? Is there a grain of truth here?"</li>
+                        <li><strong>Go deeper.</strong> Click into the Hard Question. Your coach will guide you with follow-ups: "What's underneath this gap? Fear? Doubt? Competing priorities?"</li>
+                        <li><strong>Commit or decide.</strong> Either: (a) "I realize this isn't actually a priority. I'm changing my non-negotiables," or (b) "This is a priority, and here's how I'm going to close the gap."</li>
+                    </ol>
+
+                    <h3>Building Self-Awareness Through Reflection</h3>
+                    <p>Hard Questions are one of the most powerful self-awareness tools in Life-OS. They force honesty. Over 12 weeks of engaging with Hard Questions, you'll know yourself far better. You'll understand your patterns, your self-deceptions, your real priorities versus your stated priorities.</p>
+
+                    <div class="tip-box">
+                        <strong>Pro Tip:</strong> Save Hard Questions for when you have time to sit with them. Don't dismiss and move on. Journal about them. Discuss them with a trusted friend. They're gifts from your coaches.
+                    </div>
+                </section>
+
+                <!-- LIFE MAP -->
+                <section id="life-map" class="section-content">
+                    <h1>Life Map: Multi-Week Visualization</h1>
+                    <p class="subheading">See your life patterns at a glance. Track streaks. Spot friction.</p>
+
+                    <h3>What is the Life Map?</h3>
+                    <p>The Life Map is a visual calendar showing your last 3, 4, or 8 weeks of Life-OS engagement. It's color-coded by domain and highlights patterns, streaks, and friction events.</p>
+
+                    <h3>Life Map Views</h3>
+                    <ul>
+                        <li><strong>3-Week View:</strong> Detailed look at the most recent three weeks</li>
+                        <li><strong>4-Week View:</strong> Monthly patterns (one lunar month)</li>
+                        <li><strong>8-Week View:</strong> Two-month trends</li>
+                    </ul>
+
+                    <h3>Domain-Based Color Coding</h3>
+                    <p>Each day on the Life Map shows colors for domains you engaged with:</p>
+                    <ul>
+                        <li><span class="color-clarity">Purple = Clarity (Mental)</span></li>
+                        <li><span class="color-capital">Gold = Capital (Finance)</span></li>
+                        <li><span class="color-momentum">Green = Momentum (Business)</span></li>
+                        <li><span class="color-fuel">Orange = Fuel (Health)</span></li>
+                        <li><span class="color-anchor">Pink = Anchor (Relationships)</span></li>
+                    </ul>
+
+                    <p>A day with all five colors means you engaged with all five coaches (or did all five check-in cards). A day with only one or two colors means you focused narrowly.</p>
+
+                    <h3>Friction Event Highlighting</h3>
+                    <p>Days where you logged friction in your evening check-in are highlighted with a small alert icon. Over weeks, patterns emerge:</p>
+                    <ul>
+                        <li>"Friction spikes on Mondays after the weekend" → suggests weekend-to-weekday transitions are hard</li>
+                        <li>"Friction after back-to-back meetings" → suggests you need transition time</li>
+                        <li>"Friction when I skip sleep" → clear pattern</li>
+                    </ul>
+
+                    <h3>Streak Tracking for Non-Negotiables</h3>
+                    <p>The Life Map shows your streaks for each non-negotiable:</p>
+                    <ul>
+                        <li>"8 hours sleep: 14-day streak" ✓</li>
+                        <li>"One meaningful conversation: 7-day streak" ✓</li>
+                        <li>"2 hours SAIL work: 3-day streak" (just restarted) ✓</li>
+                    </ul>
+
+                    <p>Streaks build momentum. When you break a streak, the Life Map shows it clearly, which motivates you to get back on track.</p>
+
+                    <h3>Reading Your Life Map Patterns</h3>
+                    <p>Use these questions to interpret your Life Map:</p>
+                    <ul>
+                        <li>"Which domains am I neglecting?" (If I see no gold for three weeks, I'm avoiding Capital.)</li>
+                        <li>"When is my stress highest?" (Looking at friction spikes and stress ratings.)</li>
+                        <li>"What breaks my non-negotiable streaks?" (Are there predictable breaking points?)</li>
+                        <li>"What helps me thrive?" (Comparing high-energy days to check-in data.)</li>
+                        <li>"What's my sustainable rhythm?" (If I see I do best with 3-4 coach sessions per week, that's my rhythm.)</li>
+                    </ul>
+
+                    <div class="note-box">
+                        <strong>Monthly Life Map Review:</strong> At the end of each month, spend 10 minutes with your Life Map. What patterns do you see? Bring those insights to your monthly review conversation.
+                    </div>
+                </section>
+
+                <!-- FINANCE & RETIREMENT -->
+                <section id="finance" class="section-content">
+                    <h1>Finance & Retirement Tools</h1>
+                    <p class="subheading">Model your future. Understand your numbers. Build your plan.</p>
+
+                    <h3>Exchange Rate Tracking (CNY/USD)</h3>
+                    <p>If you're based in China and planning to retire elsewhere (or vice versa), exchange rates matter. Life-OS tracks your CNY-to-USD rate and recalculates your retirement projections as rates move.</p>
+
+                    <p><strong>Example:</strong> You want to retire at 55 on $120,000 USD annually. You're currently earning in CNY. When CNY weakens against USD, your purchasing power changes. Capital helps you understand this impact and adjust your plan.</p>
+
+                    <p><strong>How to Set It:</strong> Go to Settings, input today's exchange rate. As rates change, update it. Capital will show you historical rate trends and projections.</p>
+
+                    <h3>School Pipeline Tracking (EdTech Context)</h3>
+                    <p>If you're running an EdTech business like SAIL Education, Capital helps you model revenue impact of your school pipeline.</p>
+
+                    <p><strong>Metrics Tracked:</strong></p>
+                    <ul>
+                        <li>Schools in pipeline (awareness, interest, proposal, negotiation, closed)</li>
+                        <li>Conversion rates by stage</li>
+                        <li>Average contract value</li>
+                        <li>Revenue projections based on pipeline</li>
+                    </ul>
+
+                    <p>Over time, you see which pipeline stages are healthy vs. bottlenecks. You understand what conversion rate changes mean for revenue.</p>
+
+                    <h3>Finance Entries & Tracking</h3>
+                    <p>Log your financial transactions in Life-OS:</p>
+                    <ul>
+                        <li>Income (salary, revenue, investments, gifts)</li>
+                        <li>Expenses (fixed, variable, discretionary)</li>
+                        <li>Investments (stocks, funds, real estate, business)</li>
+                        <li>Savings (emergency fund, retirement, goals)</li>
+                    </ul>
+
+                    <p>Capital reviews your entries and helps you see patterns: "You're spending 40% of income on fixed costs" or "Your investments are 70% concentrated in one sector."</p>
+
+                    <h3>Retirement Scenario Modeling</h3>
+                    <p>Using your retirement parameters (target age, annual income, currency, location), Capital models scenarios:</p>
+
+                    <ul>
+                        <li><strong>Conservative:</strong> 3% withdrawal rate, market volatility impact</li>
+                        <li><strong>Moderate:</strong> 4% withdrawal rate, mixed assets</li>
+                        <li><strong>Optimistic:</strong> 5% withdrawal rate, higher risk assets</li>
+                    </ul>
+
+                    <p><strong>Example Output:</strong> "To retire at 55 on $120K USD annually in Bali, you need $3M in assets (assuming 4% withdrawal rate). Given your current savings rate of $50K/year, you'll reach that goal at age 52 if market returns average 6% annually."</p>
+
+                    <div class="coach-feature-box capital">
+                        <h4>Using Retirement Models for Decision-Making</h4>
+                        <p>When considering a job change, investment, or large expense, run it through Capital's retirement model. "If I reduce my savings rate by $10K/year, I retire 6 months later. Is that tradeoff worth it for better work-life balance?"</p>
+                    </div>
+                </section>
+
+                <!-- GOALS & NON-NEGOTIABLES -->
+                <section id="goals" class="section-content">
+                    <h1>Goals & Non-Negotiables: Your Commitment System</h1>
+                    <p class="subheading">Three core commitments. Quarterly goals. 12-month transformation.</p>
+
+                    <h3>Setting Your Three Non-Negotiables</h3>
+                    <p>Non-negotiables are your three core commitments—the things you protect no matter what. You set these during onboarding and can update them quarterly.</p>
+
+                    <p><strong>How to Choose Non-Negotiables:</strong></p>
+                    <ul>
+                        <li><strong>Specificity:</strong> "Good sleep" is vague. "8 hours sleep daily" is clear.</li>
+                        <li><strong>Impact:</strong> Each non-negotiable should meaningfully impact your life. "8 hours sleep" impacts energy, mood, health, business clarity. Pick high-impact.</li>
+                        <li><strong>Honestly Non-Negotiable:</strong> Not something you should do. Something you must do to be yourself.</li>
+                    </ul>
+
+                    <p><strong>Example Non-Negotiables:</strong></p>
+                    <ul>
+                        <li>"8 hours sleep every night"</li>
+                        <li>"One hour focused SAIL Education work daily (revenue-focused)"</li>
+                        <li>"One meaningful 30-minute conversation with my partner daily"</li>
+                    </ul>
+
+                    <h3>Goal Definition & Review</h3>
+                    <p>Beyond non-negotiables, you set goals for each quarter. These are outcomes you want to achieve in the next 13 weeks.</p>
+
+                    <p><strong>Goal Format (per coach domain):</strong></p>
+                    <ul>
+                        <li><strong>Clarity Goal:</strong> "Master emotional regulation in high-stress situations" (measured by: friction log pattern changes, stress rating trends)</li>
+                        <li><strong>Capital Goal:</strong> "Understand retirement math and run three scenarios for my future" (measured by: scenarios created, options evaluated)</li>
+                        <li><strong>Momentum Goal:</strong> "Close 5 schools for SAIL Education" (measured by: deals closed, revenue)</li>
+                        <li><strong>Fuel Goal:</strong> "Establish consistent 8-hour sleep habit" (measured by: nightly sleep hours, non-negotiable streak)</li>
+                        <li><strong>Anchor Goal:</strong> "Deepen emotional intimacy with my partner" (measured by: quality conversations, couple time, feedback from partner)</li>
+                    </ul>
+
+                    <h3>Quarterly Goal Adjustment</h3>
+                    <p>Every 13 weeks, you review your goals with your coaches in a Quarterly Review conversation:</p>
+                    <ul>
+                        <li>Did you hit your goals? Why or why not?</li>
+                        <li>What did you learn about yourself?</li>
+                        <li>What should your next quarter's goals be?</li>
+                        <li>Do your non-negotiables still feel right?</li>
+                    </ul>
+
+                    <p>This quarterly rhythm keeps you aligned and allows you to adjust course as you learn and grow.</p>
+
+                    <h3>Tracking Commitment to Non-Negotiables</h3>
+                    <p>Life-OS tracks your non-negotiable streaks daily. The Life Map shows your performance visually. Your coaches reference your streaks in conversations:</p>
+
+                    <p>Fuel: "You've hit 8 hours sleep for 14 days straight. What's changed? What made it possible?" This helps you understand and reinforce the habit.</p>
+
+                    <p>If you break a streak, your coaches don't shame you. They get curious: "You broke your sleep streak. What happened?" → Understanding the blocker → Building resilience.</p>
+
+                    <div class="tip-box">
+                        <strong>Non-Negotiable Wisdom:</strong> Non-negotiables aren't punishment. They're your foundation. When life is chaotic, you're not trying to optimize everything. You're just protecting these three things. Everything else is secondary. That focus is liberating.
+                    </div>
+                </section>
+
+                <!-- SETTINGS -->
+                <section id="settings" class="section-content">
+                    <h1>Settings: Personalize Your Life-OS</h1>
+                    <p class="subheading">Configure your system. Protect your data. Customize your experience.</p>
+
+                    <h3>Profile Management</h3>
+                    <p>Update your basic information anytime:</p>
+                    <ul>
+                        <li>Name and pronouns</li>
+                        <li>Date of birth</li>
+                        <li>Primary location</li>
+                        <li>Profile photo</li>
+                        <li>Bio/about (optional)</li>
+                    </ul>
+
+                    <h3>Exchange Rate Configuration</h3>
+                    <p>Set your primary currency and current exchange rates:</p>
+                    <ul>
+                        <li>Primary income currency (CNY, USD, etc.)</li>
+                        <li>Retirement currency (USD, EUR, etc.)</li>
+                        <li>Current exchange rate (update weekly if rate volatility matters for you)</li>
+                    </ul>
+
+                    <h3>Retirement Parameters</h3>
+                    <p>Update your retirement vision anytime:</p>
+                    <ul>
+                        <li>Target retirement age</li>
+                        <li>Annual income needed</li>
+                        <li>Primary currency</li>
+                        <li>Target location</li>
+                    </ul>
+
+                    <h3>Coach Preferences</h3>
+                    <p>Customize your coaching experience:</p>
+                    <ul>
+                        <li><strong>Recommended Coach Rotation:</strong> Which coach(es) do you want to engage with each day? (E.g., "Monday: Clarity, Wednesday: Momentum, Friday: Fuel")</li>
+                        <li><strong>Notification Preferences:</strong> How often do you want reminders for check-ins and coach sessions?</li>
+                        <li><strong>Coach Intensity:</strong> Want your coaches to push harder, or be gentler?</li>
+                    </ul>
+
+                    <h3>Data Management</h3>
+                    <ul>
+                        <li><strong>Export Your Data:</strong> Download all your check-in data, goal progress, and insights as a PDF or CSV</li>
+                        <li><strong>Privacy & Security:</strong> All data is encrypted. Choose what's visible to whom.</li>
+                        <li><strong>Account Deletion:</strong> Request permanent deletion of all your data</li>
+                    </ul>
+
+                    <div class="note-box">
+                        <strong>Data Security:</strong> Your Life-OS data is end-to-end encrypted. Coaches access your data to support you, but your private reflections are yours alone. Read our privacy policy for details.
+                    </div>
+                </section>
+
+                <!-- WEEKLY & MONTHLY RHYTHM -->
+                <section id="rhythm" class="section-content">
+                    <h1>Your Weekly & Monthly Rhythm</h1>
+                    <p class="subheading">Build a sustainable practice. Engage strategically. Compound growth.</p>
+
+                    <h3>Recommended Daily Routine</h3>
+                    <p><strong>5 minutes (Morning):</strong> Complete Morning Check-in</p>
+                    <ul>
+                        <li>Mood (1-10 + word)</li>
+                        <li>Sleep (hours + quality)</li>
+                        <li>Exercise yesterday (yes/no)</li>
+                        <li>SAIL action for today</li>
+                        <li>Relationship intention</li>
+                        <li>Energy for today (1-10)</li>
+                    </ul>
+
+                    <p><strong>10-15 minutes (Mid-morning or whenever):</strong> Coach Session (optional but recommended)</p>
+                    <ul>
+                        <li>Not required daily, but 3-4 per week is ideal</li>
+                        <li>Rotate between coaches based on your rhythm</li>
+                        <li>Sessions are conversational and usually 10-15 minutes</li>
+                    </ul>
+
+                    <p><strong>5 minutes (Evening):</strong> Complete Evening Check-in</p>
+                    <ul>
+                        <li>SAIL completion (yes/no/partial)</li>
+                        <li>End-of-day energy (1-10)</li>
+                        <li>Stress level (1-10)</li>
+                        <li>Win/achievement</li>
+                        <li>Friction (what, how responded, wish)</li>
+                    </ul>
+
+                    <p><strong>Total Daily Time: 20-30 minutes (including optional coach session)</strong></p>
+
+                    <h3>Recommended Weekly Coach Rotation</h3>
+                    <p>You don't need all five coaches every day. Here's an efficient weekly rhythm:</p>
+
+                    <table>
+                        <tr>
+                            <th>Day</th>
+                            <th>Coach Focus</th>
+                            <th>Why</th>
+                        </tr>
+                        <tr>
+                            <td>Monday</td>
+                            <td>Clarity</td>
+                            <td>Start the week grounded in your values and emotional state</td>
+                        </tr>
+                        <tr>
+                            <td>Tuesday</td>
+                            <td>Momentum</td>
+                            <td>Mid-week check: are you crushing your business goals?</td>
+                        </tr>
+                        <tr>
+                            <td>Wednesday</td>
+                            <td>Fuel</td>
+                            <td>Mid-week health reset: sleep, energy, movement</td>
+                        </tr>
+                        <tr>
+                            <td>Thursday</td>
+                            <td>Capital</td>
+                            <td>Financial check-in</td>
+                        </tr>
+                        <tr>
+                            <td>Friday</td>
+                            <td>Anchor</td>
+                            <td>End week by investing in your key relationship</td>
+                        </tr>
+                        <tr>
+                            <td>Saturday</td>
+                            <td>Optional: Clarity or Anchor</td>
+                            <td>Deepen or reset</td>
+                        </tr>
+                        <tr>
+                            <td>Sunday</td>
+                            <td>Optional: Review or rest</td>
+                            <td>Weekly review or full rest day</td>
+                        </tr>
+                    </table>
+
+                    <p><strong>Note:</strong> This is a suggestion. Customize to your rhythm. Some people do 4 coaches one week and 4 different coaches the next. Find what feels sustainable.</p>
+
+                    <h3>Monthly Review (Week 4)</h3>
+                    <p>One per month, dedicate 30 minutes to a deeper monthly review:</p>
+
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Life Map Review (10 minutes)</h4>
+                                <p>Look at your 4-week Life Map. What patterns do you see? Which domains did you neglect? When was your energy highest?</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Non-Negotiables Audit (5 minutes)</h4>
+                                <p>How many days did you hit each non-negotiable? 28/30? 15/30? What broke your streaks?</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Domain Deep-Dive (10 minutes)</h4>
+                                <p>Pick one domain. Review all your check-in data for that domain this month. What improved? What regressed?</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Next Month Intention (5 minutes)</h4>
+                                <p>What's one thing you want to focus on next month? One domain to prioritize? One habit to establish?</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Quarterly Goal Review (Every 13 Weeks)</h3>
+                    <p>Four times per year, have a deeper quarterly conversation with your coaches:</p>
+
+                    <ol>
+                        <li><strong>Goal Achievement:</strong> Did you hit your quarterly goals? What got in the way?</li>
+                        <li><strong>Breakthrough Insights:</strong> What did you learn about yourself?</li>
+                        <li><strong>Non-Negotiables Reflection:</strong> Are your three non-negotiables still serving you?</li>
+                        <li><strong>Next Quarter Goals:</strong> What do you want to achieve in the next 13 weeks?</li>
+                        <li><strong>12-Month Progress:</strong> How are you progressing toward your Future Self vision?</li>
+                    </ol>
+
+                    <div class="tip-box">
+                        <strong>Rhythm Wisdom:</strong> Life-OS is sustainable because it's rhythmic, not rigid. Daily check-ins take 10 minutes. Weekly coach sessions average 15 minutes. Monthly reviews take 30 minutes. Quarterly conversations take 45 minutes. Over a year, that's roughly 5 hours of intentional reflection. That compounds into a transformed life.
+                    </div>
+                </section>
+
+                <!-- FEATURES LIST -->
+                <section id="features" class="section-content">
+                    <h1>Complete Feature List</h1>
+                    <p class="subheading">All of Life-OS at a glance, organized by domain.</p>
+
+                    <table>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Domain(s)</th>
+                            <th>Purpose</th>
+                        </tr>
+                        <tr>
+                            <td>Morning Check-in (6 cards)</td>
+                            <td>All</td>
+                            <td>Daily reflection on mood, sleep, exercise, intentions, energy</td>
+                        </tr>
+                        <tr>
+                            <td>Evening Check-in (5 cards)</td>
+                            <td>All</td>
+                            <td>Daily reflection on goals, energy, stress, wins, friction</td>
+                        </tr>
+                        <tr>
+                            <td>Clarity Coach Sessions</td>
+                            <td>Mental/Emotional</td>
+                            <td>Socratic dialogue, emotional processing, values alignment</td>
+                        </tr>
+                        <tr>
+                            <td>Fear Setting</td>
+                            <td>Mental/Emotional</td>
+                            <td>Structured fear processing (5 steps)</td>
+                        </tr>
+                        <tr>
+                            <td>Hard Questions</td>
+                            <td>All</td>
+                            <td>AI-detected intention-behavior gaps</td>
+                        </tr>
+                        <tr>
+                            <td>Capital Coach Sessions</td>
+                            <td>Finance</td>
+                            <td>Financial literacy, retirement planning, scenario modeling</td>
+                        </tr>
+                        <tr>
+                            <td>Exchange Rate Tracking</td>
+                            <td>Finance</td>
+                            <td>CNY/USD currency management</td>
+                        </tr>
+                        <tr>
+                            <td>School Pipeline Tracking</td>
+                            <td>Finance/Business</td>
+                            <td>EdTech sales pipeline and revenue modeling</td>
+                        </tr>
+                        <tr>
+                            <td>Finance Entries & Tracking</td>
+                            <td>Finance</td>
+                            <td>Income, expenses, investments, savings logging</td>
+                        </tr>
+                        <tr>
+                            <td>Retirement Scenario Modeling</td>
+                            <td>Finance</td>
+                            <td>Financial projections based on target retirement parameters</td>
+                        </tr>
+                        <tr>
+                            <td>Momentum Coach Sessions</td>
+                            <td>Business</td>
+                            <td>Strategic business coaching, assumption testing, accountability</td>
+                        </tr>
+                        <tr>
+                            <td>Fuel Coach Sessions</td>
+                            <td>Health</td>
+                            <td>Sleep optimization, movement, performance metrics</td>
+                        </tr>
+                        <tr>
+                            <td>Health Metrics Tracking</td>
+                            <td>Health</td>
+                            <td>Sleep hours/quality, exercise type/frequency, vitality trends</td>
+                        </tr>
+                        <tr>
+                            <td>Anchor Coach Sessions (Solo)</td>
+                            <td>Relationships</td>
+                            <td>Individual relationship reflection</td>
+                        </tr>
+                        <tr>
+                            <td>Anchor Coach Sessions (Couple)</td>
+                            <td>Relationships</td>
+                            <td>Facilitated partner dialogue</td>
+                        </tr>
+                        <tr>
+                            <td>Storm Mode</td>
+                            <td>All</td>
+                            <td>Crisis override protecting non-negotiables</td>
+                        </tr>
+                        <tr>
+                            <td>Non-Negotiables Tracking</td>
+                            <td>All</td>
+                            <td>Streak tracking for your three core commitments</td>
+                        </tr>
+                        <tr>
+                            <td>Life Map (3/4/8 week views)</td>
+                            <td>All</td>
+                            <td>Visual calendar with color-coded domain engagement and friction</td>
+                        </tr>
+                        <tr>
+                            <td>Quarterly Goal Reviews</td>
+                            <td>All</td>
+                            <td>13-week goal review and planning</td>
+                        </tr>
+                        <tr>
+                            <td>Home Dashboard</td>
+                            <td>All</td>
+                            <td>Central hub showing stats, tasks, streaks, coach pulse, rhythm</td>
+                        </tr>
+                        <tr>
+                            <td>Profile Settings</td>
+                            <td>All</td>
+                            <td>Personal information, preferences, data management</td>
+                        </tr>
+                        <tr>
+                            <td>Coach Preferences</td>
+                            <td>All</td>
+                            <td>Customize coach rotation, intensity, notification frequency</td>
+                        </tr>
+                        <tr>
+                            <td>Data Export</td>
+                            <td>All</td>
+                            <td>Export all data as PDF or CSV</td>
+                        </tr>
+                    </table>
+
+                    <h3>Feature Summary by Domain</h3>
+
+                    <h4 class="color-clarity">◈ Clarity (Mental & Emotional)</h4>
+                    <ul>
+                        <li>Coach Sessions (Socratic method)</li>
+                        <li>Fear Setting</li>
+                        <li>Hard Questions</li>
+                        <li>Emotional check-ins (mood, stress)</li>
+                    </ul>
+
+                    <h4 class="color-capital">◎ Capital (Finance & Retirement)</h4>
+                    <ul>
+                        <li>Coach Sessions (financial literacy)</li>
+                        <li>Exchange Rate Tracking</li>
+                        <li>School Pipeline Tracking</li>
+                        <li>Finance Entries & Tracking</li>
+                        <li>Retirement Scenario Modeling</li>
+                    </ul>
+
+                    <h4 class="color-momentum">◆ Momentum (Business & Entrepreneurship)</h4>
+                    <ul>
+                        <li>Coach Sessions (direct, challenging)</li>
+                        <li>School Pipeline Tracking</li>
+                        <li>Business goal tracking</li>
+                        <li>Revenue metrics</li>
+                    </ul>
+
+                    <h4 class="color-fuel">◉ Fuel (Health & Performance)</h4>
+                    <ul>
+                        <li>Coach Sessions (evidence-based, terse)</li>
+                        <li>Sleep Tracking</li>
+                        <li>Exercise Logging</li>
+                        <li>Health Metrics & Vitality Trends</li>
+                    </ul>
+
+                    <h4 class="color-anchor">◍ Anchor (Relationships)</h4>
+                    <ul>
+                        <li>Coach Sessions (Solo mode)</li>
+                        <li>Coach Sessions (Couple mode)</li>
+                        <li>Relationship intention check-ins</li>
+                        <li>Gottman-based guidance</li>
+                    </ul>
+                </section>
+
+                <footer>
+                    SAIL Education © 2026 | Life-OS Manual
+                </footer>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Navigation
+        function navigateTo(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Update active nav link
+            document.querySelectorAll('.sidebar-nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`a[href="javascript:void(0)" data-target="${sectionId}"]`).classList.add('active');
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Collapsible sections
+        document.querySelectorAll('.collapsible').forEach(button => {
+            button.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                if (content && content.classList.contains('collapsible-content')) {
+                    content.classList.toggle('active');
+                }
+            });
+        });
+
+        // Search functionality
+        function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (!searchTerm) return;
+
+            const contentWrapper = document.querySelector('.content-wrapper');
+            const sections = document.querySelectorAll('.section-content');
+            let found = false;
+
+            sections.forEach(section => {
+                const text = section.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    const sectionId = section.id;
+                    navigateTo(sectionId);
+                    found = true;
+                }
+            });
+
+            if (!found) {
+                alert('No results found for "' + searchTerm + '"');
+            }
+        }
+
+        // Allow Enter key in search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Initialize first section as active
+        document.addEventListener('DOMContentLoaded', function() {
+            navigateTo('welcome');
+        });
+    </script>
+</body>
+</html>
