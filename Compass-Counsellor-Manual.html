@@ -862,8 +862,8 @@ tr:last-child td {
         </aside>
 
         <!-- MAIN CONTENT -->
-        <main class="main">
-            <div class="content-wrapper">
+        <div class="main-wrapper">
+        <main class="main-content">
 
                 <!-- WELCOME & OVERVIEW -->
                 <section id="welcome" class="section active">
@@ -2693,8 +2693,8 @@ tr:last-child td {
                     <p>SAIL Education © 2026 | Compass Counsellor v5 | Last updated Mar 28, 2026</p>
                     <p style="font-size: 0.85rem; margin-top: 0.5rem;">For support: compliance@sailedu.co</p>
                 </footer>
-            </div>
         </main>
+        </div>
     </div>
 
     <script>
@@ -2730,7 +2730,7 @@ tr:last-child td {
             const query = e.target.value.toLowerCase();
             if (!query) return;
 
-            const content = document.querySelector('.content-wrapper').innerText.toLowerCase();
+            const content = document.querySelector('.main-content').innerText.toLowerCase();
             const sections = document.querySelectorAll('.section');
 
             sections.forEach(section => {
