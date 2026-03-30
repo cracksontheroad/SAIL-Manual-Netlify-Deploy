@@ -45,3 +45,8 @@
   from = "/ielts"
   to = "/IELTS-OS-Manual.html"
   status = 200
+
+[[redirects]]
+  from = "/ecosystem"
+  to = "/SAIL-Ecosystem-Map.html"
+  status = 200
