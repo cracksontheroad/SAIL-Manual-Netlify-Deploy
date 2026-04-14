@@ -1,0 +1,2643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compass Manual - SAIL Education</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* === ANIMATIONS === */
+@keyframes float-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.4; }
+  50% { transform: translateY(-20px) translateX(10px); opacity: 0.8; }
+}
+@keyframes float-delayed-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.3; }
+  50% { transform: translateY(-15px) translateX(-10px); opacity: 0.7; }
+}
+@keyframes float-slow-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.2; }
+  50% { transform: translateY(-25px) translateX(5px); opacity: 0.6; }
+}
+@keyframes drift {
+  0% { transform: translateX(0px); }
+  100% { transform: translateX(20px); }
+}
+@keyframes orbit {
+  0% { transform: rotate(0deg) translateX(30px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
+}
+@keyframes breathing {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.1); }
+}
+@keyframes breathing-delayed {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.05); }
+}
+@keyframes rotate-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes slideInLeft {
+  0% { opacity: 0; transform: translateX(-50px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInDown {
+  0% { opacity: 0; transform: translateY(-30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.1); }
+  50% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), 0 0 30px rgba(255, 255, 255, 0.1); }
+}
+
+/* === RESET & BASE === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); border-radius: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: rgba(255,255,255,0.85);
+  background: #000;
+  line-height: 1.7;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* === IMMERSIVE BACKGROUND === */
+.immersive-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.immersive-bg .gradient-base {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1e1b4b 0%, #3b0764 40%, #0f172a 100%);
+}
+
+.immersive-bg .bg-image {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/8d0c8cab-aafd-4759-951d-82f748461c75_3840w.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.4;
+}
+
+/* Floating particles */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(1px);
+}
+.particle-1 { top: 25%; left: 33%; width: 2px; height: 2px; background: rgba(96,165,250,0.4); animation: float-glow 4s ease-in-out infinite; }
+.particle-2 { top: 75%; right: 25%; width: 1px; height: 1px; background: rgba(167,139,250,0.5); animation: float-delayed-glow 5s ease-in-out infinite; }
+.particle-3 { bottom: 33%; left: 50%; width: 1.5px; height: 1.5px; background: rgba(244,114,182,0.3); animation: float-slow-glow 6s ease-in-out infinite; }
+.particle-4 { top: 50%; right: 33%; width: 1px; height: 1px; background: rgba(34,211,238,0.4); animation: drift 8s ease-in-out infinite alternate; }
+.particle-5 { bottom: 25%; left: 25%; width: 2px; height: 2px; background: rgba(129,140,248,0.3); animation: orbit 15s linear infinite; }
+
+/* Ambient orbs */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+}
+.orb-1 { top: -50px; right: -50px; width: 384px; height: 384px; background: radial-gradient(circle, rgba(59,130,246,0.15), transparent); animation: breathing 4s ease-in-out infinite; }
+.orb-2 { bottom: -50px; left: -50px; width: 320px; height: 320px; background: radial-gradient(circle, rgba(168,85,247,0.2), transparent); animation: breathing-delayed 4s ease-in-out infinite 2s; }
+.orb-3 { top: 50%; left: 50%; width: 256px; height: 256px; background: radial-gradient(circle, rgba(236,72,153,0.1), transparent); animation: rotate-slow 20s linear infinite; }
+
+/* === LAYOUT === */
+.container {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* === GLASS SIDEBAR === */
+.sidebar, aside.sidebar {
+  width: 300px;
+  position: fixed;
+  top: 16px;
+  bottom: 16px;
+  left: 16px;
+  z-index: 100;
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  animation: slideInLeft 0.8s ease-out forwards;
+  transition: border-color 0.5s ease;
+  scrollbar-width: thin;
+}
+.sidebar:hover { border-color: rgba(255,255,255,0.25); }
+
+.sidebar-logo, .sidebar-header, .sidebar > div:first-child, .sidebar > h2:first-child {
+  padding: 28px 24px 16px;
+  font-size: 1.35em;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.sidebar-header h2, .sidebar-header h1 {
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: 700;
+  margin: 0;
+  padding: 0;
+  border: none;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-header p, .sidebar-header .version, .sidebar-version {
+  font-size: 0.8em;
+  color: rgba(255,255,255,0.5);
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+/* Sidebar search */
+.sidebar-search, .sidebar .search-container {
+  padding: 12px 20px 16px;
+}
+
+.sidebar-search input, .sidebar input[type="text"], .search-input {
+  width: 100%;
+  padding: 10px 14px 10px 38px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.08);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  color: #fff;
+  font-size: 0.85em;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  outline: none;
+}
+.sidebar-search input:focus, .sidebar input[type="text"]:focus, .search-input:focus {
+  border-color: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.12);
+}
+.sidebar-search input::placeholder, .sidebar input[type="text"]::placeholder, .search-input::placeholder {
+  color: rgba(255,255,255,0.4);
+}
+
+/* Sidebar navigation links - all variants */
+.sidebar-nav, .sidebar-menu, .sidebar nav, .nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px 20px;
+}
+
+.sidebar-nav a, .sidebar-menu a, .sidebar-menu li a, .sidebar nav a,
+.nav-link, .nav-item, a.nav-link, a.nav-item, button.nav-link {
+  display: block;
+  padding: 10px 16px;
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.88em;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  border: 1px solid transparent;
+  background: transparent;
+  text-align: left;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.4;
+}
+
+.sidebar-nav a:hover, .sidebar-menu a:hover, .sidebar-menu li a:hover, .sidebar nav a:hover,
+.nav-link:hover, .nav-item:hover, a.nav-link:hover, a.nav-item:hover, button.nav-link:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.9);
+  border-color: rgba(255,255,255,0.1);
+  transform: scale(1.02);
+}
+
+.sidebar-nav a.active, .sidebar-menu a.active, .sidebar-menu li a.active, .sidebar nav a.active,
+.nav-link.active, .nav-item.active, a.nav-link.active, a.nav-item.active, button.nav-link.active {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border-color: rgba(255,255,255,0.2);
+  font-weight: 600;
+  box-shadow: 0 0 15px rgba(255,255,255,0.05);
+}
+
+/* Sidebar section headings / group titles */
+.nav-section-title, .nav-group, .sidebar h3, .sidebar h4,
+.sidebar-menu > h3, .sidebar-menu > h4 {
+  font-size: 0.7em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.35);
+  padding: 18px 16px 6px;
+  margin: 0;
+  border: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.nav-section {
+  margin-bottom: 4px;
+}
+
+/* Sidebar list items without bullets */
+.sidebar-menu ul, .sidebar-menu ol, .sidebar nav ul, .sidebar nav ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* === MAIN CONTENT AREA === */
+.main-wrapper {
+  margin-left: 332px;
+  flex: 1;
+  min-height: 100vh;
+  padding: 16px 16px 16px 0;
+}
+
+.main-content, main.main-content {
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 48px 52px;
+  min-height: calc(100vh - 32px);
+  transition: border-color 0.5s ease;
+  animation: fadeIn 0.6s ease-out forwards;
+}
+.main-content:hover { border-color: rgba(255,255,255,0.25); }
+
+/* === CONTENT SECTIONS === */
+.content-section { display: none; animation: fadeIn 0.4s ease-out; }
+.content-section.active { display: block; }
+
+/* === TYPOGRAPHY === */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 2.2em;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 0.6em;
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h2 {
+  font-size: 1.6em;
+  font-weight: 600;
+  margin-top: 2em;
+  margin-bottom: 0.6em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  /* Override gradient text for h2 */
+  background: none;
+  -webkit-text-fill-color: #fff;
+}
+
+h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.4em;
+  color: rgba(255,255,255,0.95);
+}
+
+h4 {
+  font-size: 1.05em;
+  font-weight: 600;
+  margin-top: 1.2em;
+  margin-bottom: 0.3em;
+  color: rgba(255,255,255,0.9);
+}
+
+p {
+  margin-bottom: 1em;
+  color: rgba(255,255,255,0.75);
+}
+
+a { color: rgba(147,197,253,0.9); text-decoration: none; transition: color 0.3s; }
+a:hover { color: #fff; }
+
+strong, b { color: rgba(255,255,255,0.95); font-weight: 600; }
+
+code {
+  background: rgba(255,255,255,0.08);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  color: rgba(196,181,253,0.9);
+}
+
+ul, ol {
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+  color: rgba(255,255,255,0.75);
+}
+
+li { margin-bottom: 0.5em; }
+
+/* === STYLED BOXES (tip, note, ai, warning, milestone) === */
+.box {
+  padding: 20px 24px;
+  margin: 20px 0;
+  border-radius: 16px;
+  border-left: 3px solid;
+  background: rgba(255,255,255,0.04);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+}
+
+.box-title {
+  font-weight: 600;
+  color: rgba(255,255,255,0.95);
+  margin-bottom: 8px;
+}
+
+.box-tip, .box.tip {
+  border-left: 3px solid rgba(52,211,153,0.6);
+  background: rgba(52,211,153,0.06);
+}
+.box-tip::before, .box.tip::before { content: "💡 "; font-weight: bold; }
+
+.box-note, .box.note {
+  border-left: 3px solid rgba(251,191,36,0.6);
+  background: rgba(251,191,36,0.06);
+}
+.box-note::before, .box.note::before { content: "⚠️ "; font-weight: bold; }
+
+.box-ai, .box.ai-feature {
+  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15));
+  border-left: 3px solid rgba(168,85,247,0.6);
+  border: 1px solid rgba(168,85,247,0.2);
+}
+.box-ai::before, .box.ai-feature::before { content: "🤖 "; font-weight: bold; }
+.box-ai a { color: rgba(251,191,36,0.9); }
+
+.box.warning {
+  border-left: 3px solid rgba(239,68,68,0.6);
+  background: rgba(239,68,68,0.06);
+}
+
+.box.milestone {
+  border-left: 3px solid rgba(59,130,246,0.6);
+  background: rgba(59,130,246,0.06);
+}
+
+/* === STEPS === */
+.steps {
+  list-style: none;
+  padding: 0;
+  counter-reset: step-counter;
+}
+
+.steps li {
+  margin: 18px 0;
+  padding-left: 54px;
+  position: relative;
+  color: rgba(255,255,255,0.75);
+}
+
+.steps li::before {
+  content: counter(step-counter);
+  counter-increment: step-counter;
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.1);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+/* === CHECKLISTS === */
+.checklist {
+  list-style: none;
+  padding: 0;
+}
+
+.checklist li {
+  padding: 10px 0 10px 32px;
+  position: relative;
+  color: rgba(255,255,255,0.75);
+}
+
+.checklist li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: rgba(52,211,153,0.8);
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+/* === TABLES === */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 20px 0;
+  font-size: 0.9em;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+th {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.95);
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.7);
+}
+
+tr:hover td {
+  background: rgba(255,255,255,0.03);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* === ROLE BADGES === */
+.role-super-admin { color: rgba(56,189,248,0.9); font-weight: 600; }
+.role-admin { color: rgba(248,113,113,0.9); font-weight: 600; }
+.role-dept-head { color: rgba(167,139,250,0.9); font-weight: 600; }
+.role-teacher { color: rgba(52,211,153,0.9); font-weight: 600; }
+.role-student { color: rgba(129,140,248,0.9); font-weight: 600; }
+.role-parent { color: rgba(148,163,184,0.9); font-weight: 600; }
+
+.role-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.82em;
+  font-weight: 600;
+  margin-right: 5px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.role-badge.super-admin { background: rgba(56,189,248,0.12); color: rgba(56,189,248,0.9); border-color: rgba(56,189,248,0.2); }
+.role-badge.admin { background: rgba(248,113,113,0.12); color: rgba(248,113,113,0.9); border-color: rgba(248,113,113,0.2); }
+.role-badge.dept-head { background: rgba(167,139,250,0.12); color: rgba(167,139,250,0.9); border-color: rgba(167,139,250,0.2); }
+.role-badge.teacher { background: rgba(52,211,153,0.12); color: rgba(52,211,153,0.9); border-color: rgba(52,211,153,0.2); }
+.role-badge.student { background: rgba(129,140,248,0.12); color: rgba(129,140,248,0.9); border-color: rgba(129,140,248,0.2); }
+.role-badge.parent { background: rgba(148,163,184,0.12); color: rgba(148,163,184,0.9); border-color: rgba(148,163,184,0.2); }
+
+/* === COLLAPSIBLE === */
+.collapsible {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.9);
+  cursor: pointer;
+  padding: 16px 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  margin: 10px 0;
+  font-weight: 600;
+  font-size: 0.95em;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.collapsible:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  transform: scale(1.01);
+}
+
+.collapsible.active {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.25);
+  box-shadow: 0 0 20px rgba(255,255,255,0.05);
+}
+
+.collapsible-content {
+  display: none;
+  padding: 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-top: none;
+  border-radius: 0 0 14px 14px;
+  margin-top: -10px;
+}
+
+.collapsible-content.active {
+  display: block;
+}
+
+.collapsible-icon, .collapsible-arrow {
+  transition: transform 0.3s;
+  color: rgba(255,255,255,0.5);
+}
+
+.collapsible.active .collapsible-icon,
+.collapsible.active .collapsible-arrow {
+  transform: rotate(180deg);
+}
+
+/* === FEATURE GRID & CARDS === */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.feature-card {
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.feature-card h4 {
+  margin-top: 0;
+  color: rgba(255,255,255,0.95);
+}
+
+/* === ICON CIRCLE === */
+.icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+/* === FOOTER === */
+.footer {
+  background: rgba(255,255,255,0.04);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  padding: 24px;
+  margin-top: 48px;
+  border-radius: 0 0 24px 24px;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 0.85em;
+  color: rgba(255,255,255,0.4);
+}
+
+/* === UTILITY CLASSES === */
+.text-teal { color: rgba(52,211,153,0.9); }
+.text-center { text-align: center; }
+.mt-2 { margin-top: 2em; }
+.mb-2 { margin-bottom: 2em; }
+
+/* === STEP DESCRIPTION (SuperTeacher specific) === */
+.step-description {
+  color: rgba(255,255,255,0.65);
+  font-size: 0.9em;
+  margin-top: 4px;
+}
+
+/* Walkthrough step cards (SuperTeacher specific) */
+.setup-step, .step-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 12px 0;
+}
+
+/* === MOBILE RESPONSIVE === */
+@media (max-width: 900px) {
+  .sidebar, aside.sidebar {
+    position: fixed;
+    width: 280px;
+    left: -300px;
+    top: 0;
+    bottom: 0;
+    border-radius: 0 24px 24px 0;
+    transition: left 0.4s ease;
+    z-index: 200;
+  }
+  .sidebar.mobile-open { left: 0; }
+
+  .main-wrapper {
+    margin-left: 0;
+    padding: 16px;
+  }
+
+  .main-content, main.main-content {
+    padding: 28px 24px;
+    border-radius: 20px;
+  }
+
+  h1 { font-size: 1.6em; }
+  h2 { font-size: 1.3em; }
+  h3 { font-size: 1.1em; }
+
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 901px) {
+  .mobile-menu-btn { display: none !important; }
+  .mobile-overlay { display: none !important; }
+}
+
+.mobile-menu-btn {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 150;
+  width: 44px;
+  height: 44px;
+  background: rgba(255,255,255,0.1);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 14px;
+  color: #fff;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  transition: all 0.3s;
+}
+.mobile-menu-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
+
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  z-index: 150;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.mobile-overlay.active { opacity: 1; pointer-events: auto; }
+
+/* === PRINT CSS === */
+@media print {
+  .sidebar, aside.sidebar, .immersive-bg, .mobile-menu-btn, .mobile-overlay { display: none !important; }
+  .main-wrapper { margin-left: 0; }
+  .main-content, main.main-content {
+    max-width: 100%;
+    padding: 0;
+    background: #fff;
+    color: #000;
+    border: none;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  body { background: #fff; color: #000; }
+  .content-section { display: block !important; page-break-after: always; }
+  h1, h2, h3, h4 { color: #000; -webkit-text-fill-color: #000; background: none; }
+  p, li, td { color: #333; }
+  th { background: #eee; color: #000; }
+  .box { background: #f5f5f5; border-color: #ccc; }
+  .collapsible-content { display: block !important; }
+  .feature-card { background: #f5f5f5; border-color: #ddd; }
+}
+</style>
+</head>
+<body>
+<!-- Immersive Background -->
+<div class="immersive-bg">
+  <div class="gradient-base"></div>
+  <div class="bg-image"></div>
+  <div class="particle particle-1"></div>
+  <div class="particle particle-2"></div>
+  <div class="particle particle-3"></div>
+  <div class="particle particle-4"></div>
+  <div class="particle particle-5"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+<!-- Mobile Menu Button -->
+<button class="mobile-menu-btn" onclick="document.querySelector('.sidebar, aside.sidebar').classList.toggle('mobile-open'); document.querySelector('.mobile-overlay').classList.toggle('active');">☰</button>
+<div class="mobile-overlay" onclick="document.querySelector('.sidebar, aside.sidebar').classList.remove('mobile-open'); this.classList.remove('active');"></div>
+
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <img class="logo" src="icons/compass.png" alt="Compass" style="width:100px;height:100px;border-radius:14px;object-fit:cover;">
+            <h3>📚 Menu</h3>
+            <input type="text" class="sidebar-search" id="sidebarSearch" placeholder="Search sections...">
+            <ul class="sidebar-menu" id="sidebarMenu">
+                <li><a href="javascript:void(0)" data-target="welcome">Welcome & Overview</a></li>
+                <li><a href="javascript:void(0)" data-target="getting-started">Getting Started</a></li>
+                <li><a href="javascript:void(0)" data-target="dashboard">Dashboard</a></li>
+                <li><a href="javascript:void(0)" data-target="schools">Schools</a></li>
+                <li><a href="javascript:void(0)" data-target="activities">Activities</a></li>
+                <li><a href="javascript:void(0)" data-target="tests">Tests</a></li>
+                <li><a href="javascript:void(0)" data-target="roadmap">Roadmap & Milestones</a></li>
+                <li><a href="javascript:void(0)" data-target="gap-analysis">Gap Analysis</a></li>
+                <li><a href="javascript:void(0)" data-target="essay-workshop">Essay Workshop</a></li>
+                <li><a href="javascript:void(0)" data-target="journal">Reflection Journal</a></li>
+                <li><a href="javascript:void(0)" data-target="checkin">Monthly Check-in</a></li>
+                <li><a href="javascript:void(0)" data-target="counsellor">Counsellor Connections</a></li>
+                <li><a href="javascript:void(0)" data-target="settings">Settings</a></li>
+                <li><a href="javascript:void(0)" data-target="compliance">Compliance & Privacy</a></li>
+                <li><a href="javascript:void(0)" data-target="features">Feature List</a></li>
+            </ul>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-wrapper">
+        <main class="main-content">
+            <!-- HEADER -->
+            <div class="header">
+                <h1>🧭 Compass Manual</h1>
+                <p>Your year-long guide to the university you deserve</p>
+                <div class="lang-toggle">
+                    <button class="lang-btn active" onclick="switchLanguage('en')">English</button>
+                    <button class="lang-btn" onclick="switchLanguage('zh')">中文</button>
+                </div>
+            </div>
+
+            <!-- WELCOME & OVERVIEW -->
+            <div id="welcome" class="section active">
+                <h2>Welcome & Overview</h2>
+
+                <h3>What is Compass?</h3>
+                <p>Compass is a comprehensive, year-long college application operating system designed specifically for Grade 11-12 students applying to universities worldwide. It helps you organize, track, and optimize every aspect of your university application journey—from managing multiple school applications to building a compelling extracurricular profile, achieving target test scores, and crafting compelling essays.</p>
+
+                <div class="box tip">
+                    <strong>💡 Think of it as your personal application command center:</strong> One place to manage schools, activities, tests, essays, and milestones across a 24-month timeline.
+                </div>
+
+                <h3>Who is it for?</h3>
+                <p>Compass is built for:</p>
+                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                    <li><strong>Grade 11-12 students</strong> applying to universities internationally</li>
+                    <li>Students targeting <strong>US, UK, Canada, Australia, Hong Kong, or Singapore</strong> universities</li>
+                    <li>Students navigating <strong>multiple application systems</strong> (Common App, UCAS, etc.)</li>
+                    <li>Students balancing <strong>academics, tests, activities, and essays</strong></li>
+                </ul>
+
+                <h3>Key Features Overview</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>🏫 Schools</h4>
+                        <p>Manage applications to multiple universities with tier tracking (Reach, Match, Safe) and intelligent requirements engine.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🎯 Activities</h4>
+                        <p>Track extracurriculars and super-curriculars with tier system and impact statements.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📊 Tests</h4>
+                        <p>Log test scores (TOEFL, IELTS, SAT, ACT, IB, A-Level, AP) with automatic normalization.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📋 Roadmap</h4>
+                        <p>17 milestones spanning Grade 11 to post-enrollment tracking.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>✍️ Essays</h4>
+                        <p>Write, revise, and get AI feedback on personal statements and supplementals.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🤖 AI Coaching</h4>
+                        <p>Gap detection, monthly check-ins, and personalized guidance.</p>
+                    </div>
+                </div>
+
+                <h3>Supported Countries</h3>
+                <p><strong>Primary targets:</strong> United States, United Kingdom, Canada, Australia</p>
+                <p><strong>Additional support:</strong> Hong Kong, Singapore</p>
+                <div class="box note">
+                    <strong>⚠️ Note:</strong> Compass is optimized for English-medium education systems. Some features (like certain milestone types) are region-specific.
+                </div>
+            </div>
+
+            <!-- GETTING STARTED -->
+            <div id="getting-started" class="section">
+                <h2>Getting Started</h2>
+
+                <h3>Sign Up</h3>
+                <p>To create your Compass account:</p>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Visit Compass homepage</strong> and click "Sign Up"
+                </div>
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Enter your email</strong> and create a secure password
+                </div>
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>COPPA Consent:</strong> Confirm you are 13+ years old (COPPA compliance for US users)
+                </div>
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Email verification</strong> — check your inbox and click the verification link
+                </div>
+
+                <div class="box tip">
+                    <strong>💡 Use a personal email:</strong> We recommend using your personal email (not school email) so you maintain access after graduation.
+                </div>
+
+                <h3>5-Step Onboarding Walkthrough</h3>
+
+                <button class="collapsible">Step 1: About You</button>
+                <div class="content">
+                    <p>Tell us about yourself to personalize your experience.</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>Full Name:</strong> Your legal name (for recommendation letters and official documents)</li>
+                        <li><strong>Current Grade:</strong> Select Grade 11 or 12</li>
+                        <li><strong>Start Date:</strong> When you're beginning your application journey</li>
+                        <li><strong>Intended Major(s):</strong> Select your primary and optional secondary major (used for school fit matching)</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Step 2: Lifestyle & Goals</button>
+                <div class="content">
+                    <p>Help Compass understand your ideal university environment.</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>Post-Grad Plans:</strong> Further study, careers in tech/finance/medicine/law/humanities/arts/other</li>
+                        <li><strong>Campus Size Preference:</strong> Small (&lt;3K), Medium (3K-15K), Large (&gt;15K)</li>
+                        <li><strong>Culture:</strong> Urban, suburban, rural</li>
+                        <li><strong>Weather Preference:</strong> Hot, cold, moderate, no preference</li>
+                        <li><strong>EC Priorities:</strong> Select up to 3 areas (sports, arts, volunteer, entrepreneurship, etc.)</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Step 3: Target Countries</button>
+                <div class="content">
+                    <p>Select which countries you're applying to. You can choose multiple.</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>United States</li>
+                        <li>United Kingdom</li>
+                        <li>Canada</li>
+                        <li>Australia</li>
+                        <li>Hong Kong</li>
+                        <li>Singapore</li>
+                    </ul>
+                    <div class="box tip">
+                        <strong>💡 Multi-country strategies:</strong> Each country has different application systems (Common App for US, UCAS for UK). Compass adapts requirements and timelines based on your selections.
+                    </div>
+                </div>
+
+                <button class="collapsible">Step 4: First School</button>
+                <div class="content">
+                    <p>Add your first target university.</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>School Name:</strong> Official university name</li>
+                        <li><strong>Country:</strong> Where the university is located</li>
+                        <li><strong>Tier:</strong> Reach, Match, or Safe (see Schools section for definitions)</li>
+                        <li><strong>Application Deadline:</strong> The regular decision deadline</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Step 5: Setup Complete</button>
+                <div class="content">
+                    <p>Congratulations! Your Compass account is ready. You'll be taken to your Dashboard where you can:</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>View your Profile Readiness score (0-100)</li>
+                        <li>See upcoming milestones and deadlines</li>
+                        <li>Add more schools, activities, and test scores</li>
+                        <li>Begin your personalized roadmap</li>
+                    </ul>
+                </div>
+
+                <h3>Language Toggle</h3>
+                <p>Compass is available in English and Simplified Chinese (中文). Use the toggle at the top of the page to switch languages. Your preferences are saved automatically.</p>
+                <div class="box note">
+                    <strong>⚠️ Note:</strong> AI-generated content (Gap Analysis, Essay Feedback, Monthly Coaching) will generate in your selected language.
+                </div>
+            </div>
+
+            <!-- DASHBOARD -->
+            <div id="dashboard" class="section">
+                <h2>Dashboard</h2>
+
+                <h3>Dashboard Overview</h3>
+                <p>Your Dashboard is the central hub where you see your progress at a glance. It displays your Profile Readiness Ring, upcoming deadlines, and key widgets.</p>
+
+                <h3>Profile Readiness Ring (0-100 Score)</h3>
+                <p>The Readiness Ring is a visual indicator (0-100) of how prepared your application profile is. It breaks down into five components:</p>
+
+                <table>
+                    <tr>
+                        <th>Component</th>
+                        <th>Max Points</th>
+                        <th>How It's Calculated</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Language</strong></td>
+                        <td>20 pts</td>
+                        <td>TOEFL score ÷ 120 × 20, or IELTS ÷ 9 × 20 (whichever is higher)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Academic</strong></td>
+                        <td>20 pts</td>
+                        <td>SAT/ACT/IB/A-Level normalized to 0-20 scale</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Activities & EC Depth</strong></td>
+                        <td>25 pts</td>
+                        <td>Tier weighting: Tier 1 (5 pts each, max 2 = 10), Tier 2 (2 pts each, max 4 = 8), Tier 3 (0.5 pts, max 10 = 5). Bonus +2 pts for UK super-curriculars</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Essays</strong></td>
+                        <td>15 pts</td>
+                        <td>Word count progress: 0-200 words = 5 pts, 200-400 = 10 pts, 400+ = 15 pts. +5 bonus for multiple drafts</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Milestones</strong></td>
+                        <td>10 pts</td>
+                        <td>Completed weight ÷ total possible weight × 10</td>
+                    </tr>
+                </table>
+
+                <div class="box tip">
+                    <strong>💡 Using your Readiness score:</strong> Aim for 75+ by Grade 12 Early Fall. A score below 50 suggests critical gaps (see Gap Analysis section).
+                </div>
+
+                <h3>Next Milestones Widget</h3>
+                <p>This widget shows your upcoming 3 milestones based on your current date. Each milestone displays:</p>
+                <ul style="margin-left: 1.5rem;">
+                    <li>Milestone name (e.g., "Register for SAT")</li>
+                    <li>Due date (or target completion date)</li>
+                    <li>Region applicability (All, US, UK, CA, AU)</li>
+                    <li>Completion status (checkbox to mark done)</li>
+                </ul>
+
+                <h3>Upcoming Deadlines Widget</h3>
+                <p>Shows your next 5 application deadlines, sorted by date:</p>
+                <ul style="margin-left: 1.5rem;">
+                    <li>School name</li>
+                    <li>Days until deadline (color-coded: green &gt; 60 days, yellow 30-60, red &lt; 30)</li>
+                    <li>Application status (Researching, Planning, Submitted)</li>
+                    <li>Quick-click to go to school details</li>
+                </ul>
+
+                <div class="box ai-feature">
+                    <strong>🤖 Dashboard Auto-Refresh:</strong> Readiness score updates in real-time as you add scores, activities, and essays. Milestones advance automatically based on your regional selections.
+                </div>
+            </div>
+
+            <!-- SCHOOLS -->
+            <div id="schools" class="section">
+                <h2>Schools</h2>
+
+                <h3>Overview</h3>
+                <p>The Schools section is where you manage all your university applications. Compass uses an Intelligent Requirements Engine to tell you exactly what each school needs based on tier and location.</p>
+
+                <h3>Adding a School: Step-by-Step</h3>
+
+                <button class="collapsible">Step 1: Basic Information</button>
+                <div class="content">
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        <strong>School Name:</strong> Enter the official university name (e.g., "University of California, Berkeley")
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        <strong>Country:</strong> Select the country where the university is located
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        <strong>Tier:</strong> Choose from <span class="tier-reach">Reach</span>, <span class="tier-match">Match</span>, or <span class="tier-safe">Safe</span> (see below for definitions)
+                    </div>
+                </div>
+
+                <button class="collapsible">Step 2: Application Details</button>
+                <div class="content">
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        <strong>Application System:</strong> Compass auto-detects (e.g., Common App for US, UCAS for UK)
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        <strong>Application Deadline:</strong> Regular Decision date (Compass will flag if Early Decision is available)
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        <strong>Status:</strong> Researching → Planning → Submitted (tracks your progress)
+                    </div>
+                </div>
+
+                <h3>Understanding Tiers</h3>
+
+                <div class="box milestone">
+                    <h4><span class="tier-reach">REACH</span> Schools</h4>
+                    <p>Universities where your academic profile falls below their typical admitted student range. Reaching requires excellent overall application strength, unique activities, and strong essays.</p>
+                    <p><strong>Typical profile:</strong> Admitted students score in the 90th+ percentile. You need Tier 1 activities, strong essays, and above-average test scores.</p>
+                </div>
+
+                <div class="box milestone">
+                    <h4><span class="tier-match">MATCH</span> Schools</h4>
+                    <p>Universities where your academic profile is in or near their typical admitted student range. Match schools are your "target" schools where you're likely to be admitted with a strong application.</p>
+                    <p><strong>Typical profile:</strong> Your test scores and GPA are in the 25th-75th percentile of admitted students.</p>
+                </div>
+
+                <div class="box milestone">
+                    <h4><span class="tier-safe">SAFE</span> Schools</h4>
+                    <p>Universities where your academic profile exceeds their typical admitted student range. Safe schools are where you're very likely to be admitted (assuming a submitted application).</p>
+                    <p><strong>Typical profile:</strong> Your test scores and GPA are above the 75th percentile.</p>
+                </div>
+
+                <div class="box tip">
+                    <strong>💡 School list strategy:</strong> Aim for 70% Match, 20% Safe, 10% Reach schools. This maximizes your chances of admission to excellent universities.
+                </div>
+
+                <h3>Intelligent Requirements Engine</h3>
+
+                <p>Once you add a school, Compass automatically generates a personalized requirements checklist based on tier, country, and your profile. Here's how it works:</p>
+
+                <button class="collapsible">Language Test Requirements</button>
+                <div class="content">
+                    <p>Compass checks if you need a language test (TOEFL or IELTS) based on school location and your profile.</p>
+                    <table>
+                        <tr>
+                            <th>School Location</th>
+                            <th>Required?</th>
+                            <th>Reach Target</th>
+                            <th>Match Target</th>
+                            <th>Safe Target</th>
+                        </tr>
+                        <tr>
+                            <td>US/CA/AU/UK/HK/SG</td>
+                            <td>If English not native</td>
+                            <td>TOEFL 100+ or IELTS 7.5+</td>
+                            <td>TOEFL 90+ or IELTS 7+</td>
+                            <td>TOEFL 80+ or IELTS 6.5+</td>
+                        </tr>
+                    </table>
+                    <div class="box note">
+                        <strong>⚠️ Note:</strong> Most UK universities under TOEFL/IELTS accept TOEFL Home Edition and Duolingo English Test as alternatives. Compass will flag valid alternatives.
+                    </div>
+                </div>
+
+                <button class="collapsible">Academic Test Requirements</button>
+                <div class="content">
+                    <p>Requirements vary by country and school tier:</p>
+                    <h5><strong>United States & Canada:</strong></h5>
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>Reach:</strong> SAT 1500+ or ACT 34+ (or equivalent)</li>
+                        <li><strong>Match:</strong> SAT 1400-1490 or ACT 32-33</li>
+                        <li><strong>Safe:</strong> SAT 1300+ or ACT 30+</li>
+                    </ul>
+                    <h5><strong>United Kingdom:</strong></h5>
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>Reach:</strong> IB 38+ or A-Level A*A*A*</li>
+                        <li><strong>Match:</strong> IB 35-37 or A-Level A*AA</li>
+                        <li><strong>Safe:</strong> IB 32+ or A-Level AAA</li>
+                    </ul>
+                    <h5><strong>Australia:</strong></h5>
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>Reach:</strong> ATAR 95+</li>
+                        <li><strong>Match:</strong> ATAR 85-95</li>
+                        <li><strong>Safe:</strong> ATAR 75+</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Extracurricular Requirements</button>
+                <div class="content">
+                    <p>Compass evaluates your EC profile based on tier.</p>
+                    <h5><strong>Reach Schools (Top 10% acceptance rate):</strong></h5>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Minimum 2 Tier 1 activities (national/international level)</li>
+                        <li>Minimum 2-3 Tier 2 activities (regional/school leadership)</li>
+                        <li>All activities need impact statements explaining why they matter</li>
+                    </ul>
+                    <h5><strong>Match Schools (10-30% acceptance rate):</strong></h5>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Minimum 1 Tier 1 activity OR 3+ Tier 2 activities</li>
+                        <li>Depth preferred over breadth (sustained commitment &gt; many activities)</li>
+                    </ul>
+                    <h5><strong>Safe Schools (30%+ acceptance rate):</strong></h5>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Minimum 2-3 Tier 2 or Tier 3 activities</li>
+                        <li>No Tier 1 requirement, but valued if present</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Essay Requirements</button>
+                <div class="content">
+                    <p>All schools require at least a personal statement. Many also require supplemental essays.</p>
+                    <h5><strong>Personal Statement (Required for all):</strong></h5>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Common App: 650 words (all US/CA schools)</li>
+                        <li>UCAS: 4,000 characters (all UK schools)</li>
+                        <li>Other systems vary (Compass shows specific requirements)</li>
+                    </ul>
+                    <h5><strong>Supplemental Essays:</strong></h5>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Most Reach/Match schools require "Why [School]?" essays (100-400 words each)</li>
+                        <li>Some schools have additional prompts (activities, challenges, etc.)</li>
+                        <li>Safe schools typically have fewer supplemental requirements</li>
+                    </ul>
+                    <div class="box ai-feature">
+                        <strong>🤖 AI Essay Matching:</strong> Compass tracks which essays you've written and intelligently matches them to similar prompts across schools (e.g., one "Why School?" essay can serve as a template for multiple schools).
+                    </div>
+                </div>
+
+                <h3>School Detail Panel</h3>
+
+                <p>Click on any school to open a detailed panel with four tabs:</p>
+
+                <button class="collapsible">Tab 1: Requirements</button>
+                <div class="content">
+                    <p>A comprehensive checklist of everything you need for this specific school.</p>
+                    <p><strong>Displays:</strong></p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Language test (with your current score status: ✗ Not started, ⚠️ In progress, ✓ Met)</li>
+                        <li>Academic test (SAT/ACT/IB/A-Level with target score and your current status)</li>
+                        <li>EC requirements (# Tier 1 needed vs. you have, # Tier 2 needed vs. you have)</li>
+                        <li>Personal statement (word count progress)</li>
+                        <li>Supplemental essays (list each, with your draft count)</li>
+                        <li>Recommendation letters (status: not requested, pending, submitted)</li>
+                    </ul>
+                    <p><strong>Progress bars:</strong> Visual indicators show what % of each requirement you've completed.</p>
+                </div>
+
+                <button class="collapsible">Tab 2: Costs</button>
+                <div class="content">
+                    <p>Financial information for the school (tuition, fees, living costs, estimated total cost of attendance).</p>
+                    <div class="box ai-feature">
+                        <strong>🤖 AI-Fetched Data:</strong> Compass pulls official tuition data from university websites. Multi-currency support (USD, GBP, CAD, AUD, etc.).
+                    </div>
+                    <p><strong>Displays:</strong></p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Tuition per year</li>
+                        <li>Room & board (on/off campus options)</li>
+                        <li>Estimated books & supplies</li>
+                        <li>Total Cost of Attendance (CoA)</li>
+                        <li>Financial aid % of students receiving aid</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Tab 3: Fit</button>
+                <div class="content">
+                    <p>How well does this school match your preferences (from your Onboarding)?</p>
+                    <p><strong>Fit score (0-100):</strong> Based on:</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Campus size (your preference vs. actual)</li>
+                        <li>Location culture (urban/suburban/rural)</li>
+                        <li>Weather (if specified)</li>
+                        <li>Major availability (% of students in your intended major)</li>
+                        <li>EC offerings (match to your EC priorities)</li>
+                    </ul>
+                    <p><strong>Example:</strong> If you prefer urban culture and large campuses, and the school is suburban and mid-size, your fit score might be 65/100.</p>
+                </div>
+
+                <button class="collapsible">Tab 4: Scholarships</button>
+                <div class="content">
+                    <p>Scholarship and financial aid opportunities matched to your profile.</p>
+                    <div class="box ai-feature">
+                        <strong>🤖 AI Scholarship Matching:</strong> Compass scans the school's scholarship database and recommends scholarships based on your academic profile, activities, and major.
+                    </div>
+                    <p><strong>Shows:</strong></p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Scholarship name and amount</li>
+                        <li>Eligibility (your match %)</li>
+                        <li>Application deadline (if separate from main application)</li>
+                        <li>Link to official scholarship page</li>
+                    </ul>
+                </div>
+
+                <h3>Application Status Tracking</h3>
+
+                <p>Track your progress through three main statuses:</p>
+
+                <div class="step">
+                    <strong>🔍 Researching:</strong> You're learning about the school, haven't committed to applying yet
+                </div>
+
+                <div class="step">
+                    <strong>📋 Planning:</strong> You've committed to applying and are working on requirements (essays, tests, etc.)
+                </div>
+
+                <div class="step">
+                    <strong>✅ Submitted:</strong> Your application has been submitted to the school
+                </div>
+
+                <div class="box tip">
+                    <strong>💡 Status strategy:</strong> Move schools to "Planning" only after you've registered for required tests and have a plan for essays. This prevents over-committing.
+                </div>
+            </div>
+
+            <!-- ACTIVITIES -->
+            <div id="activities" class="section">
+                <h2>Activities</h2>
+
+                <h3>Activity Tier System</h3>
+
+                <p>Compass categorizes extracurriculars into three tiers to help you build a competitive profile.</p>
+
+                <div class="box milestone">
+                    <h4><span style="color: #DC2626; font-weight: 600;">🏆 Tier 1 Activities</span></h4>
+                    <p><strong>Level:</strong> National or international achievement</p>
+                    <p><strong>Examples:</strong></p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>National science olympiad winner</li>
+                        <li>International debate champion</li>
+                        <li>Published research in peer-reviewed journal</li>
+                        <li>National sports ranking (e.g., top 100 in country)</li>
+                        <li>Award from government or major organization</li>
+                    </ul>
+                    <p><strong>Contribution to Readiness Score:</strong> 5 points each (max 2 = 10 points)</p>
+                    <p><strong>Why it matters:</strong> Tier 1 activities show exceptional achievement and are critical for Reach schools.</p>
+                </div>
+
+                <div class="box milestone">
+                    <h4><span style="color: #7C3AED; font-weight: 600;">💼 Tier 2 Activities</span></h4>
+                    <p><strong>Level:</strong> Regional achievement or school/community leadership</p>
+                    <p><strong>Examples:</strong></p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Debate team captain or award winner (state/regional)</li>
+                        <li>Volunteer coordinator (50+ hours/year)</li>
+                        <li>Start-up founder or business leader</li>
+                        <li>Sports team captain or competitive athlete</li>
+                        <li>School club president (with measurable impact)</li>
+                    </ul>
+                    <p><strong>Contribution to Readiness Score:</strong> 2 points each (max 4 = 8 points)</p>
+                    <p><strong>Why it matters:</strong> Tier 2 shows leadership and commitment. Most Match schools expect at least 2-3.</p>
+                </div>
+
+                <div class="box milestone">
+                    <h4><span style="color: #16A34A; font-weight: 600;">📚 Tier 3 Activities</span></h4>
+                    <p><strong>Level:</strong> Participation-based (no leadership or major award required)</p>
+                    <p><strong>Examples:</strong></p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>School club membership</li>
+                        <li>Community volunteer (under 50 hours/year)</li>
+                        <li>School sports team member (not captain)</li>
+                        <li>Online course (e.g., Coursera, MIT OpenCourseWare)</li>
+                    </ul>
+                    <p><strong>Contribution to Readiness Score:</strong> 0.5 points each (max 10 = 5 points)</p>
+                    <p><strong>Why it matters:</strong> Breadth of activities shows diverse interests.</p>
+                </div>
+
+                <h3>Adding an Activity: Step-by-Step</h3>
+
+                <button class="collapsible">Step 1: Basic Details</button>
+                <div class="content">
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>Activity Name:</strong> Official name (e.g., "Science Olympiad" not "science club")</li>
+                        <li><strong>Category:</strong> Extracurricular, Super-Curricular, Award, Research</li>
+                        <li><strong>Start Date & End Date:</strong> When you participated</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Step 2: Tier & Role</button>
+                <div class="content">
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>Tier:</strong> Select 1, 2, or 3 based on level of achievement</li>
+                        <li><strong>Your Role:</strong> Participant, team member, captain, founder, organizer, etc.</li>
+                        <li><strong>Hours per Week:</strong> Average hours committed (used for impact calculation)</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Step 3: Impact Statement</button>
+                <div class="content">
+                    <p><strong>Impact Statement (max 150 characters):</strong> A short explanation of why this activity matters to you and what you gained.</p>
+                    <p><strong>Good example:</strong> "Led team to state competition. Developed leadership skills and discovered passion for STEM education."</p>
+                    <p><strong>Poor example:</strong> "I did the activity and it was good."</p>
+                    <div class="box tip">
+                        <strong>💡 Impact statement tips:</strong>
+                        <ul style="margin-left: 1.5rem;">
+                            <li>Show tangible results ("led" not "was part of")</li>
+                            <li>Connect to your major or post-grad goals if possible</li>
+                            <li>Be specific (what skills did you develop?)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Activity Categories</h3>
+
+                <table>
+                    <tr>
+                        <th>Category</th>
+                        <th>Definition</th>
+                        <th>Examples</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Extracurricular (EC)</strong></td>
+                        <td>Activities outside regular school curriculum</td>
+                        <td>Sports, clubs, student government</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Super-Curricular</strong></td>
+                        <td>Activities that deeply extend school curriculum (UK-specific bonus: +2 pts)</td>
+                        <td>Research project, independent study, MOOC in your subject</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Award</strong></td>
+                        <td>Recognitions and honors</td>
+                        <td>Scholarship, grant, essay award, athlete of year</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Research</strong></td>
+                        <td>Academic research or independent investigation</td>
+                        <td>Published paper, summer research, lab work</td>
+                    </tr>
+                </table>
+
+                <div class="box note">
+                    <strong>⚠️ UK Super-Curricular Bonus:</strong> If you're applying to UK universities, Compass awards +2 bonus points for super-curricular activities. This reflects the UK's emphasis on demonstrated subject knowledge and independent learning. Plan Tier 2-3 super-curriculars in your Grade 11 Spring/Summer.
+                </div>
+
+                <h3>Tips for Building a Strong EC Profile</h3>
+
+                <div class="box tip">
+                    <strong>💡 Depth over breadth:</strong> 2-3 activities with deep commitment beats 10 activities with shallow involvement. Aim for 100+ hours/year in at least one activity.
+                </div>
+
+                <div class="box tip">
+                    <strong>💡 Leadership progression:</strong> Start as participant → take on leadership roles in Grade 12. Show growth and commitment.
+                </div>
+
+                <div class="box tip">
+                    <strong>💡 Alignment to major:</strong> If possible, connect activities to your intended major (computer science students: coding competitions; pre-meds: volunteer healthcare).
+                </div>
+
+                <div class="box tip">
+                    <strong>💡 One "spike":</strong> Reach schools want one Tier 1 activity or one area of deep expertise. This is more compelling than being "well-rounded" with no distinction.
+                </div>
+            </div>
+
+            <!-- TESTS -->
+            <div id="tests" class="section">
+                <h2>Tests</h2>
+
+                <h3>Overview</h3>
+                <p>Compass supports seven standardized test types across multiple education systems. Each test is normalized to a 0-20 scale for fair comparison.</p>
+
+                <h3>Supported Tests</h3>
+
+                <table>
+                    <tr>
+                        <th>Test</th>
+                        <th>Purpose</th>
+                        <th>Scale</th>
+                        <th>Used By</th>
+                    </tr>
+                    <tr>
+                        <td><strong>TOEFL</strong></td>
+                        <td>English language proficiency</td>
+                        <td>0-120</td>
+                        <td>International students</td>
+                    </tr>
+                    <tr>
+                        <td><strong>IELTS</strong></td>
+                        <td>English language proficiency</td>
+                        <td>0-9 (band)</td>
+                        <td>UK, AU, CA, International</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SAT</strong></td>
+                        <td>US college readiness</td>
+                        <td>400-1600</td>
+                        <td>US, CA, some international</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ACT</strong></td>
+                        <td>US college readiness</td>
+                        <td>1-36</td>
+                        <td>US, some international</td>
+                    </tr>
+                    <tr>
+                        <td><strong>IB (International Baccalaureate)</strong></td>
+                        <td>Comprehensive secondary credential</td>
+                        <td>0-45</td>
+                        <td>UK, AU, CA, US, International</td>
+                    </tr>
+                    <tr>
+                        <td><strong>A-Level</strong></td>
+                        <td>UK secondary credential</td>
+                        <td>A*-E per subject</td>
+                        <td>UK, some international</td>
+                    </tr>
+                    <tr>
+                        <td><strong>AP (Advanced Placement)</strong></td>
+                        <td>US advanced high school courses</td>
+                        <td>1-5 per exam</td>
+                        <td>US, some international</td>
+                    </tr>
+                </table>
+
+                <h3>Adding a Test Score: Step-by-Step</h3>
+
+                <button class="collapsible">Step 1: Select Test Type</button>
+                <div class="content">
+                    <p>Choose from the test list above. Compass will show format-specific fields.</p>
+                </div>
+
+                <button class="collapsible">Step 2: Enter Score</button>
+                <div class="content">
+                    <p>Enter your score in the native format (e.g., 1480 for SAT, 7.5 for IELTS, 42 for IB).</p>
+                    <div class="box tip">
+                        <strong>💡 Multiple attempts:</strong> You can log multiple attempts of the same test. Compass will show all attempts and your highest score.
+                    </div>
+                </div>
+
+                <button class="collapsible">Step 3: Test Date & Status</button>
+                <div class="content">
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>Test Date:</strong> When you took the test</li>
+                        <li><strong>Score Received Date:</strong> When you got your results</li>
+                        <li><strong>Status:</strong> Submitted to schools (if applicable)</li>
+                    </ul>
+                </div>
+
+                <h3>Score Normalization</h3>
+
+                <p>Compass converts all test scores to a unified 0-20 scale for fair comparison. Here's how:</p>
+
+                <h4>Language Tests (0-20 pts)</h4>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>TOEFL:</strong> Score ÷ 120 × 20 (so 120 = 20, 60 = 10)</li>
+                    <li><strong>IELTS:</strong> Band ÷ 9 × 20 (so 9.0 = 20, 6.0 = 13.3)</li>
+                </ul>
+
+                <h4>Academic Tests (0-20 pts)</h4>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>SAT:</strong> (Score - 400) ÷ 1200 × 20 (so 1600 = 20, 1000 = 10)</li>
+                    <li><strong>ACT:</strong> (Score ÷ 36) × 20 (so 36 = 20, 18 = 10)</li>
+                    <li><strong>IB:</strong> (Score ÷ 45) × 20 (so 45 = 20, 22.5 = 10)</li>
+                    <li><strong>A-Level:</strong> Based on A*, A, B, C grades (A* = 20, A = 18, B = 16, etc.) for each subject, averaged</li>
+                    <li><strong>AP:</strong> (Average score across all AP exams ÷ 5) × 20 (so avg 5 = 20, avg 2.5 = 10)</li>
+                </ul>
+
+                <div class="box tip">
+                    <strong>💡 Why normalization matters:</strong> SAT 1500 and IB 42 aren't directly comparable, but both might normalize to ~19/20. This helps Compass fairly rank your academic readiness across different systems.
+                </div>
+
+                <h3>Target Scores</h3>
+
+                <p>Based on your school list tier distribution, Compass suggests target scores:</p>
+
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Language target:</strong> Based on Reach schools' typical TOEFL/IELTS requirements (e.g., 100+ TOEFL)</li>
+                    <li><strong>Academic target:</strong> Weighted by tier (Reach, Match, Safe averages)</li>
+                </ul>
+
+                <button class="collapsible">Setting a Target Score</button>
+                <div class="content">
+                    <p>In the Tests section, click "Set Target" for any test. Compass will suggest a score based on your school list, or you can enter a custom target. Your Readiness score will show progress toward target.</p>
+                </div>
+
+                <h3>Retake Strategy</h3>
+
+                <div class="box ai-feature">
+                    <strong>🤖 AI Retake Recommendation:</strong> After you receive a score, Compass AI analyzes your progress and recommends whether to retake. For example: "Your TOEFL is 88/120 (target 100). Statistically, students improve 10-15 points on second attempts. Consider retaking in 4 weeks."
+                </div>
+
+                <div class="box tip">
+                    <strong>💡 Retake timing:</strong>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Give yourself 2-4 weeks between attempts</li>
+                        <li>Plan retakes for Grade 11 Spring (tests) and Grade 12 Early Fall (final attempts)</li>
+                        <li>SAT: Space attempts 3 weeks apart minimum</li>
+                        <li>TOEFL/IELTS: Space 12 days apart minimum (officially), but practically 2-4 weeks recommended</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ROADMAP -->
+            <div id="roadmap" class="section">
+                <h2>Roadmap & Milestones</h2>
+
+                <h3>Two-Year Application Arc</h3>
+
+                <p>Compass lays out 17 critical milestones across a 24-month timeline (Grade 11 Fall → Grade 12 Late Spring). This roadmap ensures you're on track throughout your application journey.</p>
+
+                <h3>Grade 11: Foundation Building</h3>
+
+                <button class="collapsible">Grade 11 Fall (Sep-Dec)</button>
+                <div class="content">
+                    <p><strong>Theme:</strong> Research & Profile Building</p>
+                    <div class="step">
+                        <strong>Milestone 1: Research Top 10 Universities</strong> (Target: Dec 1) — Identify potential schools across tiers. Create a list of 15-20 schools to explore.
+                    </div>
+                    <div class="step">
+                        <strong>Milestone 2: Attend College Fair (if available)</strong> (Target: Oct-Nov) — Meet admissions officers, learn about schools, get on mailing lists.
+                    </div>
+                    <div class="step">
+                        <strong>Milestone 3: Identify Recommenders</strong> (Target: Nov 1) — Ask 2-3 teachers if they'd write recommendations (do this in person, not email). Typically: 2 academic teachers + 1 counselor.
+                    </div>
+                    <div class="step">
+                        <strong>Milestone 4: EC Deep Dive</strong> (Target: Dec 1) — Commit to deepen 2-3 activities. Take on leadership role (team captain, club officer, volunteer coordinator).
+                    </div>
+                </div>
+
+                <button class="collapsible">Grade 11 Spring (Jan-Jun)</button>
+                <div class="content">
+                    <p><strong>Theme:</strong> Test Preparation & School List Finalization</p>
+                    <div class="step">
+                        <strong>Milestone 5: Finalize School List (Draft)</strong> (Target: Jan 15) — Narrow to 15-20 schools. Establish tier distribution.
+                    </div>
+                    <div class="step">
+                        <strong>Milestone 6: Register for SAT/ACT</strong> (Target: Feb 1) — Register for spring test (March, May, or June). Aim for first attempt in spring.
+                    </div>
+                    <div class="step">
+                        <strong>Milestone 7: Language Test Planning</strong> (Target: Feb 1, if needed) — Register for TOEFL/IELTS if English isn't native language. Typically May/June.
+                    </div>
+                    <div class="step">
+                        <strong>Milestone 8: First Test Attempt</strong> (Target: Mar-Jun) — Take SAT or ACT. Plan to retake if needed.
+                    </div>
+                    <div class="step">
+                        <strong>Milestone 9: Summer Plan</strong> (Target: Apr 1) — Plan summer activities: test retakes, summer programs, research, internships, volunteering.
+                    </div>
+                </div>
+
+                <h3>Grade 12: Application Season</h3>
+
+                <button class="collapsible">Grade 12 Early Fall (Sep-Oct)</button>
+                <div class="content">
+                    <p><strong>Theme:</strong> Setup & Test Finalization</p>
+                    <div class="step">
+                        <strong>Milestone 10: Set Up Compass</strong> (Target: Sep 1) — Create account, input all 15-20 schools, activities, tests.
+                    </div>
+                    <div class="step">
+                        <strong>Milestone 11: Finalize Test Scores</strong> (Target: Sep 15) — Last retake window. Lock in your best scores (SAT by mid-Sep, language test by late Sep).
+                    </div>
+                    <div class="step">
+                        <strong>Milestone 12: Submit Recommender Requests</strong> (Target: Sep 20) — Formally request recommendations. Provide deadline (typically early Jan for US) and brief summary of your app.
+                    </div>
+                </div>
+
+                <button class="collapsible">Grade 12 Late Fall (Nov-Dec)</button>
+                <div class="content">
+                    <p><strong>Theme:</strong> Early Applications & Writing</p>
+                    <div class="step">
+                        <strong>Milestone 13: Early Decision Submission (if applicable)</strong> (Target: Nov 1-15) — If applying Early Decision/Action, submit by deadline (binding or non-binding).
+                    </div>
+                    <div class="step">
+                        <strong>Milestone 14: UCAS Submission (UK students)</strong> (Target: Oct 15 for early birds, Oct 31 typical) — Submit UCAS application with personal statement.
+                    </div>
+                    <div class="step">
+                        <strong>Milestone 15: Personal Statement Final Draft</strong> (Target: Oct 31) — Complete personal statement (650 words Common App or 4000 chars UCAS). Share with teachers/counselor for feedback.
+                    </div>
+                    <div class="step">
+                        <strong>Milestone 16: School-Specific Essays Start</strong> (Target: Nov 1) — Begin "Why School?" and supplemental essays for Regular Decision schools.
+                    </div>
+                </div>
+
+                <button class="collapsible">Grade 12 Early Spring (Jan-Feb)</button>
+                <div class="content">
+                    <p><strong>Theme:</strong> Regular Decision Submissions & Interviews</p>
+                    <div class="step">
+                        <strong>Milestone 17: Regular Decision Submissions Complete</strong> (Target: Jan 31) — Submit all remaining applications before deadlines (typical window: Jan 1-Feb 1).
+                    </div>
+                    <div class="step">
+                        <strong>Milestone 18: Interviews (if requested)</strong> (Target: Jan-Feb) — Attend alumni or school interviews for schools that offer them.
+                    </div>
+                    <div class="step">
+                        <strong>Milestone 19: Financial Aid Forms (FAFSA/CSS)</strong> (Target: Jan-Feb) — Submit US financial aid forms. Check Canada/UK/AU equivalents.
+                    </div>
+                </div>
+
+                <button class="collapsible">Grade 12 Late Spring (Mar-May)</button>
+                <div class="content">
+                    <p><strong>Theme:</strong> Decisions & Enrollment</p>
+                    <div class="step">
+                        <strong>Milestone 20: Decisions Received</strong> (Target: Mar-Apr) — Schools release decisions (US: end of March; UK: Jan-May depending on offer conditions).
+                    </div>
+                    <div class="step">
+                        <strong>Milestone 21: Compare & Choose University</strong> (Target: Apr-May) — Compare offers, financial aid, consider campus visits. Make final enrollment decision by May 1 (US) or May 31 (most others).
+                    </div>
+                    <div class="step">
+                        <strong>Milestone 22: Accept Offer & Enroll</strong> (Target: May 31) — Confirm enrollment by deadline. Pay enrollment deposit.
+                    </div>
+                    <div class="step">
+                        <strong>Milestone 23: Official Transcript Submit</strong> (Target: May-Jun) — Send official Grade 12 transcript to enrolled university.
+                    </div>
+                    <div class="step">
+                        <strong>Milestone 24: Visa/Housing Plans (International)</strong> (Target: Jun-Jul) — If international: apply for visa, book accommodation, arrange travel.
+                    </div>
+                </div>
+
+                <h3>Milestone Tracking</h3>
+
+                <p>In the Roadmap section, you can:</p>
+
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>View all 17 milestones:</strong> Listed in chronological order</li>
+                    <li><strong>Filter by system:</strong> Show all milestones, or filter by US/UK/CA/AU</li>
+                    <li><strong>Mark complete:</strong> Check off milestones as you finish them</li>
+                    <li><strong>Weight points:</strong> Each milestone has a weight (critical milestones worth more toward Readiness score)</li>
+                    <li><strong>See readiness impact:</strong> When you mark a milestone complete, your Readiness score updates immediately</li>
+                </ul>
+
+                <div class="box tip">
+                    <strong>💡 Milestone strategy:</strong> Don't skip milestones even if they seem optional. They're designed to keep you on track and ensure nothing falls through the cracks.
+                </div>
+            </div>
+
+            <!-- GAP ANALYSIS -->
+            <div id="gap-analysis" class="section">
+                <h2>Gap Analysis (AI-Powered)</h2>
+
+                <h3>How Gap Detection Works</h3>
+
+                <p>Compass automatically scans your profile weekly and identifies gaps—missing tests, incomplete essays, missing tiers of activities, etc. The AI generates actionable advice to close each gap.</p>
+
+                <h3>Gap Types & Examples</h3>
+
+                <table>
+                    <tr>
+                        <th>Gap Type</th>
+                        <th>Definition</th>
+                        <th>Example Advice</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Missing Language Test</strong></td>
+                        <td>You're not a native English speaker and haven't registered for TOEFL/IELTS</td>
+                        <td>"Register for TOEFL by Feb 1 to complete testing by May."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Low Language Score</strong></td>
+                        <td>Your TOEFL/IELTS is below your Reach/Match target</td>
+                        <td>"Your TOEFL is 82 (target 95). Retake in 4 weeks; focus on listening."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Missing Academic Test</strong></td>
+                        <td>No SAT/ACT/IB/A-Level score for your target countries</td>
+                        <td>"Register for SAT by Feb 1 for April test."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Low Academic Score</strong></td>
+                        <td>Your SAT/ACT is below target range for your schools</td>
+                        <td>"Retake SAT in June. Target Math +40 points (focus on grid-ins)."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Missing Tier 1 Activities</strong></td>
+                        <td>You have 0 Tier 1 activities but are applying to Reach schools</td>
+                        <td>"You need 1-2 Tier 1 activities for Reach schools. Consider: national competition, research project, or significant award by May."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Activities Without Impact</strong></td>
+                        <td>You've listed activities but no impact statements</td>
+                        <td>"Complete impact statement for Science Olympiad: explain what you learned and how it shaped you."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Personal Statement Not Started</strong></td>
+                        <td>Personal statement is blank or &lt; 100 words</td>
+                        <td>"Draft your personal statement by Sep 15. Brainstorm: a moment that shaped you, an identity, an obstacle overcome."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incomplete Personal Statement</strong></td>
+                        <td>Personal statement is 200-400 words (incomplete)</td>
+                        <td>"Expand personal statement to 500+ words by Oct 1. Add specific examples and reflection."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>School-Specific Essays Missing</strong></td>
+                        <td>For schools with "Why School?" essays, you haven't drafted them</td>
+                        <td>"You're applying to MIT (Match) but haven't drafted 'Why MIT?' essay. Start by Nov 1."</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Critical Milestones Incomplete</strong></td>
+                        <td>You're behind on major timeline milestones (e.g., it's Oct 15 and you haven't registered for test)</td>
+                        <td>"You're behind on finalizing test scores. Register for SAT by Feb 1 for April 15 test."</td>
+                    </tr>
+                </table>
+
+                <h3>Priority Levels</h3>
+
+                <p>Each gap is rated by urgency:</p>
+
+                <div class="badge high">HIGH</div> — Critical. If not addressed, will significantly hurt your applications or miss deadlines.
+                <div style="margin: 0.5rem 0;"></div>
+                <div class="badge medium">MEDIUM</div> — Important. Should be addressed soon, but not urgent.
+                <div style="margin: 0.5rem 0;"></div>
+                <div class="badge low">LOW</div> — Nice to have. Improves competitiveness but not critical.
+
+                <div class="box tip">
+                    <strong>💡 Gap priority strategy:</strong>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Focus on HIGH gaps first (tests, critical essays, critical milestones)</li>
+                        <li>Address MEDIUM gaps in parallel if you have bandwidth</li>
+                        <li>LOW gaps can wait unless they're quick (e.g., adding impact statement)</li>
+                    </ul>
+                </div>
+
+                <h3>AI Advice</h3>
+
+                <div class="box ai-feature">
+                    <strong>🤖 Actionable Guidance:</strong> For each gap, Compass AI generates 1-2 sentence actionable advice. Example: "Your personal statement is incomplete (320 words). Focus on expanding the reflection section with specific examples. Aim for 500+ words by Oct 15."
+                </div>
+
+                <h3>EU AI Act Transparency Disclosure</h3>
+
+                <div class="box note">
+                    <strong>⚠️ AI Transparency:</strong> Gap detection uses AI language models (trained data up to early 2025). Advice is personalized but not guaranteed to be perfect. Always verify AI suggestions with your counselor or teachers. Compass does not replace human counseling.
+                </div>
+            </div>
+
+            <!-- ESSAY WORKSHOP -->
+            <div id="essay-workshop" class="section">
+                <h2>Essay Workshop</h2>
+
+                <h3>Essay Types</h3>
+
+                <p>Compass supports two main essay types:</p>
+
+                <h4>Personal Statement (650 words, all schools)</h4>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Purpose:</strong> Give admissions officers insight into who you are beyond grades and test scores</li>
+                    <li><strong>Platforms:</strong> Common App (650 words) for US/CA, UCAS (4000 characters) for UK</li>
+                    <li><strong>Tone:</strong> Personal, reflective, authentic voice</li>
+                    <li><strong>Topics:</strong> Identity, background, challenge overcome, moment that shaped you, intellectual interest, etc.</li>
+                </ul>
+
+                <h4>Supplemental Essays (250-500 words each, school-specific)</h4>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Purpose:</strong> Show why you're interested in this specific school (fit)</li>
+                    <li><strong>Types:</strong> "Why [School]?", activities, challenges, intellectual curiosity, demographics, etc.</li>
+                    <li><strong>Tone:</strong> Research-informed, specific to school (not generic)</li>
+                    <li><strong>Typical count:</strong> 1-3 supplementals per school (Reach schools have more)</li>
+                </ul>
+
+                <h3>Adding a New Essay</h3>
+
+                <button class="collapsible">Step 1: Select Essay Type</button>
+                <div class="content">
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>Personal Statement:</strong> If you have only one, all schools see it</li>
+                        <li><strong>Supplemental/Why School:</strong> Linked to a specific school (e.g., "Why MIT?")</li>
+                        <li><strong>Other:</strong> Select activity, challenge, intellectual interest, etc.</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Step 2: Enter Prompt</button>
+                <div class="content">
+                    <p>Copy the exact essay prompt from the school (if it's a supplemental). If personal statement, you can use Common App prompt or write a custom prompt.</p>
+                </div>
+
+                <button class="collapsible">Step 3: Create First Draft</button>
+                <div class="content">
+                    <p>Start writing or paste existing draft. Compass auto-saves as you type.</p>
+                </div>
+
+                <h3>Drafts System (Versioning)</h3>
+
+                <p>Compass saves every version of your essay with timestamps. You can:</p>
+
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Create new draft:</strong> Click "New Draft" to start revising without losing previous version</li>
+                    <li><strong>View history:</strong> See all draft versions with dates (e.g., "Draft 1 - Sep 15", "Draft 2 - Sep 22")</li>
+                    <li><strong>Restore old draft:</strong> If you over-edit, restore any previous version</li>
+                    <li><strong>Compare versions:</strong> See what changed between drafts</li>
+                </ul>
+
+                <h3>Writing & Revising Workflow</h3>
+
+                <button class="collapsible">Phase 1: Brainstorming</button>
+                <div class="content">
+                    <p>Before writing, brainstorm your essay. Some prompts to guide you:</p>
+                    <p><strong>For Personal Statements:</strong></p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>What moment or experience has shaped who you are?</li>
+                        <li>What's an obstacle you've overcome?</li>
+                        <li>What's a core part of your identity (background, culture, beliefs)?</li>
+                        <li>What intellectual curiosity drives you?</li>
+                    </ul>
+                    <p><strong>For Supplementals:</strong></p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Why this school? (Be specific: research, programs, culture, values alignment)</li>
+                        <li>How does your activity connect to the school's offerings?</li>
+                        <li>What would you contribute to campus?</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Phase 2: First Draft (Rough Draft)</button>
+                <div class="content">
+                    <p>Write your essay without worrying about perfection. Goals:</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Get ideas on paper</li>
+                        <li>Hit word count (aim for 80% on first draft, e.g., 500/650)</li>
+                        <li>Use specific examples and stories (not general statements)</li>
+                    </ul>
+                    <div class="box tip">
+                        <strong>💡 First draft tips:</strong>
+                        <ul style="margin-left: 1.5rem;">
+                            <li>Write without editing. Turn off your inner critic.</li>
+                            <li>Use vivid details and specific moments (show, don't tell)</li>
+                            <li>Write in your authentic voice (imagine telling a friend)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="collapsible">Phase 3: Get Feedback</button>
+                <div class="content">
+                    <p>Share your draft with teachers, counselors, or mentors. Request feedback on:</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Is my voice authentic?</li>
+                        <li>Are my examples specific and vivid?</li>
+                        <li>Does the essay answer the prompt clearly?</li>
+                        <li>Is there anything that feels clichéd or generic?</li>
+                    </ul>
+                    <div class="box note">
+                        <strong>⚠️ Keep feedback focused:</strong> Aim for 1-2 trusted readers, not 5+. Too many opinions will confuse your voice.
+                    </div>
+                </div>
+
+                <button class="collapsible">Phase 4: Revise & Polish</button>
+                <div class="content">
+                    <p>In Compass, create new drafts as you revise. Focus on:</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>Structure:</strong> Does the essay flow logically?</li>
+                        <li><strong>Clarity:</strong> Are ideas clearly expressed?</li>
+                        <li><strong>Conciseness:</strong> Cut redundancy and weak words</li>
+                        <li><strong>Grammar & mechanics:</strong> Final proofread</li>
+                        <li><strong>Word count:</strong> Hit the exact limit (650 Common App, 4000 chars UCAS)</li>
+                    </ul>
+                </div>
+
+                <button class="collapsible">Phase 5: Final Submission</button>
+                <div class="content">
+                    <p>Once finalized:</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Mark draft as "Final"</li>
+                        <li>Copy & paste into application platform (Common App, UCAS, school portals)</li>
+                        <li>Double-check formatting is preserved</li>
+                        <li>Submit application</li>
+                    </ul>
+                </div>
+
+                <h3>AI Feedback Features</h3>
+
+                <div class="box ai-feature">
+                    <strong>🤖 Compass Essay AI:</strong> For any draft, click "Get AI Feedback" to receive analysis on five dimensions:
+                </div>
+
+                <h4>1. Cliché Detection</h4>
+                <p>Highlights overused phrases or concepts (e.g., "I've always been passionate about", "unique perspective"). Suggests more specific alternatives.</p>
+                <p><strong>Example feedback:</strong> "You used 'overcoming adversity' (common phrase). More specific: 'When my father's business closed, I...' This shows instead of tells."</p>
+
+                <h4>2. Clarity & Structure Analysis</h4>
+                <p>Analyzes essay organization and clarity. Identifies:
+                <ul style="margin-left: 1.5rem;">
+                    <li>Unclear transitions between paragraphs</li>
+                    <li>Paragraphs that lack a clear topic sentence</li>
+                    <li>Ideas that feel disconnected or abrupt</li>
+                </ul>
+
+                <h4>3. Personal Voice Authenticity</h4>
+                <p>Assesses whether the essay sounds like you (authentic) or overly polished/inauthentic. Looks for:
+                <ul style="margin-left: 1.5rem;">
+                    <li>Consistent tone and perspective</li>
+                    <li>Personal anecdotes and specific details</li>
+                    <li>Language that feels natural (not over-thesaurus'd)</li>
+                </ul>
+
+                <h4>4. Word Count Compliance</h4>
+                <p>Checks if you're within limits. Shows: "650/650 words. Perfect. (If 630-670, you're fine; under 600 or over 700 = need revision)"</p>
+
+                <h4>5. School-Specific Fit (Supplementals Only)</h4>
+                <p>For "Why School?" essays, analyzes if you've demonstrated genuine fit. Checks for:
+                <ul style="margin-left: 1.5rem;">
+                    <li>Specific mention of programs, professors, resources (not generic)</li>
+                    <li>Personal connection explained (why this school for YOU?)</li>
+                    <li>Alignment with your academic/personal goals</li>
+                </ul>
+                <p><strong>Example feedback:</strong> "You mention MIT's CS program but don't explain why MIT specifically fits your goals. Add: How MIT's X program differs from others, and why that difference matters to you."</p>
+
+                <h3>Feedback Tips</h3>
+
+                <div class="box tip">
+                    <strong>💡 Using AI feedback:</strong>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>AI feedback is a starting point, not a prescription. You choose what to act on.</li>
+                        <li>Don't over-polish. Admissions officers prefer authentic, personal essays over perfectly "polished" ones.</li>
+                        <li>If AI flags something but your human reader says it's great, trust the human.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- JOURNAL -->
+            <div id="journal" class="section">
+                <h2>Reflection Journal</h2>
+
+                <h3>Overview</h3>
+                <p>The Reflection Journal is a private space for you to process your application journey. It includes 10 rotating prompts designed to deepen self-awareness and track your emotional progress.</p>
+
+                <h3>10 Rotating Journal Prompts</h3>
+
+                <ol style="margin-left: 1.5rem;">
+                    <li><strong>"What excited me most about my applications this week?"</strong> — Focus on positive moments</li>
+                    <li><strong>"What challenge did I face, and how did I respond?"</strong> — Build resilience awareness</li>
+                    <li><strong>"Which of my activities best reflects who I am, and why?"</strong> — Deepen activity reflection</li>
+                    <li><strong>"What would my ideal university look like 10 years after graduation?"</strong> — Connect to long-term goals</li>
+                    <li><strong>"Who has supported me through this process? How have they helped?"</strong> — Gratitude & relationships</li>
+                    <li><strong>"What have I learned about myself through essays?"</strong> — Meta-reflection on self-discovery</li>
+                    <li><strong>"If I could tell my Grade 9 self one thing, what would it be?"</strong> — Growth & perspective</li>
+                    <li><strong>"What does "belonging" mean to me in a university?"</strong> — Values clarification</li>
+                    <li><strong>"What's one thing I'm proud of in my application profile?"</strong> — Build confidence</li>
+                    <li><strong>"How have my goals shifted since starting Compass?"</strong> — Awareness of change</li>
+                </ol>
+
+                <h3>Writing Entries</h3>
+
+                <p><strong>Requirements:</strong></p>
+                <ul style="margin-left: 1.5rem;">
+                    <li>Minimum 10 words (no character minimum, just minimum word count to prevent spam)</li>
+                    <li>No maximum (write as much as you want)</li>
+                    <li>Auto-saved as you type</li>
+                    <li>Dated automatically</li>
+                </ul>
+
+                <h3>Search & Browse Entries</h3>
+
+                <p>Access your journal anytime to:</p>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>View all entries:</strong> Chronological list (newest first)</li>
+                    <li><strong>Search entries:</strong> Search by keyword (e.g., "MIT", "excited")</li>
+                    <li><strong>Filter by prompt:</strong> View only entries for a specific prompt</li>
+                    <li><strong>Edit entries:</strong> Update any past entry</li>
+                </ul>
+
+                <h3>Entry Statistics</h3>
+
+                <p>Compass tracks:</p>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Total entries:</strong> How many journal entries you've written</li>
+                    <li><strong>Total words:</strong> Cumulative word count across all entries</li>
+                    <li><strong>Writing streak:</strong> Days in a row you've journaled (resets if you skip a day)</li>
+                    <li><strong>Most-used prompt:</strong> Which prompt you return to most</li>
+                </ul>
+
+                <div class="box tip">
+                    <strong>💡 Journal strategy:</strong> Aim to journal 1x per week (e.g., Sunday reflection). This helps process emotions and track growth over the 24-month timeline.
+                </div>
+
+                <h3>Privacy & Safeguarding</h3>
+
+                <p>Your journal is completely private:</p>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Not shared with counsellors:</strong> Even if you're connected with a counselor, they cannot see your journal</li>
+                    <li><strong>Not shared with anyone:</strong> Only you can access your entries</li>
+                    <li><strong>Stored securely:</strong> Compass uses encryption to protect your writing</li>
+                </ul>
+
+                <div class="box note">
+                    <strong>⚠️ Safeguarding note:</strong> Compass uses AI to flag entries containing concerning language (e.g., self-harm) and may notify a support service if you're in danger. This is for your safety.
+                </div>
+            </div>
+
+            <!-- CHECKIN -->
+            <div id="checkin" class="section">
+                <h2>Monthly Check-in</h2>
+
+                <h3>Overview</h3>
+                <p>The Monthly Check-in is a structured reflection (takes ~10 minutes) that Compass uses to generate personalized AI coaching. Complete one per month during application season.</p>
+
+                <h3>5 Structured Questions</h3>
+
+                <p><strong>Requirement:</strong> Answer minimum 3 of 5 questions (you can answer all 5 for more detailed coaching).</p>
+
+                <button class="collapsible">Question 1: Monthly Accomplishments</button>
+                <div class="content">
+                    <p><strong>"What have you accomplished this month (tests, essays, schools added, activities, milestones)?"</strong></p>
+                    <p>Be specific: "Submitted SAT (1420), drafted personal statement (300 words), added 5 schools to Compass, completed impact statements for 3 activities."</p>
+                </div>
+
+                <button class="collapsible">Question 2: Difficulties & Blockers</button>
+                <div class="content">
+                    <p><strong>"What difficulties or blockers did you face? What's slowing you down?"</strong></p>
+                    <p>Examples: Test anxiety, essay writer's block, unsure about school choices, struggling to balance with schoolwork.</p>
+                </div>
+
+                <button class="collapsible">Question 3: Test Score Improvement</button>
+                <div class="content">
+                    <p><strong>"Do you need to improve any test scores? Which tests, and by how much?"</strong></p>
+                    <p>Example: "TOEFL 82, need 95 for Reach schools (+13 points). Retaking in March."</p>
+                </div>
+
+                <button class="collapsible">Question 4: Essay Progress</button>
+                <div class="content">
+                    <p><strong>"What's your essay status? Which essays are done, which need work?"</strong></p>
+                    <p>Example: "Personal statement draft 2 (500 words), need to expand. MIT supplemental started (150 words). Stanford Why essay not started."</p>
+                </div>
+
+                <button class="collapsible">Question 5: Biggest Worry</button>
+                <div class="content">
+                    <p><strong>"What's your biggest worry or concern about the application process right now?"</strong></p>
+                    <p>Be honest. Compass AI responds with compassionate, realistic guidance.</p>
+                </div>
+
+                <h3>AI Coaching Summary</h3>
+
+                <p>After you submit your check-in, Compass AI generates a personalized coaching response (200-260 words) addressing:</p>
+
+                <ul style="margin-left: 1.5rem;">
+                    <li>Validation of your accomplishments (celebrate wins)</li>
+                    <li>Advice on blockers (actionable solutions)</li>
+                    <li>Test retake strategy (if needed)</li>
+                    <li>Essay timeline & priorities</li>
+                    <li>Encouragement & perspective on your biggest worry</li>
+                </ul>
+
+                <div class="box ai-feature">
+                    <strong>🤖 AI Coaching Example:</strong> "You've made great progress (SAT +50 points, personal statement underway). Your TOEFL gap is real but manageable—focus on listening practice. For essays: finish personal statement by Oct 15, then tackle supplementals. Your worry about Reach schools is valid, but your profile (Tier 1 activity + improving scores) is competitive. Keep moving forward."
+                </div>
+
+                <h3>Bilingual Output</h3>
+
+                <p>You can request your coaching summary in English or Chinese (中文). Select your language before submitting, and Compass AI will respond in that language.</p>
+
+                <h3>Frequency & Timing</h3>
+
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>When to do check-ins:</strong> Once per month (recommend: first Sunday of the month)</li>
+                    <li><strong>When to start:</strong> Grade 12 September (when you set up Compass)</li>
+                    <li><strong>When to end:</strong> After you enroll (Milestone 22)</li>
+                    <li><strong>Total check-ins:</strong> Typically 8-9 over application season</li>
+                </ul>
+
+                <div class="box tip">
+                    <strong>💡 Check-in strategy:</strong> Schedule a recurring reminder on your phone for the same day/time each month (e.g., first Sunday, 10 AM). Consistency helps Compass track your progress accurately.
+                </div>
+            </div>
+
+            <!-- COUNSELLOR -->
+            <div id="counsellor" class="section">
+                <h2>Counsellor Connections</h2>
+
+                <h3>Overview</h3>
+                <p>Counsellor Connections allows your school counselor (or independent counselor) to view certain parts of your Compass profile to provide better guidance. This is optional but recommended.</p>
+
+                <h3>Connection Workflow</h3>
+
+                <button class="collapsible">Step 1: Your Counselor Sends You an Invite</button>
+                <div class="content">
+                    <p>Your counselor generates an invite link (or code) and shares it with you (usually in person or via email).</p>
+                </div>
+
+                <button class="collapsible">Step 2: You Accept the Connection</button>
+                <div class="content">
+                    <p>In Compass, go to Connections and paste the invite code. Compass will display:</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Counselor name and school/organization</li>
+                        <li>What they can see (listed below)</li>
+                    </ul>
+                    <p>Click "Accept" to confirm the connection.</p>
+                </div>
+
+                <button class="collapsible">Step 3: Counselor Can Now View Your Profile</button>
+                <div class="content">
+                    <p>Your counselor can see the allowed sections (see below). They may provide feedback via Compass messaging or in person.</p>
+                </div>
+
+                <h3>What Counsellors CAN See</h3>
+
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Profile Readiness Score (0-100)</strong> and breakdown by component</li>
+                    <li><strong>Test Scores:</strong> All logged tests and scores</li>
+                    <li><strong>Activities:</strong> List of all activities, tiers, and impact statements</li>
+                    <li><strong>Schools:</strong> Your school list with tier assignments and status</li>
+                    <li><strong>Milestones:</strong> Your milestone progress and completion status</li>
+                    <li><strong>Gap Analysis:</strong> High/Medium/Low gaps identified by AI</li>
+                </ul>
+
+                <h3>What Counsellors CANNOT See</h3>
+
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Essays:</strong> Personal statements and supplemental essays (these are private to you)</li>
+                    <li><strong>Journal:</strong> Reflection journal entries (completely private)</li>
+                    <li><strong>Check-ins:</strong> Monthly check-in responses (private coaching)</li>
+                    <li><strong>Recommendation Letters:</strong> Your requests to recommenders</li>
+                </ul>
+
+                <div class="box tip">
+                    <strong>💡 Counselor connection strategy:</strong> If you have a strong relationship with your counselor, connect them. They can review your schools, activities, and readiness score and provide guidance. If you prefer privacy, skip this feature.
+                </div>
+
+                <h3>Disconnecting</h3>
+
+                <p>You can disconnect from a counselor anytime:</p>
+                <ul style="margin-left: 1.5rem;">
+                    <li>Go to Connections and click "Disconnect"</li>
+                    <li>Their access is immediately revoked</li>
+                    <li>You can reconnect later if needed</li>
+                </ul>
+
+                <div class="box note">
+                    <strong>⚠️ Note:</strong> Once disconnected, the counselor cannot see any updates to your profile. Reconnecting gives them a fresh view of your current profile.
+                </div>
+            </div>
+
+            <!-- SETTINGS -->
+            <div id="settings" class="section">
+                <h2>Settings</h2>
+
+                <h3>Profile Settings</h3>
+
+                <button class="collapsible">Edit Profile Information</button>
+                <div class="content">
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>Full Name:</strong> Update your legal name</li>
+                        <li><strong>Email:</strong> Change your email address (confirmation required)</li>
+                        <li><strong>Current Grade:</strong> Update from 11 to 12 (or vice versa)</li>
+                        <li><strong>Intended Major(s):</strong> Update primary or add secondary major</li>
+                    </ul>
+                </div>
+
+                <h3>Lifestyle & Goals Preferences</h3>
+
+                <p>Update your preferences anytime. These affect school recommendations and fit calculations.</p>
+
+                <button class="collapsible">Edit Preferences</button>
+                <div class="content">
+                    <ul style="margin-left: 1.5rem;">
+                        <li><strong>Post-Grad Plans:</strong> Further study, tech, finance, medicine, law, humanities, arts, other</li>
+                        <li><strong>Campus Size:</strong> Small, medium, large, no preference</li>
+                        <li><strong>Culture:</strong> Urban, suburban, rural</li>
+                        <li><strong>Weather:</strong> Hot, cold, moderate, no preference</li>
+                        <li><strong>EC Priorities:</strong> Up to 3 areas (sports, arts, volunteer, entrepreneurship, etc.)</li>
+                    </ul>
+                </div>
+
+                <h3>Language Settings</h3>
+
+                <p>Toggle between English and Simplified Chinese (中文). Affects:</p>
+                <ul style="margin-left: 1.5rem;">
+                    <li>Dashboard and interface language</li>
+                    <li>AI-generated content (Gap Analysis, Essay Feedback, Monthly Coaching)</li>
+                    <li>All prompts and guidance</li>
+                </ul>
+
+                <h3>Data Portability (GDPR Article 20)</h3>
+
+                <p>You have the right to export all your Compass data in machine-readable format:</p>
+
+                <button class="collapsible">Export Your Data</button>
+                <div class="content">
+                    <p>Click "Download My Data" to receive a JSON file containing:</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Profile information</li>
+                        <li>Schools list</li>
+                        <li>Activities</li>
+                        <li>Test scores</li>
+                        <li>Milestones</li>
+                        <li>Essays (text)</li>
+                        <li>Journal entries</li>
+                        <li>Gap Analysis data</li>
+                    </ul>
+                    <p><strong>File format:</strong> JSON (can be opened in text editor or imported to other tools)</p>
+                    <p><strong>Time to generate:</strong> Usually within 1 hour</p>
+                </div>
+
+                <h3>Clear All Data</h3>
+
+                <div class="box note">
+                    <strong>⚠️ WARNING: Permanent Action</strong>
+                </div>
+
+                <p>You can permanently delete all your Compass data. This action is irreversible.</p>
+
+                <p><strong>What gets deleted:</strong></p>
+                <ul style="margin-left: 1.5rem;">
+                    <li>Profile, schools, activities, tests, essays, journal, milestones, all custom data</li>
+                    <li>Connection to counselors is severed</li>
+                </ul>
+
+                <p><strong>What remains:</strong></p>
+                <ul style="margin-left: 1.5rem;">
+                    <li>Your email account (but profile is blank)</li>
+                    <li>You can sign back in and start fresh</li>
+                </ul>
+
+                <div class="box tip">
+                    <strong>💡 Before clearing data:</strong> Export your data first (see Data Portability above) so you have a backup.
+                </div>
+            </div>
+
+            <!-- COMPLIANCE -->
+            <div id="compliance" class="section">
+                <h2>Compliance & Privacy</h2>
+
+                <h3>Overview</h3>
+                <p>Compass complies with international data protection and education regulations. This section outlines key compliance commitments.</p>
+
+                <h3>Data Protection & Privacy Regulations</h3>
+
+                <table>
+                    <tr>
+                        <th>Regulation</th>
+                        <th>Jurisdiction</th>
+                        <th>Compass Compliance</th>
+                    </tr>
+                    <tr>
+                        <td><strong>GDPR</strong></td>
+                        <td>Europe</td>
+                        <td>Data portability (Art. 20), right to deletion, lawful processing (legitimate interest)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>COPPA</strong></td>
+                        <td>United States</td>
+                        <td>Age verification (13+ required), parental consent for under-13 users</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PDPA</strong></td>
+                        <td>Singapore</td>
+                        <td>Consent-based processing, transparent data practices</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PIPEDA</strong></td>
+                        <td>Canada</td>
+                        <td>Consent, access, correction rights, limited retention</td>
+                    </tr>
+                    <tr>
+                        <td><strong>POPIA</strong></td>
+                        <td>South Africa</td>
+                        <td>Lawful processing, data minimization, security measures</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Australian Privacy Act</strong></td>
+                        <td>Australia</td>
+                        <td>APPs compliance, data handling transparency</td>
+                    </tr>
+                    <tr>
+                        <td><strong>UAE PDPL</strong></td>
+                        <td>United Arab Emirates</td>
+                        <td>Personal data protection commitments</td>
+                    </tr>
+                    <tr>
+                        <td><strong>FERPA</strong></td>
+                        <td>United States (Education)</td>
+                        <td>Educational records privacy (to extent applicable)</td>
+                    </tr>
+                </table>
+
+                <h3>EU AI Act Transparency Disclosure</h3>
+
+                <div class="box ai-feature">
+                    <strong>🤖 AI System Transparency:</strong>
+                </div>
+
+                <p>Compass uses AI language models for:</p>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Gap Analysis:</strong> Identifies missing profile components and generates actionable advice</li>
+                    <li><strong>Essay Feedback:</strong> Analyzes essays for clichés, clarity, voice, and school fit</li>
+                    <li><strong>Monthly Coaching:</strong> Generates personalized coaching responses</li>
+                    <li><strong>Scholarship Matching:</strong> Matches scholarships to your profile</li>
+                    <li><strong>School Requirements Engine:</strong> Determines requirements for each school</li>
+                </ul>
+
+                <p><strong>Model information:</strong></p>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Training data:</strong> Models trained on publicly available data (cutoff: early 2025)</li>
+                    <li><strong>Limitations:</strong> AI can make mistakes. Always verify with human counselors.</li>
+                    <li><strong>No personal data in training:</strong> Your essays and personal data are never used to train models.</li>
+                    <li><strong>Human oversight:</strong> Compass team reviews AI outputs for accuracy and safety.</li>
+                </ul>
+
+                <h3>UK KCSIE & Safeguarding</h3>
+
+                <p>Compass follows UK Keeping Children Safe in Education (KCSIE) standards:</p>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Safeguarding children:</strong> AI flags concerning language (e.g., self-harm) and may alert support services</li>
+                    <li><strong>Duty of care:</strong> Compass prioritizes student wellbeing</li>
+                    <li><strong>Transparency:</strong> Parents/guardians can request information about how Compass uses their child's data</li>
+                </ul>
+
+                <h3>UNCRC Article 3 & Mandatory Reporting</h3>
+
+                <p><strong>UN Convention on the Rights of the Child (Article 3):</strong> All actions must consider the child's best interest.</p>
+
+                <p><strong>Mandatory reporting:</strong> In certain jurisdictions (e.g., US states, UK), if Compass detects signs of abuse or serious harm, we are required to report to authorities.</p>
+
+                <div class="box note">
+                    <strong>⚠️ Privacy limitation:</strong> While we prioritize your privacy, safeguarding obligations may override confidentiality if you are at risk of serious harm.
+                </div>
+
+                <h3>Data Storage & Security</h3>
+
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Local-first approach:</strong> Your data is stored locally on your device when possible</li>
+                    <li><strong>End-to-end encryption:</strong> Data in transit is encrypted (HTTPS)</li>
+                    <li><strong>No selling to third parties:</strong> Compass does not sell your data</li>
+                    <li><strong>Minimal sharing:</strong> Data is shared only with counselors (if you choose) and required authorities</li>
+                    <li><strong>Data retention:</strong> Data is retained while your account is active. Upon deletion request, data is purged within 30 days (except legally required records)</li>
+                </ul>
+
+                <h3>Third-Party Services</h3>
+
+                <p>Compass uses the following third parties:</p>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Cloud storage (optional):</strong> If you enable cloud backup, data is encrypted and stored by [provider]</li>
+                    <li><strong>AI models:</strong> Gap Analysis, Essay Feedback, and Coaching use third-party AI APIs (data is not logged for training)</li>
+                    <li><strong>Analytics (privacy-focused):</strong> Compass uses [privacy-focused analytics platform] to understand usage patterns (no personal data collected)</li>
+                </ul>
+
+                <h3>Your Rights</h3>
+
+                <p>Under various data protection laws, you have the right to:</p>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Access:</strong> Request a copy of all data Compass holds about you</li>
+                    <li><strong>Correction:</strong> Update or correct inaccurate data</li>
+                    <li><strong>Deletion:</strong> Request deletion of your account and data</li>
+                    <li><strong>Portability:</strong> Download your data in machine-readable format (JSON)</li>
+                    <li><strong>Objection:</strong> Opt out of certain data processing (e.g., analytics)</li>
+                </ul>
+
+                <p><strong>To exercise these rights:</strong> Contact privacy@saileducation.com with your request. We'll respond within 30 days (or as required by law).</p>
+
+                <h3>Contact & Support</h3>
+
+                <p><strong>Questions about privacy or compliance?</strong></p>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Email:</strong> privacy@saileducation.com</li>
+                    <li><strong>Data Protection Officer:</strong> dpo@saileducation.com (EU users)</li>
+                    <li><strong>Support:</strong> support@saileducation.com</li>
+                </ul>
+            </div>
+
+            <!-- FEATURE LIST -->
+            <div id="features" class="section">
+                <h2>Complete Feature List</h2>
+
+                <p>A comprehensive table of all Compass features and their availability:</p>
+
+                <table style="font-size: 0.95em;">
+                    <tr>
+                        <th>Feature</th>
+                        <th>Category</th>
+                        <th>Availability</th>
+                        <th>AI-Powered</th>
+                    </tr>
+                    <tr>
+                        <td>Profile Readiness Ring (0-100)</td>
+                        <td>Dashboard</td>
+                        <td>All users</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>School Management & Tier Tracking</td>
+                        <td>Schools</td>
+                        <td>All users</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Intelligent Requirements Engine</td>
+                        <td>Schools</td>
+                        <td>All users</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>School Costs & Financial Aid Data</td>
+                        <td>Schools</td>
+                        <td>All users</td>
+                        <td>Yes (fetched)</td>
+                    </tr>
+                    <tr>
+                        <td>School Fit Matching</td>
+                        <td>Schools</td>
+                        <td>All users</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Activity Tier System</td>
+                        <td>Activities</td>
+                        <td>All users</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Impact Statements</td>
+                        <td>Activities</td>
+                        <td>All users</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Test Score Logging (7 test types)</td>
+                        <td>Tests</td>
+                        <td>All users</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Score Normalization (0-20 scale)</td>
+                        <td>Tests</td>
+                        <td>All users</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>17-Milestone Roadmap</td>
+                        <td>Roadmap</td>
+                        <td>All users</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Gap Analysis (AI-powered)</td>
+                        <td>Gap Analysis</td>
+                        <td>All users</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Essay Workshop with Drafts</td>
+                        <td>Essays</td>
+                        <td>All users</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>AI Essay Feedback (5 dimensions)</td>
+                        <td>Essays</td>
+                        <td>All users</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Reflection Journal (10 prompts)</td>
+                        <td>Journal</td>
+                        <td>All users</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Monthly Check-in & AI Coaching</td>
+                        <td>Check-in</td>
+                        <td>All users</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Counselor Connections</td>
+                        <td>Connections</td>
+                        <td>All users (optional)</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Bilingual Support (EN/中文)</td>
+                        <td>Settings</td>
+                        <td>All users</td>
+                        <td>Yes (AI content)</td>
+                    </tr>
+                    <tr>
+                        <td>Data Export (JSON)</td>
+                        <td>Settings</td>
+                        <td>All users</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Mobile Responsive Design</td>
+                        <td>UX</td>
+                        <td>All users</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Print-Friendly CSS</td>
+                        <td>UX</td>
+                        <td>All users</td>
+                        <td>No</td>
+                    </tr>
+                </table>
+
+                <div class="box tip">
+                    <strong>💡 Feature roadmap:</strong> Compass is actively developed. New features planned include: video essay interviews, peer collaboration, scholarship database search, and more. Check back for updates.
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="footer">
+                <p>SAIL Education © 2026 | Compass v2 | Last updated Mar 28, 2026 | <a href="javascript:void(0)" data-target="" style="color: #0D9A7C; text-decoration: none;">Privacy Policy</a> | <a href="javascript:void(0)" data-target="" style="color: #0D9A7C; text-decoration: none;">Terms of Service</a></p>
+            </div>
+        </main>
+        </div>
+    </div>
+
+    <script>
+        // Collapsible sections
+        document.querySelectorAll('.collapsible').forEach(button => {
+            button.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                content.classList.toggle('active');
+            });
+        });
+
+        // Sidebar menu navigation
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const sectionId = this.getAttribute('data-target') || this.getAttribute('href')?.substring(1);
+
+                // Hide all sections
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.remove('active');
+                });
+
+                // Show selected section
+                document.getElementById(sectionId).classList.add('active');
+
+                // Scroll to top
+                document.querySelector('.main-content').scrollTop = 0;
+            });
+        });
+
+        // Sidebar search
+        document.getElementById('sidebarSearch').addEventListener('keyup', function(e) {
+            const query = e.target.value.toLowerCase();
+            document.querySelectorAll('.sidebar-menu li').forEach(li => {
+                const text = li.textContent.toLowerCase();
+                li.style.display = text.includes(query) ? 'block' : 'none';
+            });
+        });
+
+        // Language toggle
+        function switchLanguage(lang) {
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // In a real app, this would change the language
+            console.log('Language switched to:', lang);
+        }
+
+        // Print functionality
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                e.preventDefault();
+                window.print();
+            }
+        });
+    </script>
+</body>
+</html>
