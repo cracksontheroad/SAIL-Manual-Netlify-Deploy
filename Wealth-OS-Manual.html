@@ -1,0 +1,2703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wealth-OS Manual - SAIL Wealth System v2</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* === ANIMATIONS === */
+@keyframes float-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.4; }
+  50% { transform: translateY(-20px) translateX(10px); opacity: 0.8; }
+}
+@keyframes float-delayed-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.3; }
+  50% { transform: translateY(-15px) translateX(-10px); opacity: 0.7; }
+}
+@keyframes float-slow-glow {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.2; }
+  50% { transform: translateY(-25px) translateX(5px); opacity: 0.6; }
+}
+@keyframes drift {
+  0% { transform: translateX(0px); }
+  100% { transform: translateX(20px); }
+}
+@keyframes orbit {
+  0% { transform: rotate(0deg) translateX(30px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
+}
+@keyframes breathing {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.1); }
+}
+@keyframes breathing-delayed {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.05); }
+}
+@keyframes rotate-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes slideInLeft {
+  0% { opacity: 0; transform: translateX(-50px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInDown {
+  0% { opacity: 0; transform: translateY(-30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.1); }
+  50% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), 0 0 30px rgba(255, 255, 255, 0.1); }
+}
+
+/* === RESET & BASE === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); border-radius: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: rgba(255,255,255,0.85);
+  background: #000;
+  line-height: 1.7;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* === IMMERSIVE BACKGROUND === */
+.immersive-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.immersive-bg .gradient-base {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1e1b4b 0%, #3b0764 40%, #0f172a 100%);
+}
+
+.immersive-bg .bg-image {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/8d0c8cab-aafd-4759-951d-82f748461c75_3840w.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.4;
+}
+
+/* Floating particles */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(1px);
+}
+.particle-1 { top: 25%; left: 33%; width: 2px; height: 2px; background: rgba(96,165,250,0.4); animation: float-glow 4s ease-in-out infinite; }
+.particle-2 { top: 75%; right: 25%; width: 1px; height: 1px; background: rgba(167,139,250,0.5); animation: float-delayed-glow 5s ease-in-out infinite; }
+.particle-3 { bottom: 33%; left: 50%; width: 1.5px; height: 1.5px; background: rgba(244,114,182,0.3); animation: float-slow-glow 6s ease-in-out infinite; }
+.particle-4 { top: 50%; right: 33%; width: 1px; height: 1px; background: rgba(34,211,238,0.4); animation: drift 8s ease-in-out infinite alternate; }
+.particle-5 { bottom: 25%; left: 25%; width: 2px; height: 2px; background: rgba(129,140,248,0.3); animation: orbit 15s linear infinite; }
+
+/* Ambient orbs */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+}
+.orb-1 { top: -50px; right: -50px; width: 384px; height: 384px; background: radial-gradient(circle, rgba(59,130,246,0.15), transparent); animation: breathing 4s ease-in-out infinite; }
+.orb-2 { bottom: -50px; left: -50px; width: 320px; height: 320px; background: radial-gradient(circle, rgba(168,85,247,0.2), transparent); animation: breathing-delayed 4s ease-in-out infinite 2s; }
+.orb-3 { top: 50%; left: 50%; width: 256px; height: 256px; background: radial-gradient(circle, rgba(236,72,153,0.1), transparent); animation: rotate-slow 20s linear infinite; }
+
+/* === LAYOUT === */
+.container {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* === GLASS SIDEBAR === */
+.sidebar, aside.sidebar {
+  width: 300px;
+  position: fixed;
+  top: 16px;
+  bottom: 16px;
+  left: 16px;
+  z-index: 100;
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  animation: slideInLeft 0.8s ease-out forwards;
+  transition: border-color 0.5s ease;
+  scrollbar-width: thin;
+}
+.sidebar:hover { border-color: rgba(255,255,255,0.25); }
+
+.sidebar-logo, .sidebar-header, .sidebar > div:first-child, .sidebar > h2:first-child {
+  padding: 28px 24px 16px;
+  font-size: 1.35em;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.sidebar-header h2, .sidebar-header h1 {
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: 700;
+  margin: 0;
+  padding: 0;
+  border: none;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-header p, .sidebar-header .version, .sidebar-version {
+  font-size: 0.8em;
+  color: rgba(255,255,255,0.5);
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+/* Sidebar search */
+.sidebar-search, .sidebar .search-container {
+  padding: 12px 20px 16px;
+}
+
+.sidebar-search input, .sidebar input[type="text"], .search-input {
+  width: 100%;
+  padding: 10px 14px 10px 38px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.08);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  color: #fff;
+  font-size: 0.85em;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  outline: none;
+}
+.sidebar-search input:focus, .sidebar input[type="text"]:focus, .search-input:focus {
+  border-color: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.12);
+}
+.sidebar-search input::placeholder, .sidebar input[type="text"]::placeholder, .search-input::placeholder {
+  color: rgba(255,255,255,0.4);
+}
+
+/* Sidebar navigation links - all variants */
+.sidebar-nav, .sidebar-menu, .sidebar nav, .nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px 20px;
+}
+
+.sidebar-nav a, .sidebar-menu a, .sidebar-menu li a, .sidebar nav a,
+.nav-link, .nav-item, a.nav-link, a.nav-item, button.nav-link {
+  display: block;
+  padding: 10px 16px;
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.88em;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  border: 1px solid transparent;
+  background: transparent;
+  text-align: left;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.4;
+}
+
+.sidebar-nav a:hover, .sidebar-menu a:hover, .sidebar-menu li a:hover, .sidebar nav a:hover,
+.nav-link:hover, .nav-item:hover, a.nav-link:hover, a.nav-item:hover, button.nav-link:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.9);
+  border-color: rgba(255,255,255,0.1);
+  transform: scale(1.02);
+}
+
+.sidebar-nav a.active, .sidebar-menu a.active, .sidebar-menu li a.active, .sidebar nav a.active,
+.nav-link.active, .nav-item.active, a.nav-link.active, a.nav-item.active, button.nav-link.active {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border-color: rgba(255,255,255,0.2);
+  font-weight: 600;
+  box-shadow: 0 0 15px rgba(255,255,255,0.05);
+}
+
+/* Sidebar section headings / group titles */
+.nav-section-title, .nav-group, .sidebar h3, .sidebar h4,
+.sidebar-menu > h3, .sidebar-menu > h4 {
+  font-size: 0.7em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.35);
+  padding: 18px 16px 6px;
+  margin: 0;
+  border: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.nav-section {
+  margin-bottom: 4px;
+}
+
+/* Sidebar list items without bullets */
+.sidebar-menu ul, .sidebar-menu ol, .sidebar nav ul, .sidebar nav ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* === MAIN CONTENT AREA === */
+.main-wrapper {
+  margin-left: 332px;
+  flex: 1;
+  min-height: 100vh;
+  padding: 16px 16px 16px 0;
+}
+
+.main-content, main.main-content {
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 48px 52px;
+  min-height: calc(100vh - 32px);
+  transition: border-color 0.5s ease;
+  animation: fadeIn 0.6s ease-out forwards;
+}
+.main-content:hover { border-color: rgba(255,255,255,0.25); }
+
+/* === CONTENT SECTIONS === */
+.content-section { display: none; animation: fadeIn 0.4s ease-out; }
+.content-section.active { display: block; }
+
+/* === TYPOGRAPHY === */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 2.2em;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 0.6em;
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h2 {
+  font-size: 1.6em;
+  font-weight: 600;
+  margin-top: 2em;
+  margin-bottom: 0.6em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  /* Override gradient text for h2 */
+  background: none;
+  -webkit-text-fill-color: #fff;
+}
+
+h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.4em;
+  color: rgba(255,255,255,0.95);
+}
+
+h4 {
+  font-size: 1.05em;
+  font-weight: 600;
+  margin-top: 1.2em;
+  margin-bottom: 0.3em;
+  color: rgba(255,255,255,0.9);
+}
+
+p {
+  margin-bottom: 1em;
+  color: rgba(255,255,255,0.75);
+}
+
+a { color: rgba(147,197,253,0.9); text-decoration: none; transition: color 0.3s; }
+a:hover { color: #fff; }
+
+strong, b { color: rgba(255,255,255,0.95); font-weight: 600; }
+
+code {
+  background: rgba(255,255,255,0.08);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  color: rgba(196,181,253,0.9);
+}
+
+ul, ol {
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+  color: rgba(255,255,255,0.75);
+}
+
+li { margin-bottom: 0.5em; }
+
+/* === STYLED BOXES (tip, note, ai, warning, milestone) === */
+.box {
+  padding: 20px 24px;
+  margin: 20px 0;
+  border-radius: 16px;
+  border-left: 3px solid;
+  background: rgba(255,255,255,0.04);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+}
+
+.box-title {
+  font-weight: 600;
+  color: rgba(255,255,255,0.95);
+  margin-bottom: 8px;
+}
+
+.box-tip, .box.tip {
+  border-left: 3px solid rgba(52,211,153,0.6);
+  background: rgba(52,211,153,0.06);
+}
+.box-tip::before, .box.tip::before { content: "💡 "; font-weight: bold; }
+
+.box-note, .box.note {
+  border-left: 3px solid rgba(251,191,36,0.6);
+  background: rgba(251,191,36,0.06);
+}
+.box-note::before, .box.note::before { content: "⚠️ "; font-weight: bold; }
+
+.box-ai, .box.ai-feature {
+  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15));
+  border-left: 3px solid rgba(168,85,247,0.6);
+  border: 1px solid rgba(168,85,247,0.2);
+}
+.box-ai::before, .box.ai-feature::before { content: "🤖 "; font-weight: bold; }
+.box-ai a { color: rgba(251,191,36,0.9); }
+
+.box.warning {
+  border-left: 3px solid rgba(239,68,68,0.6);
+  background: rgba(239,68,68,0.06);
+}
+
+.box.milestone {
+  border-left: 3px solid rgba(59,130,246,0.6);
+  background: rgba(59,130,246,0.06);
+}
+
+/* === STEPS === */
+.steps {
+  list-style: none;
+  padding: 0;
+  counter-reset: step-counter;
+}
+
+.steps li {
+  margin: 18px 0;
+  padding-left: 54px;
+  position: relative;
+  color: rgba(255,255,255,0.75);
+}
+
+.steps li::before {
+  content: counter(step-counter);
+  counter-increment: step-counter;
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.1);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+/* === CHECKLISTS === */
+.checklist {
+  list-style: none;
+  padding: 0;
+}
+
+.checklist li {
+  padding: 10px 0 10px 32px;
+  position: relative;
+  color: rgba(255,255,255,0.75);
+}
+
+.checklist li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: rgba(52,211,153,0.8);
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+/* === TABLES === */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 20px 0;
+  font-size: 0.9em;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+th {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.95);
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.7);
+}
+
+tr:hover td {
+  background: rgba(255,255,255,0.03);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* === ROLE BADGES === */
+.role-super-admin { color: rgba(56,189,248,0.9); font-weight: 600; }
+.role-admin { color: rgba(248,113,113,0.9); font-weight: 600; }
+.role-dept-head { color: rgba(167,139,250,0.9); font-weight: 600; }
+.role-teacher { color: rgba(52,211,153,0.9); font-weight: 600; }
+.role-student { color: rgba(129,140,248,0.9); font-weight: 600; }
+.role-parent { color: rgba(148,163,184,0.9); font-weight: 600; }
+
+.role-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.82em;
+  font-weight: 600;
+  margin-right: 5px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.role-badge.super-admin { background: rgba(56,189,248,0.12); color: rgba(56,189,248,0.9); border-color: rgba(56,189,248,0.2); }
+.role-badge.admin { background: rgba(248,113,113,0.12); color: rgba(248,113,113,0.9); border-color: rgba(248,113,113,0.2); }
+.role-badge.dept-head { background: rgba(167,139,250,0.12); color: rgba(167,139,250,0.9); border-color: rgba(167,139,250,0.2); }
+.role-badge.teacher { background: rgba(52,211,153,0.12); color: rgba(52,211,153,0.9); border-color: rgba(52,211,153,0.2); }
+.role-badge.student { background: rgba(129,140,248,0.12); color: rgba(129,140,248,0.9); border-color: rgba(129,140,248,0.2); }
+.role-badge.parent { background: rgba(148,163,184,0.12); color: rgba(148,163,184,0.9); border-color: rgba(148,163,184,0.2); }
+
+/* === COLLAPSIBLE === */
+.collapsible {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.9);
+  cursor: pointer;
+  padding: 16px 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  margin: 10px 0;
+  font-weight: 600;
+  font-size: 0.95em;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.collapsible:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  transform: scale(1.01);
+}
+
+.collapsible.active {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.25);
+  box-shadow: 0 0 20px rgba(255,255,255,0.05);
+}
+
+.collapsible-content {
+  display: none;
+  padding: 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-top: none;
+  border-radius: 0 0 14px 14px;
+  margin-top: -10px;
+}
+
+.collapsible-content.active {
+  display: block;
+}
+
+.collapsible-icon, .collapsible-arrow {
+  transition: transform 0.3s;
+  color: rgba(255,255,255,0.5);
+}
+
+.collapsible.active .collapsible-icon,
+.collapsible.active .collapsible-arrow {
+  transform: rotate(180deg);
+}
+
+/* === FEATURE GRID & CARDS === */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.feature-card {
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.feature-card h4 {
+  margin-top: 0;
+  color: rgba(255,255,255,0.95);
+}
+
+/* === ICON CIRCLE === */
+.icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+/* === FOOTER === */
+.footer {
+  background: rgba(255,255,255,0.04);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  padding: 24px;
+  margin-top: 48px;
+  border-radius: 0 0 24px 24px;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 0.85em;
+  color: rgba(255,255,255,0.4);
+}
+
+/* === UTILITY CLASSES === */
+.text-teal { color: rgba(52,211,153,0.9); }
+.text-center { text-align: center; }
+.mt-2 { margin-top: 2em; }
+.mb-2 { margin-bottom: 2em; }
+
+/* === STEP DESCRIPTION (SuperTeacher specific) === */
+.step-description {
+  color: rgba(255,255,255,0.65);
+  font-size: 0.9em;
+  margin-top: 4px;
+}
+
+/* Walkthrough step cards (SuperTeacher specific) */
+.setup-step, .step-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 12px 0;
+}
+
+/* === MOBILE RESPONSIVE === */
+@media (max-width: 900px) {
+  .sidebar, aside.sidebar {
+    position: fixed;
+    width: 280px;
+    left: -300px;
+    top: 0;
+    bottom: 0;
+    border-radius: 0 24px 24px 0;
+    transition: left 0.4s ease;
+    z-index: 200;
+  }
+  .sidebar.mobile-open { left: 0; }
+
+  .main-wrapper {
+    margin-left: 0;
+    padding: 16px;
+  }
+
+  .main-content, main.main-content {
+    padding: 28px 24px;
+    border-radius: 20px;
+  }
+
+  h1 { font-size: 1.6em; }
+  h2 { font-size: 1.3em; }
+  h3 { font-size: 1.1em; }
+
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 901px) {
+  .mobile-menu-btn { display: none !important; }
+  .mobile-overlay { display: none !important; }
+}
+
+.mobile-menu-btn {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 150;
+  width: 44px;
+  height: 44px;
+  background: rgba(255,255,255,0.1);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 14px;
+  color: #fff;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  transition: all 0.3s;
+}
+.mobile-menu-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
+
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  z-index: 150;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.mobile-overlay.active { opacity: 1; pointer-events: auto; }
+
+/* === PRINT CSS === */
+@media print {
+  .sidebar, aside.sidebar, .immersive-bg, .mobile-menu-btn, .mobile-overlay { display: none !important; }
+  .main-wrapper { margin-left: 0; }
+  .main-content, main.main-content {
+    max-width: 100%;
+    padding: 0;
+    background: #fff;
+    color: #000;
+    border: none;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  body { background: #fff; color: #000; }
+  .content-section { display: block !important; page-break-after: always; }
+  h1, h2, h3, h4 { color: #000; -webkit-text-fill-color: #000; background: none; }
+  p, li, td { color: #333; }
+  th { background: #eee; color: #000; }
+  .box { background: #f5f5f5; border-color: #ccc; }
+  .collapsible-content { display: block !important; }
+  .feature-card { background: #f5f5f5; border-color: #ddd; }
+}
+</style>
+</head>
+<body>
+<!-- Immersive Background -->
+<div class="immersive-bg">
+  <div class="gradient-base"></div>
+  <div class="bg-image"></div>
+  <div class="particle particle-1"></div>
+  <div class="particle particle-2"></div>
+  <div class="particle particle-3"></div>
+  <div class="particle particle-4"></div>
+  <div class="particle particle-5"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+<!-- Mobile Menu Button -->
+<button class="mobile-menu-btn" onclick="document.querySelector('.sidebar, aside.sidebar').classList.toggle('mobile-open'); document.querySelector('.mobile-overlay').classList.toggle('active');">☰</button>
+<div class="mobile-overlay" onclick="document.querySelector('.sidebar, aside.sidebar').classList.remove('mobile-open'); this.classList.remove('active');"></div>
+
+    <div class="container">
+        <div class="sidebar">
+            <img class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADYAAAA2CAYAAACMRWrdAAAKVUlEQVR4nO2Za5Bl1VXHf2vtc2+/prvn0dM9mQwgEAkZBhJxUhIjguWLUOKj4iUQKzFalTJJmRhNWSlLYtOmoqZimYeGmDLKGE1VmFZIkYkDamCIBKMwFUqKQUogkRlCmAfz6Om+j3PWWn7Y57YTy9K+M3T5wf7f6j6nd5+79/qftddzwxrWsIY1rOH/AeScvh1Ii5Ye3rf9O+e59pxmZZoDMc+8I8S5zXQWaO1upVVfI85+jbPT2OysMjfnP/APb97QHFv/w6kROwgbA0gpiSYApygUAFXNCymogCsETlLPgzhCBAmk0FOi5aNL7Re+vOfle5ZmY1bnZM5Xm5jMxqzMyZy//oG3/XIaHfqN5mixVZtKSoIWQkr5Hgk0gaiSRBABEQgNRAIERAIRIABxQhwicCupup1nqqXu7BfO+/xftqKV5mXeVo1Ya3crzd84bzvvfesnRqbH3h2dkggzLYhmkUiFoklrQpBEM6EkqAI4TqAqqAoRDhIIQkgQYhCGEJKGI+mYsHSkfcvd2+74UH/tl5xYf+JX333zLwxPj/+ZLPVKSZFSIZoaQkoJTUIqlFRkDakKiiBJIAUQy+Mi4NRjRNYWgRKY9HAvvUjqOiFF+8Ti9Xu2fmHvIJpbKTEh4Hu/+BMjXV/3ZHNdY2sRkBqqWkAqJGuqUFKhFElQESTlFZIqaCaRkiDanzWIyFuz/1nyRSYaoxQEL/Set8mJce0ttB/due3KnXO3zsEcK7I3/d8fgdbuliLE0tLo96dG2mZLJeaubhVhQTj5ao67YW5YGGEBAe6OmeFhmDvutS2F4zjmjjh0rctlzUv5xKbf5VNTH+X60R9Px0+eQFRf89DBR7Yzh8/G7IpkXtFDhzcfFgB3f1UIER4e7oQHHoZ7BeFEOGFZUA/P5DwL39eOhWHhVJ5JRgThgUaiV/XYOXQ5W4rNTKYJbhpvEWV4NEOkLF8JsG/fvpeOWB9e2ZB7SHjgHpgH7p7vwzPJyNqIyDZjeCbngUdA/R0TJyRrLQDDeWHh2zy3cAiACuNLJ+7h9KlFgqCsvDmIrMUgD2MSWGDmiIEkRULQWlhcQRxxQURq5wChIO71axTEyRrMfwHQji5vmbqR9868nTuO/jV/8dwdfPP5g0xsGMKqCscHykIGI4blN++BW4A76koIYDkghUBUgUUQCVQSeBASaEAkiKh9CTmenY4lZqd/hWvGr+Jr5X4+/JVP8o2HDjHzyo0UM4koA3oDhbHBiGWbr7dTOGKKa4Aq7gESJBccR3MEJionUv4fAon8IkwhAYtVm/OaM1wzfhWfef5zfGDfR/D9weTMJOsuLggxKjNsMF4D2pg7UTm4QEjWhDtmDg6EEAbh2VF4vUXDstd0j+wda8cjoSxWp/mZieuoqPj0/Z9j4b4OYxeOMv26EcammtlBlYatisb21dcSvAowQ8tEiBCJ7K4FxBLZfDynHiJo35ForS0FAtSgE102ynqu23AtXz3+ME8+/ixbrtnIzI5hhocKzB3rVmhp+IAqG9ArOlTZpWdtZVvre8XKLWvL8rNe2rLXlBAkqDXpSMCp3kmum7iGYR1m1yN3EoWzafswRZGwKqgqoyorrOdQDpYHD+g8spA5EDtqCgqiOddzye5dREghNXFQEY73TiEpGNYmI2kIF6cZTd60+Qa+2TvEPfsfZOq71qEJyl5FUs0vrQys9NWxsQfqq7lBRPaEFeC1TZUBFWCeM5DIGQgOYtAuu7xly09z09QNbC1eRq+qeHrpIN83cSVbhmb4zGO7OfHicSYvGME6TtRkvHSidLyKVbKxPgzcArEstLoQDi4KFahCSE6jQgUtlJPdk/zg5tfyq+e/bXmaZ9oH2XP0Pq7beDUvVEf5/P1fYv3mUdIQeC/HAoXsaKogSsd6A0k6mI1ROW6GWZ1NVIZX+T48iEpyDCvzeK8q0VDed9Evcmjx27xh7y/xO49/moXqNO857+e5ZOwiPnvgLg7++3Osv3AMyljWUFX1NRVUHV9djWXX7fWW01xDwXLwFYF+aZIQjnZf5F2veDMXjL2cd/39B7nn9r3ct+krfOT8P2HHqy5h50WXs/fe+1m3fpjGBogyV2xS5bncAmsHgkOnFmLfKhDr20wEUNU1lAiSlJPlabw0pICJxihd77J1aIZ3vOIm9h15hF1372aiWI92EvZoj0ce/zr/OLGfdeUIU68bQXpBZYZLoAhJcmiJHoQI1h5I0sFtLMxxc0wEFcUlOLp4nLdf/rO8dusO7n3uQR499gRPLzzLh179a6RGwS13fZTyWx3Gf2gjug78eNA80iBeDIpppTEp2WnU8c5wIgTvOd4LAoEBbWxAjTlhRpSGFonKjXa3w+zr38k7XvMmTlVtbrjgWjre48DRp7hyeju/9/Cf8tV7H2Lq4k0MrU80TJEZ8C2Odz0LUOX8ug8xcrVQBtYxJBRfTWJeZXdeoHR6HWgIf/Aj7+fmy97AZx/7Gz6w+2Ncev6F/NgVV3P9pVfztRMH+KPdf85oGkYvTNABj0Dr2KYqJBGik5NntK7NPOf8YRA9cnwsV5FYH4udRaY3TnPbT/4WV19wJb/55dv4/V2fwr+xyKHRp/nbvX/Hhy/ewsjECMeeOMzYFesoRLG2QaG49TtUkTP9fqtquUUAGoL3Au/m/Jnaxh74H+Q6a2IqIp1ul5mJab741j9mcmycN+56H3f91Z2MLg1RnDeeuygnnYWvH2XBYXjbCMWmAl3MsY0qIEkub8h8skvNa0T/1nNMs24gEXi3GqijNhAxsThF5UQJ/3zkCf7w9l08uOd+JmUCvWSItKUAAe8aciohC5C2FagL5paLTxHEom67xXd2ZnI7MqdtkXNOyrx9o9JTAFw2vaKCc4XErnV4gK6VDzdSwbNPPqs/99vvRo71GB+eRL97iOaGRq6MI2A4YcMCU4GqEl3L9hN1XZZq2yIn0zlPiGxXdU0tAVZ6RCXqPe+aVf8CwOPzKyK2cvXOotxKTP36VQ/Fol/Ve36p0mYqdKYgjSe06q9Xd3oDgkCkVoNK7h/WVbOq5JcQkW1MBIkzPCMQFqWqNqrF8s5vfeyxN9JqJeZX1ldceUp1oCUI4WX5Xi3Emi8bKRobiyoFwaIhvUC6Dh1D2o50HO0EtB1pgywaLAVa/8SiQT3mi46frvC240uGL3rYaSujpFEuVQtlz95PIGxfmbYGIzY/b8zO6osf3/9PRNycmtpOY41CVUSDyL00XBEnd988PFw8lvtx4uEReJh7jsLiUT/J8kdCEJFmapj5sV7HfurIbQee4lZkpc1SOJvTlno7TL/ze66g2bgl3H5UlPUikq1Dc5NHRLJN9beXBFL38sM9e8ZaTuE/u1UeDhZHCdnjC+0PHr79356hRWKe1TuU+K/kAKbfs2OmlMZFjZLRKkKKM0+0bPlXRjpj/L87+VKikup0WcVTC5/812NAtu0BNHXumEWZXVm7+azQaiVmByyrzsC5HdVC9s83tl5CgvOwm/+bY9o1rGENa1jDGtawhjWcif8AC/t9194ZuCEAAAAASUVORK5CYII=" alt="Wealth-OS" style="width:54px;height:54px;border-radius:14px;object-fit:cover;">
+            <h2>Wealth-OS v2</h2>
+            <input type="text" class="search-box" id="searchBox" placeholder="Search...">
+            <ul class="nav-list" id="navList">
+                <li><a href="javascript:void(0)" data-target="welcome" class="nav-link active">Welcome</a></li>
+                <li><a href="javascript:void(0)" data-target="overview" class="nav-link">Overview</a></li>
+                <li><a href="javascript:void(0)" data-target="getting-started" class="nav-link">Getting Started</a></li>
+                <li><a href="javascript:void(0)" data-target="three-layer-system" class="nav-link">3-Layer System</a></li>
+                <li><a href="javascript:void(0)" data-target="overview-tab" class="nav-link">Overview Tab</a></li>
+                <li><a href="javascript:void(0)" data-target="portfolio-tab" class="nav-link">Portfolio Tab</a></li>
+                <li><a href="javascript:void(0)" data-target="history-tab" class="nav-link">History Tab</a></li>
+                <li><a href="javascript:void(0)" data-target="rebalance-tab" class="nav-link">Rebalance Tab</a></li>
+                <li><a href="javascript:void(0)" data-target="contributions-tab" class="nav-link">Contributions Tab</a></li>
+                <li><a href="javascript:void(0)" data-target="projector-tab" class="nav-link">Projector Tab</a></li>
+                <li><a href="javascript:void(0)" data-target="ai-coach" class="nav-link">AI Coach</a></li>
+                <li><a href="javascript:void(0)" data-target="first-trades" class="nav-link">First Trades</a></li>
+                <li><a href="javascript:void(0)" data-target="settings" class="nav-link">Settings & Data</a></li>
+                <li><a href="javascript:void(0)" data-target="compliance" class="nav-link">Compliance</a></li>
+                <li><a href="javascript:void(0)" data-target="features" class="nav-link">Feature List</a></li>
+            </ul>
+        </div>
+
+        <div class="main-wrapper">
+        <main class="main-content">
+            <!-- WELCOME SECTION -->
+            <section id="welcome" class="content-section active">
+                <h1>Welcome to Wealth-OS v2</h1>
+                <p class="intro-text">Your personal wealth management platform with AI behavioral coaching, portfolio tracking, and retirement scenario modeling.</p>
+
+                <div class="disclaimer-banner">
+                    <h3>Important Disclaimers</h3>
+                    <p><strong>Not FCA Regulated</strong> — Wealth-OS is not authorized or regulated by the Financial Conduct Authority. It is a personal financial tool, not a licensed investment platform.</p>
+                    <p><strong>Not Financial Advice</strong> — This system provides no financial advice. It is educational and designed to help you think through your own decisions.</p>
+                    <p><strong>Capital at Risk</strong> — Investments carry risk. You may lose money. Past performance is not indicative of future results.</p>
+                    <p><strong>Cryptocurrency Volatility</strong> — Crypto assets are highly volatile. Allocations to crypto should be within your risk tolerance and personal use only.</p>
+                    <p><strong>Personal Use Only</strong> — This system is for personal wealth management only. Not intended for professional, institutional, or advisory use.</p>
+                </div>
+
+                <h2>What is Wealth-OS?</h2>
+                <p>Wealth-OS is a personal wealth management platform that combines three key capabilities:</p>
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>Portfolio Tracking:</strong> Real-time visibility into your holdings, performance, and allocation across three strategic layers.</li>
+                    <li><strong>AI Behavioral Coach:</strong> An intelligent advisor that guides you through investment decisions, enforces portfolio rules, and asks "why" before you trade.</li>
+                    <li><strong>Retirement Projections:</strong> Multi-scenario growth calculator showing how different contribution and market assumptions impact your long-term wealth.</li>
+                </ul>
+
+                <h2>The 3-Layer Philosophy</h2>
+                <p>Wealth-OS organizes your portfolio into three distinct layers, each serving a different purpose in your overall strategy:</p>
+
+                <div class="layer-comparison">
+                    <div class="layer-card blue-card">
+                        <h4>Foundation (40%)</h4>
+                        <ul>
+                            <li>Capital preservation</li>
+                            <li>High liquidity</li>
+                            <li>Minimal volatility</li>
+                            <li>Emergency buffer</li>
+                        </ul>
+                    </div>
+                    <div class="layer-card teal-card">
+                        <h4>Growth (40%)</h4>
+                        <ul>
+                            <li>Long-term compounding</li>
+                            <li>Diversified equities</li>
+                            <li>Bond allocation</li>
+                            <li>Moderate risk</li>
+                        </ul>
+                    </div>
+                    <div class="layer-card gold-card">
+                        <h4>Asymmetric (20%)</h4>
+                        <ul>
+                            <li>High-risk, high-upside</li>
+                            <li>Crypto optionality</li>
+                            <li>Limited downside</li>
+                            <li>Conviction plays</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <p style="margin-top: 2rem;">This structure ensures your core wealth is protected while maintaining exposure to growth and opportunity. The system is designed for personal use and long-term wealth building.</p>
+            </section>
+
+            <!-- OVERVIEW SECTION -->
+            <section id="overview" class="content-section">
+                <h1>System Overview</h1>
+                <p class="intro-text">A complete walkthrough of Wealth-OS core concepts and how the system works together.</p>
+
+                <h2>How Wealth-OS Works</h2>
+                <p>Wealth-OS is built on four core principles:</p>
+
+                <ol style="margin: 1.5rem 0 1.5rem 2rem; line-height: 1.8;">
+                    <li><strong>Layered Architecture:</strong> Your portfolio is divided into Foundation, Growth, and Asymmetric layers with specific targets and rules.</li>
+                    <li><strong>Rule-Based Rebalancing:</strong> New money is allocated according to layer targets. Rebalancing is automatic, not forced.</li>
+                    <li><strong>Behavioral Coaching:</strong> The AI coach enforces rules and asks clarifying questions before major trades. Powered by Claude Anthropic API for intelligent guidance.</li>
+                    <li><strong>Scenario Modeling:</strong> Project your wealth under multiple market assumptions to understand your financial future.</li>
+                </ol>
+
+                <h2>The Four Main Tabs</h2>
+                <p>Wealth-OS organizes your wealth management into four main areas:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tab</th>
+                            <th>Purpose</th>
+                            <th>Key Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Overview</strong></td>
+                            <td>Dashboard and portfolio health</td>
+                            <td>View portfolio health score, total value, layer status</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Portfolio</strong></td>
+                            <td>Holdings and allocation</td>
+                            <td>See all positions, P&L, layer assignments</td>
+                        </tr>
+                        <tr>
+                            <td><strong>History</strong></td>
+                            <td>Performance tracking</td>
+                            <td>Chart gains/losses, select time ranges</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Rebalance</strong></td>
+                            <td>Allocation management</td>
+                            <td>Plan new contributions, see allocation guidance</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Contributions</strong></td>
+                            <td>Track inflows</td>
+                            <td>Log contributions, view DCA history</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Projector</strong></td>
+                            <td>Retirement forecasting</td>
+                            <td>Model 30-year growth under 3 scenarios</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Data & Integration</h2>
+                <p>Wealth-OS connects to Alpaca Markets for paper trading and real-time data. All your preferences and history are stored locally in your browser's localStorage, ensuring your data stays on your device.</p>
+
+                <div class="note">Wealth-OS uses browser localStorage for data persistence. Clear your browser data and your Wealth-OS records will be deleted. Back up important data regularly.</div>
+            </section>
+
+            <!-- GETTING STARTED SECTION -->
+            <section id="getting-started" class="content-section">
+                <h1>Getting Started with Wealth-OS</h1>
+                <p class="intro-text">Set up your account, understand the consent flow, and log your first trades.</p>
+
+                <h2>Initial Consent & Agreement</h2>
+                <p>When you first open Wealth-OS, you'll be asked to confirm four key statements:</p>
+
+                <div style="margin: 1.5rem 0;">
+                    <div class="collapsible">
+                        <strong>1. This is my personal wealth management tool</strong>
+                        <div class="collapsible-content">
+                            <p>Confirms that you are using Wealth-OS for your own personal financial management, not for professional or institutional advisory purposes.</p>
+                        </div>
+                    </div>
+                    <div class="collapsible">
+                        <strong>2. I understand capital is at risk</strong>
+                        <div class="collapsible-content">
+                            <p>Acknowledges that all investments carry risk of loss. You may lose some or all of your invested capital. Past performance does not guarantee future results.</p>
+                        </div>
+                    </div>
+                    <div class="collapsible">
+                        <strong>3. I understand crypto volatility</strong>
+                        <div class="collapsible-content">
+                            <p>Acknowledges that cryptocurrency assets can be extremely volatile, with large daily price swings. Your Asymmetric Layer allocation to crypto could lose 50%+ or gain significantly.</p>
+                        </div>
+                    </div>
+                    <div class="collapsible">
+                        <strong>4. This is for personal use only</strong>
+                        <div class="collapsible-content">
+                            <p>Confirms that you will not use Wealth-OS for professional financial advice, institutional management, or regulatory-required advisory purposes.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h2>Connecting Your Account</h2>
+                <p>Wealth-OS uses Alpaca Markets for paper trading. Paper trading simulates real market conditions without using real money, perfect for learning and testing strategies.</p>
+
+                <ol class="steps">
+                    <li>Visit Alpaca Markets (alpaca.markets) and create a free account</li>
+                    <li>Generate API keys in your Alpaca dashboard</li>
+                    <li>In Wealth-OS Settings, paste your API keys and Secret Key</li>
+                    <li>Wealth-OS will verify the connection and load your account data</li>
+                    <li>Your account is now ready to track trades and monitor holdings</li>
+                </ol>
+
+                <div class="tip">Paper trading accounts start with $100,000 in cash. Use it to practice trading, test strategies, and familiarize yourself with the markets risk-free.</div>
+
+                <h2>Your First Look: The Overview Tab</h2>
+                <p>When you first log in, you'll see the Overview tab, which shows your portfolio at a glance:</p>
+
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>Portfolio Health Score (0–100):</strong> A composite metric indicating how well your portfolio aligns with layer targets. Higher is better.<br><br><strong>Health Score Calculation:</strong> The score is derived from how well each layer tracks its target allocation. A score of 80+ indicates strong alignment; 60–79 indicates fair status requiring attention; below 60 suggests significant drift. The score also penalizes excessive cash positions (>50% in cash) and asymmetric layer overallocation (>15%).</li>
+                    <li><strong>Total Portfolio Value:</strong> Your current total wealth (cash + positions).</li>
+                    <li><strong>Layer Status:</strong> Visual indicators showing whether each layer is on target, above, or below allocation.</li>
+                    <li><strong>Monthly AI Brief:</strong> An auto-generated summary of your performance and portfolio insights.</li>
+                </ul>
+
+                <div class="note">Your first few trades should be small and educational. Use the AI Coach to discuss your strategy before placing orders.</div>
+            </section>
+
+            <!-- THREE LAYER SYSTEM SECTION -->
+            <section id="three-layer-system" class="content-section">
+                <h1>The 3-Layer System Explained</h1>
+                <p class="intro-text">Deep dive into Wealth-OS's foundational architecture: why layers work, how they protect your wealth, and the rules that govern each.</p>
+
+                <h2>Why Layers Matter</h2>
+                <p>Traditional portfolios often blend everything together, leading to unclear risk management and poor decision-making. The 3-Layer System separates your wealth by purpose and risk level:</p>
+
+                <div class="layer-box layer-foundation">
+                    <strong>Foundation Layer (40% target, Blue #1560A8)</strong>
+                    <p style="margin-top: 0.5rem;">Your financial bedrock. This is capital preservation and liquidity. Think of it as your emergency fund on steroids.</p>
+                </div>
+
+                <div class="layer-box layer-growth">
+                    <strong>Growth Layer (40% target, Teal #0A7A58)</strong>
+                    <p style="margin-top: 0.5rem;">Your long-term wealth engine. Diversified equities, bonds, and index funds that compound over decades.</p>
+                </div>
+
+                <div class="layer-box layer-asymmetric">
+                    <strong>Asymmetric Layer (20% target, Gold #B07010)</strong>
+                    <p style="margin-top: 0.5rem;">Your optionality bucket. High-risk, high-upside plays where you can win 10x but lose your allocation.</p>
+                </div>
+
+                <h2>Foundation Layer (40%)</h2>
+                <h3>Purpose</h3>
+                <p>Capital preservation, liquidity, and emergency buffer. This is not growth capital; it's sleeping capital ready for crisis or opportunity.</p>
+
+                <h3>Target Allocation</h3>
+                <p>40% of your total portfolio value.</p>
+
+                <h3>Suitable Holdings</h3>
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li>Cash (USD, GBP, EUR)</li>
+                    <li>Money market funds (VMFXX, SPAXX)</li>
+                    <li>Short-term Treasury bonds (SHV, IEF)</li>
+                    <li>High-yield savings equivalents</li>
+                    <li>Ultra-safe index funds (bonds only)</li>
+                </ul>
+
+                <h3>Rules</h3>
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>Minimum volatility:</strong> Holdings should have <5% expected annual volatility</li>
+                    <li><strong>High liquidity:</strong> Must be convertible to cash within 1 business day</li>
+                    <li><strong>Capital preservation:</strong> No speculation; only safe vehicles</li>
+                    <li><strong>No crypto:</strong> Cryptocurrency is not allowed in this layer</li>
+                </ul>
+
+                <div class="tip">Your Foundation Layer is your financial shock absorber. Never let it drop below 30% of total portfolio. If it does, the AI Coach will flag this as urgent.</div>
+
+                <h2>Growth Layer (40%)</h2>
+                <h3>Purpose</h3>
+                <p>Long-term wealth compounding through diversified risk assets. This is your 30-year compounding engine.</p>
+
+                <h3>Target Allocation</h3>
+                <p>40% of your total portfolio value.</p>
+
+                <h3>Suitable Holdings</h3>
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li>Large-cap index funds (SPY, VTI, VOO)</li>
+                    <li>International equities (VXUS, EFA, IEMG)</li>
+                    <li>Dividend stocks (solid, mature companies)</li>
+                    <li>Bonds (BND, AGG, individual Treasuries)</li>
+                    <li>Real estate investment trusts (VNQ, REITs)</li>
+                    <li>Balanced funds (60/40 stock/bond mix or similar)</li>
+                </ul>
+
+                <h3>Rules</h3>
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>Diversification required:</strong> No single holding should exceed 15% of this layer</li>
+                    <li><strong>Long-term focus:</strong> Intended for 10+ year holding periods</li>
+                    <li><strong>Moderate volatility:</strong> Expected annual volatility 8–15%</li>
+                    <li><strong>Rebalancing discipline:</strong> Rebalance when drift exceeds 5% from target</li>
+                </ul>
+
+                <div class="note">The Growth Layer is your core wealth. It should be boring, diversified, and left alone. Don't day-trade this layer. The AI Coach will discourage frequent trading here.</div>
+
+                <h2>Asymmetric Layer (20%)</h2>
+                <h3>Purpose</h3>
+                <p>High-risk, high-upside bets where you accept large loss potential for significant upside. Think venture, crypto, thematic bets.</p>
+
+                <h3>Target Allocation</h3>
+                <p>20% of your total portfolio value.</p>
+
+                <h3>Suitable Holdings</h3>
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li>Bitcoin, Ethereum, alt cryptocurrencies</li>
+                    <li>Emerging market stocks (high growth, high volatility)</li>
+                    <li>Biotech and small-cap growth stocks</li>
+                    <li>Call options (if experienced)</li>
+                    <li>Venture-backed equity positions</li>
+                    <li>Thematic ETFs (AI, cleantech, disruption)</li>
+                </ul>
+
+                <h3>Rules</h3>
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>High risk accepted:</strong> These positions can lose 50%+ or gain 5x+</li>
+                    <li><strong>Position sizing:</strong> No single position should exceed 10% of this layer</li>
+                    <li><strong>Conviction required:</strong> The AI Coach will ask "why" before you add to Asymmetric</li>
+                    <li><strong>Rebalancing caps:</strong> Rebalance when drift exceeds 3% from target</li>
+                    <li><strong>Downside capped:</strong> Only risk what you can afford to lose completely</li>
+                </ul>
+
+                <div class="warning">The Asymmetric Layer is where losses happen. A 50% crash here means only a 10% hit to total portfolio (20% × 50%). That's the point: defined downside, unlimited upside, small allocation.</div>
+
+                <h2>Layer Target Rules & Enforcement</h2>
+                <p>Wealth-OS enforces layer discipline through automated checks and the AI Coach:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Condition</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>All layers within 3% of target</td>
+                            <td>✓ Healthy</td>
+                            <td>None required; maintain current allocation</td>
+                        </tr>
+                        <tr>
+                            <td>Any layer 3–5% off target</td>
+                            <td>⚠ Watch</td>
+                            <td>Plan rebalancing with next contribution</td>
+                        </tr>
+                        <tr>
+                            <td>Any layer >5% off target</td>
+                            <td>🔴 Urgent</td>
+                            <td>Rebalance immediately or discuss with Coach</td>
+                        </tr>
+                        <tr>
+                            <td>Foundation Layer <30%</td>
+                            <td>🔴 Critical</td>
+                            <td>Stop new Asymmetric/Growth additions immediately</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="coach-feature">When your layers drift, the Coach will not prevent you from trading, but will ask clarifying questions and remind you of your targets. The system is advisory, not restrictive.</div>
+
+                <h2>A Practical Example</h2>
+                <p><strong>Scenario:</strong> You have a $100,000 portfolio with $40k Foundation, $40k Growth, $20k Asymmetric. You want to add $10,000.</p>
+
+                <p><strong>Current state:</strong> Perfectly on target (40/40/20).</p>
+
+                <p><strong>New allocation:</strong> Add $4,000 Foundation, $4,000 Growth, $2,000 Asymmetric → New portfolio: $104,000 with allocation 42.3%, 42.3%, 19.2% (within healthy range).</p>
+
+                <p><strong>Another scenario:</strong> Market crash hits. Your Growth and Asymmetric layers plunge, but Foundation stays stable. New portfolio: $70,000 with allocation 57% Foundation, 27% Growth, 16% Asymmetric.</p>
+
+                <p><strong>Coach guidance:</strong> "Your Foundation is above target and Growth/Asymmetric are below. Should we move some Foundation to Growth now that valuations have dropped?" This is when you consider rebalancing.</p>
+            </section>
+
+            <!-- OVERVIEW TAB SECTION -->
+            <section id="overview-tab" class="content-section">
+                <h1>The Overview Tab</h1>
+                <p class="intro-text">Your portfolio dashboard. See your health score, total value, layer status, and monthly AI brief at a glance.</p>
+
+                <h2>Portfolio Health Score (0–100)</h2>
+                <p>A composite metric calculated from four factors:</p>
+
+                <ol style="margin: 1.5rem 0 1.5rem 2rem; line-height: 1.8;">
+                    <li><strong>Layer Alignment (40%):</strong> How close are your allocations to 40/40/20 targets?</li>
+                    <li><strong>Rebalancing Currency (20%):</strong> Do you have fresh capital to rebalance with, or are you overdue?</li>
+                    <li><strong>Volatility Control (20%):</strong> Is your portfolio volatility within expected ranges for your layer mix?</li>
+                    <li><strong>Liquidity Health (20%):</strong> What percentage of your portfolio is in liquid assets?</li>
+                </ol>
+
+                <p><strong>Scoring:</strong></p>
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li>80–100: Excellent. Your portfolio is well-aligned and healthy.</li>
+                    <li>60–79: Good. Minor drift but nothing urgent.</li>
+                    <li>40–59: Fair. Time to discuss rebalancing with the Coach.</li>
+                    <li>0–39: Poor. Significant drift; urgent rebalancing needed.</li>
+                </ul>
+
+                <div class="tip">Health Score is informational, not punitive. A score of 70 doesn't mean you're in trouble; it means there's room for thoughtful optimization.</div>
+
+                <h2>Total Portfolio Value</h2>
+                <p>Displayed in USD. Includes:</p>
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li>Cash on hand</li>
+                    <li>Current market value of all holdings</li>
+                    <li>Unrealized gains/losses</li>
+                </ul>
+
+                <p>This is updated in real-time via Alpaca API and refreshed every 60 seconds.</p>
+
+                <h2>Layer Status Indicators</h2>
+                <p>Three colored boxes showing Foundation, Growth, and Asymmetric allocation:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Visual Indicator</th>
+                            <th>Meaning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>✓ Green</td>
+                            <td>Layer is within target range (±3%)</td>
+                        </tr>
+                        <tr>
+                            <td>⚠️ Amber</td>
+                            <td>Layer is drifting (3–5% off target)</td>
+                        </tr>
+                        <tr>
+                            <td>🔴 Red</td>
+                            <td>Layer is significantly off (>5% off target)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>Click on any layer box to jump to the Rebalance tab for guidance on bringing it back to target.</p>
+
+                <h2>Monthly AI Brief</h2>
+                <p>Auto-generated at the end of each month by the AI Coach. Includes:</p>
+
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li>Month-over-month performance vs. previous month</li>
+                    <li>Key winners and losers in your portfolio</li>
+                    <li>Layer performance comparison</li>
+                    <li>Market context and macro observations</li>
+                    <li>1–3 actionable suggestions for the upcoming month</li>
+                </ul>
+
+                <p>The brief is educational, not prescriptive. Read it, think about it, and discuss any concerns with the Coach.</p>
+
+                <div class="note">The Monthly AI Brief is reset on the 1st of each month. If you want to see previous months, check the Chat History in the AI Coach section.</div>
+            </section>
+
+            <!-- PORTFOLIO TAB SECTION -->
+            <section id="portfolio-tab" class="content-section">
+                <h1>The Portfolio Tab</h1>
+                <p class="intro-text">Detailed view of all your holdings, position-by-position performance, and layer assignments.</p>
+
+                <h2>Holdings View</h2>
+                <p>A table showing all current positions:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Quantity</th>
+                            <th>Entry Price</th>
+                            <th>Current Price</th>
+                            <th>Total Value</th>
+                            <th>P&L</th>
+                            <th>Layer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>SPY</td>
+                            <td>25</td>
+                            <td>$420.00</td>
+                            <td>$450.50</td>
+                            <td>$11,262.50</td>
+                            <td>+$762.50 (+7.2%)</td>
+                            <td>Growth</td>
+                        </tr>
+                        <tr>
+                            <td>BTC</td>
+                            <td>0.15</td>
+                            <td>$45,000</td>
+                            <td>$52,000</td>
+                            <td>$7,800</td>
+                            <td>+$1,050 (+15.5%)</td>
+                            <td>Asymmetric</td>
+                        </tr>
+                        <tr>
+                            <td>SHV</td>
+                            <td>100</td>
+                            <td>$110.20</td>
+                            <td>$110.18</td>
+                            <td>$11,018</td>
+                            <td>-$2 (-0.02%)</td>
+                            <td>Foundation</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p style="margin-top: 1rem;"><strong>P&L (Profit & Loss):</strong> Calculated as (Current Price − Entry Price) × Quantity. This is unrealized gain/loss; positions are not closed unless you sell.</p>
+
+                <h2>Asset Allocation Visualization</h2>
+                <p>A pie chart showing your portfolio's composition by layer and by asset class:</p>
+
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>By Layer:</strong> Blue (Foundation %), Teal (Growth %), Gold (Asymmetric %)</li>
+                    <li><strong>By Asset Class:</strong> Equities, Bonds, Crypto, Cash</li>
+                </ul>
+
+                <p>Hover over each slice to see exact percentages. Click to drill down for more detail.</p>
+
+                <h2>Per-Position Details</h2>
+                <p>Click on any holding to expand and see:</p>
+
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>Trade History:</strong> All buys/sells for this symbol</li>
+                    <li><strong>Cost Basis:</strong> Average entry price</li>
+                    <li><strong>Current Market Data:</strong> 52-week high/low, dividend yield (if applicable)</li>
+                    <li><strong>Layer Assignment:</strong> Which layer this position belongs to</li>
+                    <li><strong>Tax Lot Information:</strong> (Coming soon)</li>
+                </ul>
+
+                <div class="tip">Right-click on any position to quickly move it to a different layer (if you're rebalancing manually) or to set a price alert.</div>
+
+                <h2>Understanding P&L Columns</h2>
+                <p>Wealth-OS tracks two types of P&L:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Definition</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Unrealized P&L</strong></td>
+                            <td>Gain/loss on positions you still hold</td>
+                            <td>You bought SPY at $420, now $450 = +$30/share</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Realized P&L</strong></td>
+                            <td>Gain/loss on positions you've sold</td>
+                            <td>You sold BTC for +$1,000 profit (locked in)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>Wealth-OS displays unrealized P&L prominently. Realized gains are tracked in your trade history.</p>
+            </section>
+
+            <!-- HISTORY TAB SECTION -->
+            <section id="history-tab" class="content-section">
+                <h1>The History Tab</h1>
+                <p class="intro-text">Track your portfolio's performance over time with interactive charts and time range selection.</p>
+
+                <h2>Performance Chart</h2>
+                <p>An interactive line chart showing your portfolio value over time. The chart updates in real-time and allows you to:</p>
+
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li>Hover to see exact values at any point in time</li>
+                    <li>Click and drag to zoom into a specific date range</li>
+                    <li>Double-click to reset to full view</li>
+                    <li>Toggle layer visibility (show/hide Foundation, Growth, Asymmetric)</li>
+                </ul>
+
+                <h2>Time Range Selection</h2>
+                <p>Quick-select buttons for common ranges:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Button</th>
+                            <th>Time Period</th>
+                            <th>Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1D</strong></td>
+                            <td>Last 24 hours</td>
+                            <td>Day-trading or checking recent activity</td>
+                        </tr>
+                        <tr>
+                            <td><strong>1W</strong></td>
+                            <td>Last 7 days</td>
+                            <td>Weekly performance check</td>
+                        </tr>
+                        <tr>
+                            <td><strong>1M</strong></td>
+                            <td>Last 30 days</td>
+                            <td>Monthly performance review</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3M</strong></td>
+                            <td>Last 90 days</td>
+                            <td>Quarterly performance</td>
+                        </tr>
+                        <tr>
+                            <td><strong>YTD</strong></td>
+                            <td>Year-to-date</td>
+                            <td>Calendar year performance</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ALL</strong></td>
+                            <td>Since account start</td>
+                            <td>All-time view</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Custom</strong></td>
+                            <td>User-selected dates</td>
+                            <td>Analyze specific periods</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Gains & Losses View</h2>
+                <p>Switch between two views to understand your returns:</p>
+
+                <div class="collapsible">
+                    <strong>Absolute Returns (Dollar Amount)</strong>
+                    <div class="collapsible-content">
+                        <p>Shows your total gain or loss in dollars. Example: You're up +$5,000 since you started.</p>
+                    </div>
+                </div>
+
+                <div class="collapsible">
+                    <strong>Percentage Returns (% Change)</strong>
+                    <div class="collapsible-content">
+                        <p>Shows your gain or loss as a percentage of starting capital. Example: You're up +12.5% since you started.</p>
+                    </div>
+                </div>
+
+                <h2>Layer Performance Comparison</h2>
+                <p>A summary table showing each layer's performance over the selected time period:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Layer</th>
+                            <th>Starting Value</th>
+                            <th>Ending Value</th>
+                            <th>Absolute Gain</th>
+                            <th>% Return</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Foundation</td>
+                            <td>$40,000</td>
+                            <td>$40,080</td>
+                            <td>+$80</td>
+                            <td>+0.2%</td>
+                        </tr>
+                        <tr>
+                            <td>Growth</td>
+                            <td>$40,000</td>
+                            <td>$44,500</td>
+                            <td>+$4,500</td>
+                            <td>+11.3%</td>
+                        </tr>
+                        <tr>
+                            <td>Asymmetric</td>
+                            <td>$20,000</td>
+                            <td>$22,100</td>
+                            <td>+$2,100</td>
+                            <td>+10.5%</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>This table answers: "Which layer is driving my returns? Where am I losing money?"</p>
+
+                <div class="note">Do not use short-term returns to judge your strategy. Markets are noisy. Focus on 1+ year returns and multi-year trends. The Coach will remind you of this regularly.</div>
+            </section>
+
+            <!-- REBALANCE TAB SECTION -->
+            <section id="rebalance-tab" class="content-section">
+                <h1>The Rebalance Tab</h1>
+                <p class="intro-text">Plan your new contributions and understand how to bring your portfolio back into alignment with layer targets.</p>
+<h3>Rebalance Calculator – Allocation by Layer</h3>
+<p>When you add a new contribution (e.g., monthly savings), the calculator automatically suggests how to allocate that money across your three layers to bring them closer to their targets:</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Layer</th>
+            <th>Current %</th>
+            <th>Target %</th>
+            <th>Suggested Allocation</th>
+            <th>Priority</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Foundation</td>
+            <td>35%</td>
+            <td>40%</td>
+            <td>$4,500 of $10,000</td>
+            <td>✓ Healthy</td>
+        </tr>
+        <tr>
+            <td>Growth</td>
+            <td>50%</td>
+            <td>45%</td>
+            <td>$0 (over-target)</td>
+            <td>Watch</td>
+        </tr>
+        <tr>
+            <td>Asymmetric</td>
+            <td>15%</td>
+            <td>15%</td>
+            <td>$5,500</td>
+            <td>✓ On target</td>
+        </tr>
+    </tbody>
+</table>
+
+<p><strong>Key principle:</strong> New money goes to the layers furthest below their targets. No selling required — pure growth through new contributions.</p>
+
+                <h2>How Rebalancing Works</h2>
+                <p>Wealth-OS uses a <strong>new money first</strong> rebalancing approach:</p>
+
+                <ol style="margin: 1.5rem 0 1.5rem 2rem; line-height: 1.8;">
+                    <li>You have new capital to invest (from salary, bonus, savings)</li>
+                    <li>You enter the amount in the Rebalance tab</li>
+                    <li>Wealth-OS calculates how much should go to each layer to bring them back to target</li>
+                    <li>You review the allocation and follow the suggested purchases</li>
+                    <li>You log the trades in the Contributions tab</li>
+                </ol>
+
+                <p><strong>Key point:</strong> This is rebalancing by addition, not forced selling. You never have to sell positions to rebalance unless you choose to.</p>
+
+                <h2>Step-by-Step: Planning a Contribution</h2>
+
+                <ol class="steps">
+                    <li>Go to the Rebalance tab</li>
+                    <li>Enter your contribution amount (e.g., $5,000)</li>
+                    <li>Wealth-OS calculates current layer % and shows where you're off target</li>
+                    <li>Review the allocation table below</li>
+                    <li>The table shows: "Add $X to Foundation, $Y to Growth, $Z to Asymmetric"</li>
+                    <li>Click "Preview Allocation" to see your new portfolio composition after the contribution</li>
+                    <li>If satisfied, use this as your guide when placing trades</li>
+                    <li>Log each trade in the Contributions tab when complete</li>
+                </ol>
+
+                <h2>Understanding Urgency Ratings</h2>
+                <p>Each layer gets an urgency rating based on how far it's drifted from target:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Urgency Level</th>
+                            <th>Drift from Target</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>🟢 Healthy</td>
+                            <td>&lt;2% off target</td>
+                            <td>No action needed. Maintain current allocation.</td>
+                        </tr>
+                        <tr>
+                            <td>🟡 Watch</td>
+                            <td>2–5% off target</td>
+                            <td>Plan to address with next contribution. Not urgent.</td>
+                        </tr>
+                        <tr>
+                            <td>🔴 Urgent</td>
+                            <td>&gt;5% off target</td>
+                            <td>Address with next contribution or consider selling overweight layer.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Health Indicators Explained</h2>
+                <p>The Rebalance tab shows four health metrics:</p>
+
+                <div style="margin: 1.5rem 0;">
+                    <div class="collapsible">
+                        <strong>Allocation Drift Score</strong>
+                        <div class="collapsible-content">
+                            <p>A 0–100 score showing how far your current allocation is from targets. 100 = perfectly aligned. Lower scores indicate greater drift.</p>
+                        </div>
+                    </div>
+                    <div class="collapsible">
+                        <strong>Rebalancing Frequency</strong>
+                        <div class="collapsible-content">
+                            <p>Shows how long it's been since your last rebalancing action. If >90 days and drift >2%, the Coach will suggest a rebalance.</p>
+                        </div>
+                    </div>
+                    <div class="collapsible">
+                        <strong>Portfolio Volatility</strong>
+                        <div class="collapsible-content">
+                            <p>Estimated annualized volatility of your portfolio. Should be 8–12% for a balanced 40/40/20 allocation.</p>
+                        </div>
+                    </div>
+                    <div class="collapsible">
+                        <strong>Capital Efficiency</strong>
+                        <div class="collapsible-content">
+                            <p>What percentage of your portfolio is deployed (invested) vs. sitting in cash. Higher is better for long-term growth, but lower provides flexibility.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h2>A Practical Rebalancing Walkthrough</h2>
+                <p><strong>Your situation:</strong> You have $100,000 in your portfolio, currently allocated 45% Foundation, 35% Growth, 20% Asymmetric. You just received a $10,000 bonus and want to rebalance.</p>
+
+                <p><strong>Step 1:</strong> You open the Rebalance tab and enter $10,000.</p>
+
+                <p><strong>Current state:</strong> Foundation is +5% above target, Growth is -5% below, Asymmetric is on target.</p>
+
+                <p><strong>Rebalancer recommendation:</strong></p>
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li>Add $0 to Foundation (already above target)</li>
+                    <li>Add $6,500 to Growth (bring it toward 40% target)</li>
+                    <li>Add $3,500 to Asymmetric (maintain relative positioning)</li>
+                </ul>
+
+                <p><strong>After allocation:</strong> New portfolio value is $110,000 with allocation 40.9% Foundation, 40.0% Growth, 19.1% Asymmetric (back in balance).</p>
+
+                <div class="tip">Use the "Preview Allocation" button to see your new portfolio composition before you commit to buying. You can adjust the allocation manually if you want to override the recommendation.</div>
+
+                <h2>When to Rebalance Manually</h2>
+                <p>Sometimes markets move so sharply that you might want to rebalance by selling, not just buying:</p>
+
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>Growth Layer crashed 20%:</strong> Fell from 40% to 30% of portfolio. You might sell some Foundation and buy Growth at depressed prices.</li>
+                    <li><strong>Asymmetric Layer surged 50%:</strong> Rose from 20% to 28% of portfolio. You might take profits and redeploy to Foundation/Growth.</li>
+                    <li><strong>Foundation Layer below 30%:</strong> This is critical. You should sell Growth/Asymmetric and rebuild Foundation immediately.</li>
+                </ul>
+
+                <p>Discuss these decisions with the AI Coach before executing.</p>
+            </section>
+
+            <!-- CONTRIBUTIONS TAB SECTION -->
+            <section id="contributions-tab" class="content-section">
+                <h1>The Contributions Tab</h1>
+                <p class="intro-text">Log new money you add to your account, track your contributions over time, and understand Dollar-Cost Averaging (DCA).</p>
+<h2>Why Track Contributions?</h2>
+<p>Logging every contribution (monthly DCA, bonus, inheritance, etc.) allows Wealth-OS to:</p>
+
+<ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+    <li><strong>Calculate net performance:</strong> Total return = (Current Portfolio Value − Total Contributions) / Total Contributions</li>
+    <li><strong>Track cost basis:</strong> Understand your average entry price across layers</li>
+    <li><strong>Project future value:</strong> The Projector tab uses your contribution history to model growth</li>
+    <li><strong>Simplify rebalancing:</strong> The calculator allocates new contributions intelligently</li>
+</ul>
+
+<h2>Adding a Contribution</h2>
+<ol class="steps">
+    <li><strong>Click "+ Add"</strong> in the Contributions tab</li>
+    <li><strong>Enter the date</strong> (defaults to today)</li>
+    <li><strong>Enter the amount</strong> (e.g., $5,000)</li>
+    <li><strong>Select the layer</strong> to allocate to (Foundation, Growth, or Asymmetric)</li>
+    <li><strong>Add a note</strong> (optional — e.g., "February DCA" or "Tax refund")</li>
+    <li><strong>Click "Save contribution"</strong></li>
+</ol>
+
+<h2>Viewing Contribution Summary</h2>
+<p>The Contributions tab displays:</p>
+
+<ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+    <li><strong>Total Contributed:</strong> Sum of all contributions to date</li>
+    <li><strong>Contribution Count:</strong> Number of contribution events logged</li>
+    <li><strong>Average per Contribution:</strong> Total ÷ Count</li>
+    <li><strong>Breakdown by Layer:</strong> How much went to each layer</li>
+</ul>
+
+<div class="tip">Edit or delete past contributions by clicking the × button. Changes are saved automatically to your browser.</div>
+
+                <h2>Logging a Contribution</h2>
+                <p>A contribution is new capital you're adding to your portfolio (salary, bonus, savings).</p>
+
+                <ol class="steps">
+                    <li>Click "Log New Contribution"</li>
+                    <li>Enter the <strong>Date</strong> the money arrived (today or back-dated)</li>
+                    <li>Enter the <strong>Amount</strong> in USD</li>
+                    <li>Select the <strong>Primary Layer</strong> if you're allocating to just one</li>
+                    <li>(Optional) Add notes about the contribution (e.g., "quarterly bonus")</li>
+                    <li>Click "Save Contribution"</li>
+                </ol>
+
+                <div class="note">Logging a contribution is separate from placing trades. You log the contribution to Wealth-OS, and then you use the Rebalance tab to figure out what to buy. Then you place the actual trades.</div>
+
+                <h2>Understanding Dollar-Cost Averaging (DCA)</h2>
+                <p>DCA is investing a fixed amount at regular intervals (monthly, quarterly, annual) regardless of market price.</p>
+
+                <h3>Why DCA Works</h3>
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>Removes timing risk:</strong> You don't have to guess when to invest; you just invest on schedule</li>
+                    <li><strong>Reduces average cost:</strong> When prices are high, you buy fewer shares. When prices are low, you buy more shares. Over time, this lowers your average cost per share</li>
+                    <li><strong>Reduces emotion:</strong> A systematic plan removes the temptation to skip investments when markets are scary</li>
+                </ul>
+
+                <h3>DCA in Wealth-OS</h3>
+                <p>You can set up automated DCA by logging regular contributions (e.g., every month) with the Rebalance tab as your guide for allocation.</p>
+
+                <p><strong>Example:</strong> You get paid $5,000/month. Every month, you log a $5,000 contribution, then use the Rebalancer to allocate it across layers, then you place the trades. This is systematic DCA.</p>
+
+                <h2>Contribution Summary</h2>
+                <p>The Contributions tab shows:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Definition</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Total Contributions</td>
+                            <td>Sum of all capital added</td>
+                            <td>$50,000 total</td>
+                        </tr>
+                        <tr>
+                            <td>Contribution Count</td>
+                            <td>Number of times you've added capital</td>
+                            <td>12 contributions</td>
+                        </tr>
+                        <tr>
+                            <td>Average per Contribution</td>
+                            <td>Total ÷ Count</td>
+                            <td>$4,166.67</td>
+                        </tr>
+                        <tr>
+                            <td>Last Contribution</td>
+                            <td>Most recent date you added money</td>
+                            <td>2026-03-20</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Historical Contribution Records</h2>
+                <p>A table showing every contribution you've ever logged:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Layer</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2026-03-20</td>
+                            <td>$5,000</td>
+                            <td>Balanced</td>
+                            <td>Monthly salary</td>
+                        </tr>
+                        <tr>
+                            <td>2026-03-01</td>
+                            <td>$10,000</td>
+                            <td>Foundation</td>
+                            <td>Tax refund</td>
+                        </tr>
+                        <tr>
+                            <td>2026-02-20</td>
+                            <td>$5,000</td>
+                            <td>Balanced</td>
+                            <td>Monthly salary</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>Click on any contribution to edit or delete it (if needed).</p>
+
+                <div class="coach-feature">The AI Coach will analyze your contribution pattern and suggest optimal allocation based on your frequency and market conditions.</div>
+            </section>
+
+            <!-- PROJECTOR TAB SECTION -->
+            <section id="projector-tab" class="content-section">
+                <h1>The Projector Tab</h1>
+                <p class="intro-text">Model your wealth under multiple market scenarios. See how contributions and compounding affect your long-term financial future.</p>
+<h2>Three Growth Scenarios</h2>
+<p>The Projector models your portfolio under three market return assumptions over your chosen time horizon:</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Scenario</th>
+            <th>Annual Return</th>
+            <th>Historical Context</th>
+            <th>5-Year Example</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Conservative</strong></td>
+            <td>6% per year</td>
+            <td>Downturn, recession, or bond-heavy portfolio</td>
+            <td>$100k grows to ~$131k</td>
+        </tr>
+        <tr>
+            <td><strong>Base</strong></td>
+            <td>8% per year</td>
+            <td>Historical stock market average (1950–2024)</td>
+            <td>$100k grows to ~$147k</td>
+        </tr>
+        <tr>
+            <td><strong>Optimistic</strong></td>
+            <td>10% per year</td>
+            <td>Strong bull market or tech-heavy portfolio</td>
+            <td>$100k grows to ~$161k</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>Customizing Projections</h2>
+<p>Use the sliders to adjust:</p>
+
+<ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+    <li><strong>Monthly Contribution:</strong> How much you plan to add each month (e.g., $500 or $5,000)</li>
+    <li><strong>Time Horizon:</strong> Number of years to project (1 to 30 years)</li>
+</ul>
+
+<p>The projector recalculates instantly. Notice how monthly contributions compound significantly over longer periods.</p>
+
+<div class="warning">
+    <strong>Disclaimer:</strong> These projections are illustrative only and assume consistent market returns and monthly contributions. Actual returns vary year to year. They do not account for fees, taxes, or inflation.
+</div>
+
+                <h2>What is the Projector?</h2>
+                <p>The Projector is a multi-scenario growth calculator that forecasts your portfolio value 30 years into the future under three different market assumptions.</p>
+
+                <p><strong>Key inputs:</strong></p>
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li>Your current portfolio value (loaded automatically)</li>
+                    <li>Monthly contribution amount (you set)</li>
+                    <li>Projection horizon in years (you set; 1–50 years)</li>
+                    <li>Three market return scenarios (pre-configured)</li>
+                </ul>
+
+                <h2>The Three Scenarios</h2>
+
+                <div class="layer-box layer-foundation">
+                    <strong>Conservative Scenario (6% annual return)</strong>
+                    <p style="margin-top: 0.5rem;">A cautious estimate assuming slower economic growth, higher interest rates, and muted equity returns. This is roughly: 30% bonds, 70% equities, 0% crypto.</p>
+                </div>
+
+                <div class="layer-box layer-growth">
+                    <strong>Base Scenario (8% annual return)</strong>
+                    <p style="margin-top: 0.5rem;">The "most likely" case assuming historical equity returns and reasonable diversification. This reflects your 40/40/20 layer allocation reasonably well.</p>
+                </div>
+
+                <div class="layer-box layer-asymmetric">
+                    <strong>Optimistic Scenario (10% annual return)</strong>
+                    <p style="margin-top: 0.5rem;">A bullish case assuming strong economic growth, tech outperformance, and favorable crypto conditions. 60% equities, 20% bonds, 20% crypto upside.</p>
+                </div>
+
+                <h2>Step-by-Step: Running a Projection</h2>
+
+                <ol class="steps">
+                    <li>Go to the Projector tab</li>
+                    <li>Your current portfolio value is shown automatically</li>
+                    <li>Enter your <strong>Monthly Contribution Amount</strong> (e.g., $500/month)</li>
+                    <li>Enter your <strong>Projection Horizon</strong> in years (e.g., 30 years to retirement)</li>
+                    <li>Click "Calculate Projections"</li>
+                    <li>View the chart showing all three scenarios over time</li>
+                    <li>See the final values comparison below the chart</li>
+                </ol>
+
+                <h2>Reading the Projection Chart</h2>
+                <p>The chart shows three lines (scenarios) growing over time:</p>
+
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>Blue line (Conservative 6%):</strong> Most pessimistic outcome. Lower ceiling, but safer assumption</li>
+                    <li><strong>Teal line (Base 8%):</strong> Most likely outcome. Middle ground, closest to historical averages</li>
+                    <li><strong>Gold line (Optimistic 10%):</strong> Most bullish outcome. Higher ceiling, but requires favorable conditions</li>
+                </ul>
+
+                <p>Hover over any point to see the exact projected value at that time.</p>
+
+                <h2>Final Values Comparison</h2>
+                <p>A table showing your projected wealth at the end of your projection horizon:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Annual Return</th>
+                            <th>Final Value (Years from now)</th>
+                            <th>Total Invested</th>
+                            <th>Total Gained</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Conservative</td>
+                            <td>6%</td>
+                            <td>$385,000</td>
+                            <td>$180,000 (contributions)</td>
+                            <td>+$205,000 (gains)</td>
+                        </tr>
+                        <tr>
+                            <td>Base</td>
+                            <td>8%</td>
+                            <td>$525,000</td>
+                            <td>$180,000</td>
+                            <td>+$345,000</td>
+                        </tr>
+                        <tr>
+                            <td>Optimistic</td>
+                            <td>10%</td>
+                            <td>$750,000</td>
+                            <td>$180,000</td>
+                            <td>+$570,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Key Insights from the Projector</h2>
+
+                <div class="tip">Notice how the range widens as years increase. In 1 year, the three scenarios might differ by $20,000. In 30 years, they differ by $365,000. This is the power (and uncertainty) of long-term compounding.</div>
+
+                <div class="note">These projections are highly sensitive to assumptions. A 2% difference in annual return (6% vs. 8% vs. 10%) compounds to massive differences over 30 years. Be skeptical of any forecast claiming certainty.</div>
+
+                <h2>Using Projections for Decisions</h2>
+
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>Can I retire at 55?</strong> Project forward 30 years from today. If even the Conservative scenario exceeds your target, you have high confidence.</li>
+                    <li><strong>Should I increase contributions?</strong> Run two projections: one with current contributions, one with higher. See the impact.</li>
+                    <li><strong>Should I take more risk?</strong> If even the Conservative scenario exceeds your goal, you might afford more Asymmetric exposure.</li>
+                    <li><strong>Am I on track?</strong> Project forward to your target retirement date. If you're on pace in the Base scenario, you're likely fine.</li>
+                </ul>
+
+                <div class="warning">Projections are NOT guaranteed. Markets can crash. Recessions happen. Your actual returns may differ significantly from these forecasts. Use them as planning tools, not predictions.</div>
+            </section>
+
+            <!-- AI COACH SECTION -->
+            <section id="ai-coach" class="content-section">
+                <h1>The AI Behavioral Coach</h1>
+                <p class="intro-text">Your personal wealth advisor. Not a stock picker, but a behavioral guide that enforces rules, asks hard questions, and keeps you disciplined.</p>
+
+                <h2>What the Coach Does</h2>
+                <p>The AI Coach is designed to:</p>
+
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>Provide Behavioral Guidance:</strong> Help you think through decisions, not tell you what to do</li>
+                    <li><strong>Enforce Layer Rules:</strong> Prevent you from breaking allocation rules without thinking</li>
+                    <li><strong>Ask "Why":</strong> Challenge your reasoning before large trades</li>
+                    <li><strong>Offer Context:</strong> Remind you of market conditions, your goals, and your risk tolerance</li>
+                    <li><strong>Flag Mistakes:</strong> Warn when you're about to do something inconsistent with your strategy</li>
+                </ul>
+
+                <p><strong>What the Coach does NOT do:</strong></p>
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li>Pick stocks or time the market</li>
+                    <li>Provide regulated financial advice</li>
+                    <li>Guarantee returns or promise specific outcomes</li>
+                    <li>Force you to do anything (all enforcement is advisory)</li>
+                </ul>
+                <h2>Using the Coach: Quick Buttons</h2>
+                <p>The Coach includes pre-written quick questions to jumpstart your thinking:</p>
+
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>"Should I rebalance this month?"</strong> → Coach analyzes layer drift and gives guidance</li>
+                    <li><strong>"Markets are down — what do I do?"</strong> → Behavioral coaching to stay the course</li>
+                    <li><strong>"Can I increase my crypto allocation?"</strong> → Portfolio rule enforcement</li>
+                    <li><strong>"Am I on track for retirement?"</strong> → Retirement planning context</li>
+                    <li><strong>"Give me my monthly summary"</strong> → Performance review and next steps</li>
+                </ul>
+
+                <p>Click any button to populate the chat input, or type your own question.</p>
+
+                <h2>How the Coach Works</h2>
+                <p>The AI Coach leverages:</p>
+
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>Real Portfolio Data:</strong> Your current positions, P&L, health score, and layer allocations</li>
+                    <li><strong>Contribution History:</strong> Total contributions, monthly cadence, and allocation trends</li>
+                    <li><strong>Personal Context:</strong> Your age, location, retirement horizon, and investment conviction</li>
+                    <li><strong>Portfolio Rules:</strong> Your three-layer framework and target allocations</li>
+                </ul>
+
+                <p>The Coach asks clarifying questions before recommending new trades and enforces your portfolio rules (e.g., "Why do you want to increase asymmetric beyond 15%?").</p>
+
+                <div class="box ai-feature">
+                    <strong>🤖 Behind the Scenes:</strong> Each chat response is generated by Claude Haiku 4.5, an efficient language model optimized for speed and cost. Your chat history is stored locally in your browser and not logged remotely.
+                </div>
+
+
+                <h2>How Conversations Work</h2>
+
+                <ol class="steps">
+                    <li>You open the Coach and describe a trade idea or question</li>
+                    <li>The Coach reads your message and your portfolio context</li>
+                    <li>The Coach responds with 3–5 sentences (direct and thoughtful)</li>
+                    <li>If you're about to break a rule, the Coach flags it and asks why</li>
+                    <li>If you have conviction, you can override; the Coach acknowledges and logs your choice</li>
+                    <li>You and the Coach continue the conversation until you're confident in your decision</li>
+                </ol>
+
+                <p><strong>Important:</strong> The Coach never prevents you from trading. It only advises and flags violations. You have full control and can override any recommendation.</p>
+
+                <h2>Coach Personality</h2>
+                <p>The Coach is:</p>
+
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>Calm:</strong> No urgency, no hype, no FOMO</li>
+                    <li><strong>Direct:</strong> No fluff; specific, honest feedback</li>
+                    <li><strong>Concise:</strong> 3–5 sentences per response, not essays</li>
+                    <li><strong>Skeptical of certainty:</strong> Acknowledges complexity and unknown risks</li>
+                </ul>
+
+                <p><strong>Example Coach responses:</strong></p>
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li>"You want to add 50% to your Asymmetric Layer, which would push it to 30%. Your rule is 20%. Before we go further, why is this conviction strong enough to break your allocation?"</li>
+                    <li>"That's a good observation about the market. But remember, your Growth Layer is already 42% of your portfolio. Adding more equities increases your overall volatility. Have you considered a different approach?"</li>
+                    <li>"You've added $8,000 to the Asymmetric Layer this month. That's your conviction talking, and I respect it. Just make sure you're not overconcentrating in one bet."</li>
+                </ul>
+
+                <h2>Layer Rules Enforcement</h2>
+                <p>The Coach will warn you if you're about to violate these rules:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rule</th>
+                            <th>Limit</th>
+                            <th>Coach Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Foundation never below 30%</td>
+                            <td>Hard floor</td>
+                            <td>Coach blocks; requires explicit override with reasoning</td>
+                        </tr>
+                        <tr>
+                            <td>Layer drift above 5%</td>
+                            <td>Urgency threshold</td>
+                            <td>Coach flags as urgent; recommends rebalancing</td>
+                        </tr>
+                        <tr>
+                            <td>Asymmetric single position >10%</td>
+                            <td>Concentration limit</td>
+                            <td>Coach warns before you buy; asks if you want to split the position</td>
+                        </tr>
+                        <tr>
+                            <td>Trading frequency >3x/month</td>
+                            <td>Overtrading check</td>
+                            <td>Coach asks if you're chasing momentum; reminds you of long-term focus</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Conviction-Based Trading</h2>
+                <p>The Coach uses a conviction framework to assess your readiness to trade:</p>
+
+                <div class="coach-feature">
+                    <strong>Before you buy anything outside of your rebalancing plan, the Coach asks:</strong>
+                    <ol style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                        <li>"Why are you adding to this position NOW versus later?"</li>
+                        <li>"What would have to change for you to sell this?"</li>
+                        <li>"How confident are you? (1–10)"</li>
+                        <li>"How much of your portfolio is this? (% of layer)"</li>
+                    </ol>
+                </div>
+
+                <p>This forces you to articulate your reasoning. Vague answers trigger skepticism from the Coach. Clear answers build confidence.</p>
+
+                <h2>Pre-populated Prompt Suggestions</h2>
+                <p>The Coach offers quick-start prompts for common conversations:</p>
+
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li>"Should I rebalance now?"</li>
+                    <li>"I want to buy [asset]. Is this a good idea?"</li>
+                    <li>"My portfolio is down 10%. Should I panic-sell?"</li>
+                    <li>"I got a windfall. How should I deploy it?"</li>
+                    <li>"Am I overconcentrated in [sector]?"</li>
+                    <li>"What should my allocation be for someone my age?"</li>
+                </ul>
+
+                <p>Click any prompt to populate the chat input and start the conversation.</p>
+
+                <h2>Chat History</h2>
+                <p>Every conversation with the Coach is saved. You can:</p>
+
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li>Review past advice and decisions</li>
+                    <li>Search your chat history by date or keyword</li>
+                    <li>Export the full transcript to a file</li>
+                    <li>Clear history if desired (permanent deletion)</li>
+                </ul>
+
+                <p>Your chat history is stored locally and never sent to external servers.</p>
+
+                <div class="tip">Re-read your past conversations with the Coach every quarter. It's humbling to see how your thinking has evolved, and it reinforces the lessons you've learned.</div>
+            </section>
+
+            <!-- FIRST TRADES SECTION -->
+            <section id="first-trades" class="content-section">
+                <h1>First Trades & Alpaca Integration</h1>
+                <p class="intro-text">Place your initial trades using Wealth-OS and Alpaca paper trading. From setup to execution.</p>
+<h2>Understanding the Starter Trades</h2>
+<p>When you first connect Wealth-OS, you'll see four suggested starter trades designed to establish your three-layer foundation:</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Layer</th>
+            <th>Ticker</th>
+            <th>Example Symbol</th>
+            <th>Purpose</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Foundation</strong></td>
+            <td>SHV or BND</td>
+            <td>Short-duration Treasury ETF</td>
+            <td>Stable, low-volatility core</td>
+        </tr>
+        <tr>
+            <td><strong>Growth</strong></td>
+            <td>VTI or SPY</td>
+            <td>Total US Stock Market</td>
+            <td>Diversified equity exposure</td>
+        </tr>
+        <tr>
+            <td><strong>Growth</strong></td>
+            <td>VEA or VXUS</td>
+            <td>International equities</td>
+            <td>Diversification beyond US</td>
+        </tr>
+        <tr>
+            <td><strong>Asymmetric</strong></td>
+            <td>BTC or ETH</td>
+            <td>Cryptocurrency (if applicable)</td>
+            <td>Concentrated, high-risk bet</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>Placing the First Trades</h2>
+<ol class="steps">
+    <li>Review the four suggested trades</li>
+    <li>Click <strong>"Buy"</strong> on any trade to place it via Alpaca</li>
+    <li>Or click <strong>"Place all 4 starter trades"</strong> to establish your framework immediately</li>
+    <li>Watch the status change from "Pending" → "Placed" → "✓ Complete"</li>
+</ol>
+
+<p>Each trade uses market order and should fill within seconds during market hours.</p>
+
+<div class="warning">
+    <strong>Paper Trading Only:</strong> These trades execute on your Alpaca paper account, not real money. Experiment freely and adjust your approach before funding a live account.
+</div>
+
+                <h2>Pre-configured Trade List</h2>
+                <p>Wealth-OS comes with a suggested starter portfolio of assets to help you get started. This is a SUGGESTION, not a mandate:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Layer</th>
+                            <th>Suggested Asset</th>
+                            <th>Allocation</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Foundation</td>
+                            <td>SHV (iShares Short Treasury)</td>
+                            <td>40%</td>
+                            <td>Ultra-safe, liquid, minimal volatility</td>
+                        </tr>
+                        <tr>
+                            <td>Growth</td>
+                            <td>VOO (Vanguard S&P 500)</td>
+                            <td>30%</td>
+                            <td>Large-cap US equities</td>
+                        </tr>
+                        <tr>
+                            <td>Growth</td>
+                            <td>VXUS (Vanguard International)</td>
+                            <td>10%</td>
+                            <td>International diversification</td>
+                        </tr>
+                        <tr>
+                            <td>Asymmetric</td>
+                            <td>BTC (Bitcoin)</td>
+                            <td>10%</td>
+                            <td>Crypto optionality</td>
+                        </tr>
+                        <tr>
+                            <td>Asymmetric</td>
+                            <td>ARK Innovation ETF</td>
+                            <td>10%</td>
+                            <td>Tech/disruption upside</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p><strong>Customize this list:</strong> You can modify any of these trades before executing. The suggestions are just starting points.</p>
+
+                <h2>Placing Individual Trades</h2>
+
+                <ol class="steps">
+                    <li>Click on any trade in the list to edit it</li>
+                    <li>Modify the symbol, quantity, or layer assignment</li>
+                    <li>Click "Place Trade" to execute</li>
+                    <li>The status changes to "Placing..." then "Done" or "Error"</li>
+                    <li>Check your Alpaca account to confirm the order executed</li>
+                    <li>The holding now appears in your Portfolio tab</li>
+                </ol>
+
+                <h2>Placing All Trades at Once</h2>
+
+                <ol class="steps">
+                    <li>Review the entire trade list for accuracy</li>
+                    <li>Click "Execute All" at the bottom of the list</li>
+                    <li>Confirm you're ready to place all orders</li>
+                    <li>All trades execute simultaneously (or nearly so)</li>
+                    <li>Wait for all trades to show "Done" status</li>
+                    <li>Check your Overview tab to see your new portfolio</li>
+                </ol>
+
+                <div class="note">In paper trading, orders execute instantly at the current market price. In real trading (if you later connect a live account), orders would be market orders that execute when the market opens or at the best available price.</div>
+
+                <h2>Status Tracking</h2>
+                <p>Each trade shows a status indicator:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Meaning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>🟡 Pending</td>
+                            <td>Trade is ready to execute but not yet placed</td>
+                        </tr>
+                        <tr>
+                            <td>⏳ Placing...</td>
+                            <td>Order is being sent to Alpaca</td>
+                        </tr>
+                        <tr>
+                            <td>✓ Done</td>
+                            <td>Order executed successfully; holding is now in your portfolio</td>
+                        </tr>
+                        <tr>
+                            <td>❌ Error</td>
+                            <td>Order failed (e.g., symbol not found, connection issue). Click for details.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Alpaca Integration</h2>
+                <p>Wealth-OS connects to Alpaca Markets for:</p>
+
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>Paper Trading:</strong> Simulate trades with $100,000 starting capital</li>
+                    <li><strong>Real-Time Data:</strong> Prices, quotes, and market data update continuously</li>
+                    <li><strong>Order Execution:</strong> Submit buy/sell orders that execute at market rates</li>
+                    <li><strong>Account Data:</strong> Portfolio holdings, cash balance, buying power, and account history</li>
+                </ul>
+
+                <p>All data is transmitted securely via Alpaca's API. Your credentials are never stored by Wealth-OS; only used to authenticate API requests.</p>
+
+                <div class="warning">Paper trading is simulated. Real trading involves real money and real risk. Before moving to a live account, practice extensively in paper trading and discuss your strategy with a financial advisor if appropriate.</div>
+            </section>
+
+            <!-- SETTINGS & DATA SECTION -->
+            <section id="settings" class="content-section">
+                <h1>Settings & Data Management</h1>
+                <p class="intro-text">Configure your API keys, manage data persistence, and understand how Wealth-OS stores your information.</p>
+
+                <h2>API Configuration</h2>
+                <p>To connect Wealth-OS to your Alpaca account:</p>
+
+                <ol class="steps">
+                    <li>Go to Settings → API Configuration</li>
+                    <li>Log into your Alpaca account at alpaca.markets</li>
+                    <li>Navigate to Account → Integrations → View API Keys</li>
+                    <li>Copy your API Key (public key)</li>
+                    <li>Copy your Secret Key (private key; treat like a password)</li>
+                    <li>In Wealth-OS Settings, paste both keys</li>
+                    <li>Click "Test Connection"</li>
+                    <li>If successful, your account data will load automatically</li>
+                </ol>
+
+                <div class="warning">Your Secret Key is sensitive. Never share it, never paste it into untrusted websites, and never commit it to version control. If you accidentally expose your keys, regenerate them immediately in your Alpaca dashboard.</div>
+
+                <h2>Data Persistence (localStorage)</h2>
+                <p>Wealth-OS stores all your personal data locally in your browser's localStorage. This includes:</p>
+
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li>Portfolio holdings and trade history</li>
+                    <li>Contribution records</li>
+                    <li>AI Coach chat history</li>
+                    <li>Preference settings (dark mode, etc.)</li>
+                    <li>Rebalancing history</li>
+                </ul>
+
+                <h3>Advantages:</h3>
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>Privacy:</strong> Your data never leaves your device or browser</li>
+                    <li><strong>Offline:</strong> You can use Wealth-OS even without internet (limited functionality)</li>
+                    <li><strong>Control:</strong> You own your data; no one else has access</li>
+                </ul>
+
+                <h3>Disadvantages:</h3>
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>No backup:</strong> If you clear your browser data or cookies, all Wealth-OS data is deleted</li>
+                    <li><strong>Single device:</strong> Your data is tied to this browser; you can't access it from another device</li>
+                    <li><strong>Sync:</strong> If you use multiple browsers or devices, data won't sync across them</li>
+                </ul>
+
+                <h2>Backing Up Your Data</h2>
+                <p>To protect your records, regularly export your data:</p>
+
+                <ol class="steps">
+                    <li>Go to Settings → Export Data</li>
+                    <li>Choose what to export (portfolio history, contributions, chat history, all)</li>
+                    <li>Click "Export to JSON"</li>
+                    <li>A file named "wealth-os-backup-[date].json" downloads</li>
+                    <li>Save this file to a secure location (cloud backup, external drive, etc.)</li>
+                </ol>
+
+                <h2>Restoring Data</h2>
+                <p>If you lose your local data, you can restore from a backup:</p>
+
+                <ol class="steps">
+                    <li>Go to Settings → Import Data</li>
+                    <li>Click "Choose File" and select your backup JSON</li>
+                    <li>Review the preview of what will be imported</li>
+                    <li>Click "Restore"</li>
+                    <li>Your data is restored to localStorage</li>
+                </ol>
+
+                <div class="note">Restoring data will overwrite your current localStorage. If you have unsaved changes, export them first.</div>
+
+                <h2>Currency Handling</h2>
+                <p>Wealth-OS operates in USD. All portfolio values, contributions, and projections are in US dollars.</p>
+
+                <p><strong>Multi-currency support is planned for future versions.</strong> For now, if you invest in assets denominated in other currencies (GBP, EUR, etc.), convert the values to USD before entering them into Wealth-OS.</p>
+
+                <h2>Clearing Data</h2>
+                <p>To clear all Wealth-OS data and start fresh:</p>
+
+                <ol class="steps">
+                    <li>Go to Settings → Data Management</li>
+                    <li>Click "Clear All Data"</li>
+                    <li>Confirm the deletion (this is permanent)</li>
+                    <li>All local Wealth-OS data is deleted</li>
+                    <li>The app resets to initial state</li>
+                </ol>
+
+                <div class="warning">This action is permanent and cannot be undone. Export your data first if you want to keep any records.</div>
+            </section>
+
+            <!-- COMPLIANCE & DISCLAIMERS SECTION -->
+            <section id="compliance" class="content-section">
+                <h1>Risk Disclaimers & Compliance</h1>
+                <p class="intro-text">Critical information about what Wealth-OS is, what it's not, and what risks you assume when using it.</p>
+
+                <div class="disclaimer-banner">
+                    <h2> Regulatory Information & Data Privacy</h2>
+
+<h3>API & Data Integrations</h3>
+<p><strong>Alpaca Markets API:</strong> Wealth-OS connects to your Alpaca paper trading account via API key. Your credentials are stored securely and used only to sync live portfolio data. All trades placed in the app go directly to Alpaca.</p>
+
+<p><strong>Claude API (Anthropic):</strong> Monthly briefs and AI coaching responses are generated using Claude language models:</p>
+<ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+    <li><strong>Claude Sonnet 4 (Briefs):</strong> Used for comprehensive monthly portfolio analysis. Higher quality, ~300 tokens per brief.</li>
+    <li><strong>Claude Haiku 4.5 (Coaching):</strong> Used for real-time chat responses. Fast and efficient, ~500 tokens per response.</li>
+</ul>
+
+<p>All API interactions use secure HTTPS connections. Anthropic API requests are subject to Anthropic's privacy policy (anthropic.com).</p>
+<h2>Not FCA Regulated</h2>
+                    <p>Wealth-OS is not authorized or regulated by the Financial Conduct Authority (FCA) or any other financial regulator. It is a personal financial tool, not a licensed investment platform or advisory service.</p>
+                    <p><strong>This means:</strong> You have no regulatory protections typically afforded to regulated platforms (e.g., investor protection schemes, complaint procedures, audits).</p>
+                </div>
+
+                <div class="disclaimer-banner">
+                    <h2>Capital at Risk Warning</h2>
+                    <p>All investments carry risk of loss. You may lose some or all of your invested capital. Past performance is not indicative of future results.</p>
+                    <p><strong>Specific risks:</strong></p>
+                    <ul style="margin: 1rem 0 1rem 1rem; line-height: 1.8;">
+                        <li><strong>Market Risk:</strong> Markets can crash, sometimes rapidly and unexpectedly</li>
+                        <li><strong>Concentration Risk:</strong> Overweighting a single asset or sector increases volatility</li>
+                        <li><strong>Liquidity Risk:</strong> Some assets (esp. crypto) may be difficult to sell quickly</li>
+                        <li><strong>Interest Rate Risk:</strong> Rising rates can cause bond and fixed-income losses</li>
+                        <li><strong>Geopolitical Risk:</strong> Wars, political instability, sanctions can impact markets</li>
+                        <li><strong>Inflation Risk:</strong> Inflation erodes purchasing power; low-yield assets lose real value</li>
+                    </ul>
+                </div>
+
+                <div class="disclaimer-banner">
+                    <h2>Cryptocurrency Volatility Disclosure</h2>
+                    <p>Cryptocurrency assets (Bitcoin, Ethereum, altcoins) are highly volatile and speculative. Your crypto holdings can lose 50%+ or gain 5x+ in weeks.</p>
+                    <p><strong>Crypto-specific risks:</strong></p>
+                    <ul style="margin: 1rem 0 1rem 1rem; line-height: 1.8;">
+                        <li><strong>Price Volatility:</strong> Daily swings of 5–15% are common</li>
+                        <li><strong>Regulatory Risk:</strong> Government bans or restrictions can crash prices</li>
+                        <li><strong>Technology Risk:</strong> Hacks, smart contract bugs, or protocol failures can cause total loss</li>
+                        <li><strong>Exchange Risk:</strong> Crypto exchanges can fail or be hacked; your holdings may be lost</li>
+                        <li><strong>Liquidity Risk:</strong> In a crash, you may not be able to sell at any price</li>
+                        <li><strong>Irreversibility:</strong> Crypto transactions are permanent; a mistake cannot be undone</li>
+                    </ul>
+                    <p><strong>Wealth-OS Asymmetric Layer is designed for high-risk assets like crypto.</strong> Never allocate more to this layer than you can afford to lose completely.</p>
+                </div>
+
+                <div class="disclaimer-banner">
+                    <h2>AI Limitations & Not Regulated Advice</h2>
+                    <p>The AI Coach is not a financial advisor and provides no regulated financial advice. It is a behavioral guidance tool designed to help you think through decisions.</p>
+                    <p><strong>AI limitations:</strong></p>
+                    <ul style="margin: 1rem 0 1rem 1rem; line-height: 1.8;">
+                        <li><strong>No Predictions:</strong> The AI cannot predict market movements or guarantee returns</li>
+                        <li><strong>Limited Context:</strong> The AI knows only about your portfolio and market data; it knows nothing about your personal situation (tax, debt, goals, etc.)</li>
+                        <li><strong>Bias:</strong> AI models can be biased; sometimes the Coach's advice may reflect biases in its training data</li>
+                        <li><strong>Errors:</strong> The AI can make mistakes or produce nonsensical advice</li>
+                    </ul>
+                    <p><strong>If you need personalized financial advice, consult a qualified financial advisor or planner.</strong></p>
+                </div>
+
+                <div class="disclaimer-banner">
+                    <h2>Personal Use Only</h2>
+                    <p>Wealth-OS is designed for personal wealth management by individuals. It is NOT intended for:</p>
+                    <ul style="margin: 1rem 0 1rem 1rem; line-height: 1.8;">
+                        <li>Professional financial advice or advisory services</li>
+                        <li>Institutional portfolio management</li>
+                        <li>Regulated investment activities requiring FCA/SEC authorization</li>
+                        <li>Fund management or pooled investment accounts</li>
+                        <li>Automated portfolio management (robo-advisory)</li>
+                    </ul>
+                    <p><strong>If you intend to use any wealth management tool in a professional or institutional capacity, you must obtain proper regulatory authorization and insurance.</strong></p>
+                </div>
+
+                <div class="disclaimer-banner">
+                    <h2>No Tax or Legal Advice</h2>
+                    <p>Wealth-OS provides no tax or legal advice. Your tax and legal obligations are your responsibility.</p>
+                    <p><strong>You should:</strong></p>
+                    <ul style="margin: 1rem 0 1rem 1rem; line-height: 1.8;">
+                        <li>Consult a tax professional about capital gains, losses, and reporting requirements</li>
+                        <li>Understand your local tax laws regarding investments and crypto</li>
+                        <li>Report all gains and losses accurately on your tax return</li>
+                        <li>Consult a lawyer about any legal questions regarding your investments</li>
+                    </ul>
+                </div>
+
+                <h2>Where to Get Professional Advice</h2>
+                <p>If you need personalized, regulated financial advice:</p>
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li><strong>FCA-Regulated Advisors:</strong> Search the FCA Registry at <strong>register.fca.org.uk</strong></li>
+                    <li><strong>Independent Financial Advisors (IFAs):</strong> unbiased.co.uk can help you find fee-only advisors</li>
+                    <li><strong>Robo-Advisors (Regulated):</strong> Wealthify, MoneyBox, and others are FCA-regulated and charge fees</li>
+                    <li><strong>Wealth Managers:</strong> For significant wealth (£500k+), consider a full-service wealth manager</li>
+                </ul>
+
+                <h2>Limitation of Liability</h2>
+                <p>Wealth-OS is provided "as is" without warranties. The creators and maintainers of Wealth-OS are not liable for any losses, damages, or consequences from using the system, including:</p>
+                <ul style="margin: 1rem 0 1rem 2rem; line-height: 1.8;">
+                    <li>Investment losses or poor market returns</li>
+                    <li>Data loss or corruption</li>
+                    <li>Technical errors or bugs</li>
+                    <li>API failures or integration issues</li>
+                    <li>Decisions you make based on Coach advice</li>
+                </ul>
+
+                <p><strong>Your investment decisions are your responsibility.</strong></p>
+            </section>
+
+            <!-- FEATURES SECTION -->
+            <section id="features" class="content-section">
+                <h1>Complete Feature List</h1>
+                <p class="intro-text">A comprehensive table of all Wealth-OS capabilities, organized by functional area.</p>
+
+                <table class="feature-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>3-Layer Portfolio</strong></td>
+                            <td>Foundation (40%), Growth (40%), Asymmetric (20%) layer system with rules enforcement</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Portfolio Overview Dashboard</strong></td>
+                            <td>Health score, total value, layer status, monthly AI brief</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Holdings Tracker</strong></td>
+                            <td>Real-time view of all positions, P&L, layer assignments</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Asset Allocation Visualization</strong></td>
+                            <td>Interactive pie charts showing allocation by layer and asset class</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Performance Tracking</strong></td>
+                            <td>Historical charts with time range selection (1D, 1W, 1M, 3M, YTD, ALL, custom)</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Rebalancing Calculator</strong></td>
+                            <td>Plan contributions and calculate optimal layer allocation</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Contribution Logger</strong></td>
+                            <td>Track all new money added; log contributions by date, amount, layer</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DCA Support</strong></td>
+                            <td>Dollar-cost averaging recommendations and tracking</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Projector (Multi-Scenario)</strong></td>
+                            <td>30-year wealth forecasting under Conservative (6%), Base (8%), Optimistic (10%) scenarios</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>AI Behavioral Coach</strong></td>
+                            <td>Conversational guidance on trades, allocation, and strategy</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Conviction-Based Trading</strong></td>
+                            <td>Coach asks clarifying questions before trades; enforces layer rules</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Monthly AI Brief</strong></td>
+                            <td>Auto-generated monthly summary and insights</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Chat History</strong></td>
+                            <td>Searchable, downloadable history of all Coach conversations</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Alpaca Integration</strong></td>
+                            <td>Connect to Alpaca Markets for paper trading and real-time data</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Order Execution</strong></td>
+                            <td>Place buy/sell orders through Alpaca API</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Real-Time Quotes</strong></td>
+                            <td>Live price data for equities, ETFs, crypto via Alpaca</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Trade History</strong></td>
+                            <td>Record of all executed trades with entry/exit prices</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Local Data Storage</strong></td>
+                            <td>All data persisted in browser localStorage; zero cloud storage</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data Export</strong></td>
+                            <td>Export portfolio history, contributions, chat history to JSON</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data Import</strong></td>
+                            <td>Restore from backup JSON file</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mobile Responsive Design</strong></td>
+                            <td>Fully responsive UI for phones, tablets, desktops</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Print Stylesheet</strong></td>
+                            <td>Optimized for printing reports and charts</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sidebar Navigation</strong></td>
+                            <td>Quick-access menu with search functionality</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Collapsible Sections</strong></td>
+                            <td>Expandable content areas for better UX</td>
+                            <td>✓ Active</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tax Lot Tracking</strong></td>
+                            <td>Track cost basis and holding periods for tax reporting</td>
+                            <td>🔜 Coming Soon</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Multi-Currency Support</strong></td>
+                            <td>Support for GBP, EUR, and other currencies</td>
+                            <td>🔜 Coming Soon</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Price Alerts</strong></td>
+                            <td>Notifications when assets hit target prices</td>
+                            <td>🔜 Coming Soon</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Options Support</strong></td>
+                            <td>Buy/sell options with risk warnings</td>
+                            <td>🔜 Coming Soon</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dividend Tracking</strong></td>
+                            <td>Log and track dividend income from holdings</td>
+                            <td>🔜 Coming Soon</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sector Analysis</strong></td>
+                            <td>Break down portfolio by sector (tech, healthcare, finance, etc.)</td>
+                            <td>🔜 Coming Soon</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Risk Scoring</strong></td>
+                            <td>Estimated volatility, Sharpe ratio, and other risk metrics</td>
+                            <td>🔜 Coming Soon</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Goal Tracking</strong></td>
+                            <td>Set financial goals and track progress</td>
+                            <td>🔜 Coming Soon</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Benchmark Comparison</strong></td>
+                            <td>Compare your returns to S&P 500, 60/40 portfolio, etc.</td>
+                            <td>🔜 Coming Soon</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p style="margin-top: 2rem;"><strong>Legend:</strong> ✓ = Active and available now | 🔜 = Coming in future updates</p>
+            </section>
+
+            <footer class="footer">
+                <p>SAIL Education © 2026 | Wealth-OS v2.1 | Not FCA Regulated | Personal Use Only</p>
+                <p style="margin-top: 0.5rem; font-size: 0.8rem;">This manual is educational content. See Compliance section for full disclaimers and risk information.</p>
+            </footer>
+        </main>
+        </div>
+    </div>
+
+    <script>
+        // Navigation & Section Switching
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.content-section');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                sections.forEach(s => s.classList.remove('active'));
+                const target = document.querySelector(link.getAttribute('href'));
+                if (target) target.classList.add('active');
+                window.scrollTo(0, 0);
+            });
+        });
+
+        // Search Functionality
+        const searchBox = document.getElementById('searchBox');
+        searchBox.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            navLinks.forEach(link => {
+                const text = link.textContent.toLowerCase();
+                link.style.display = text.includes(query) ? 'block' : 'none';
+            });
+        });
+
+        // Collapsible Sections
+        const collapsibles = document.querySelectorAll('.collapsible');
+        collapsibles.forEach(col => {
+            col.addEventListener('click', () => {
+                col.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>
