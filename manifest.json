@@ -1,0 +1,45 @@
+{
+  "lastUpdated": "2026-04-27T12:55:22Z",
+  "manuals": {
+    "Compass-Counsellor-Manual.html": {
+      "hash": "0c283bdeabbc888a260b9509ad32d31e3f89a9556f74104a547f80a2bffaf072",
+      "fileSize": 130810,
+      "regeneratedAt": "2026-04-27T12:55:22Z"
+    },
+    "Compass-Manual.html": {
+      "hash": "4760d11b193f5e6c8367e542bfb8b44fbb86f2775e41bc86bf06ca4dc9615942",
+      "fileSize": 105943,
+      "regeneratedAt": "2026-04-27T12:55:22Z"
+    },
+    "IELTS-OS-Manual.html": {
+      "hash": "2316780e10095a073298612660a7c68643d2aab826a09c787e5599f7cbb82efb",
+      "fileSize": 94322,
+      "regeneratedAt": "2026-04-27T12:55:22Z"
+    },
+    "Life-OS-Manual.html": {
+      "hash": "49ac196b36e5c78ec32ce900a5bd0dfb8e4a72d8e8478f1dcbb9cc9d4deb0f5b",
+      "fileSize": 102077,
+      "regeneratedAt": "2026-04-27T12:55:22Z"
+    },
+    "SAIL-Helm-Manual.html": {
+      "hash": "577cb3310b09b324cf5b0773e24b045aa4c3aadf07bd326569a1c1567419e3f3",
+      "fileSize": 144845,
+      "regeneratedAt": "2026-04-27T12:55:22Z"
+    },
+    "SuperStudent-Manual.html": {
+      "hash": "358e13ee8165814e1fa73383892a255451bd5e3059fb1aed39d022d0d290ea9a",
+      "fileSize": 89920,
+      "regeneratedAt": "2026-04-27T12:55:22Z"
+    },
+    "SuperTeacher-Manual.html": {
+      "hash": "598684a1c10a7ae107c9af8e9964ce6adcb2e06ebbc30441aff92d36c514570f",
+      "fileSize": 215538,
+      "regeneratedAt": "2026-04-27T12:55:22Z"
+    },
+    "Wealth-OS-Manual.html": {
+      "hash": "41a49e22ab72310ec055930ed344d06ae66f5ea13f668476227b844518f1f050",
+      "fileSize": 107458,
+      "regeneratedAt": "2026-04-27T12:55:22Z"
+    }
+  }
+}
