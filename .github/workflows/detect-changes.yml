@@ -1,0 +1,39 @@
+name: Detect App Changes → Flag Manual Updates
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/**'
+
+jobs:
+  detect-and-flag:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Detect changed app files
+        id: changed
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1 HEAD -- 'apps/' | tr '\n' ' ')
+          echo "files=$CHANGED" >> $GITHUB_OUTPUT
+          echo "Changed app files: $CHANGED"
+
+      - name: Extract CHANGELOGs and create issue
+        if: steps.changed.outputs.files != ''
+        run: python scripts/detect-changes.py "${{ steps.changed.outputs.files }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}

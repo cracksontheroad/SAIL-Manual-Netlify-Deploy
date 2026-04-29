@@ -51,6 +51,22 @@ There is intentionally no `--force` flag. If you genuinely need to land
 a smaller version, edit the gate constants in `update_manifest.py`,
 deploy, then revert the change. The friction is the point.
 
+## Change-detection signal (apps/ → manual-update issue)
+
+When a `.jsx` (or `.html`) file in `apps/` is pushed to `main`, the
+GitHub Actions workflow `.github/workflows/detect-changes.yml` runs
+`scripts/detect-changes.py`. That script:
+
+- reads CHANGELOG comments from the changed app file,
+- maps keywords to manual section IDs via `scripts/file-map.json`,
+- opens a GitHub Issue labeled `manual-update` listing which manual
+  sections likely need updating.
+
+**The workflow does not deploy.** It only signals. A human still has
+to edit the manual HTML and run `./scripts/deploy.sh`. This keeps the
+deploy gate intact while making the "which sections changed?" question
+machine-answerable.
+
 ## What does NOT happen automatically
 
 - `regenerate()` in `update_manifest.py` is a stub that raises
@@ -59,6 +75,8 @@ deploy, then revert the change. The friction is the point.
 - `manifest.json` only updates when `update_manifest.py --apply` runs
   (which `deploy.sh` does for you).
 - Pushing to GitHub does **not** deploy. Use `./scripts/deploy.sh`.
+- The detect-changes workflow does **not** deploy or modify manuals —
+  it only opens an issue.
 
 ## State reference
 
