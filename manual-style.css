@@ -263,11 +263,25 @@ body {
   margin-bottom: 4px;
 }
 
-/* Sidebar list items without bullets */
-.sidebar-menu ul, .sidebar-menu ol, .sidebar nav ul, .sidebar nav ol, .nav-list {
+/* Sidebar list items without bullets — covers ALL sidebar list patterns */
+ul.sidebar-menu, ol.sidebar-menu,
+ul.sidebar-nav, ol.sidebar-nav,
+ul.nav-list, ol.nav-list,
+.sidebar-menu ul, .sidebar-menu ol,
+.sidebar-nav ul, .sidebar-nav ol,
+.sidebar nav ul, .sidebar nav ol,
+.sidebar ul, .sidebar ol,
+.nav-list, .nav-links ul {
   list-style: none;
   padding: 0;
   margin: 0;
+}
+
+/* Sidebar li items — no bullets, no default spacing */
+.sidebar li, .sidebar-nav li, .sidebar-menu li, .nav-list li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 /* === MAIN CONTENT AREA === */
@@ -295,8 +309,20 @@ body {
 .main-content:hover { border-color: rgba(255,255,255,0.25); }
 
 /* === CONTENT SECTIONS === */
-.content-section { display: none; animation: fadeIn 0.4s ease-out; }
-.content-section.active { display: block; }
+/* Section visibility — only hide sections that use show/hide classes */
+.content-section,
+.section-content,
+div.section,
+section.section {
+  display: none;
+  animation: fadeIn 0.4s ease-out;
+}
+.content-section.active,
+.section-content.active,
+div.section.active,
+section.section.active {
+  display: block;
+}
 
 /* === TYPOGRAPHY === */
 h1, h2, h3, h4, h5, h6 {
@@ -444,6 +470,35 @@ li { margin-bottom: 0.5em; }
   color: #fff;
   font-weight: 700;
   font-size: 1em;
+}
+
+/* === STEP NUMBER DIVS (alternative to counter-based .steps) === */
+.step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin: 14px 0;
+  color: rgba(255,255,255,0.95);
+}
+
+.step-number {
+  font-weight: 700;
+  color: #fff;
+  font-size: 1em;
+  min-width: 24px;
+  flex-shrink: 0;
+}
+
+.step-number::after {
+  content: ")";
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-content h4 {
+  margin-top: 0;
 }
 
 /* === CHECKLISTS === */
@@ -757,7 +812,7 @@ tr:last-child td {
     backdrop-filter: none;
   }
   body { background: #fff; color: #000; }
-  .content-section { display: block !important; page-break-after: always; }
+  .content-section, .section-content, div.section, section.section { display: block !important; page-break-after: always; }
   h1, h2, h3, h4 { color: #000; -webkit-text-fill-color: #000; background: none; }
   p, li, td { color: #333; }
   th { background: #eee; color: #000; }

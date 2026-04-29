@@ -1,45 +1,45 @@
 {
-  "lastUpdated": "2026-04-27T12:55:22Z",
+  "lastUpdated": "2026-04-29T04:17:47Z",
   "manuals": {
     "Compass-Counsellor-Manual.html": {
-      "hash": "0c283bdeabbc888a260b9509ad32d31e3f89a9556f74104a547f80a2bffaf072",
-      "fileSize": 130810,
-      "regeneratedAt": "2026-04-27T12:55:22Z"
+      "hash": "14ed388aa4f25471db70d68ddfffdf82313e49859b4e7ef1c0fa84a7e1bdfcc9",
+      "fileSize": 130773,
+      "regeneratedAt": "2026-04-29T04:17:47Z"
     },
     "Compass-Manual.html": {
-      "hash": "4760d11b193f5e6c8367e542bfb8b44fbb86f2775e41bc86bf06ca4dc9615942",
-      "fileSize": 105943,
-      "regeneratedAt": "2026-04-27T12:55:22Z"
+      "hash": "1f7959248bfebd6df72d744f4f0d0513090f6e5c93e68579e182386b01633dd6",
+      "fileSize": 105271,
+      "regeneratedAt": "2026-04-29T04:17:47Z"
     },
     "IELTS-OS-Manual.html": {
-      "hash": "2316780e10095a073298612660a7c68643d2aab826a09c787e5599f7cbb82efb",
-      "fileSize": 94322,
-      "regeneratedAt": "2026-04-27T12:55:22Z"
+      "hash": "1fde6907b63394f200f9df40b61bc938427099575df26dd256d479d21cf85ac7",
+      "fileSize": 96067,
+      "regeneratedAt": "2026-04-29T04:17:47Z"
     },
     "Life-OS-Manual.html": {
-      "hash": "49ac196b36e5c78ec32ce900a5bd0dfb8e4a72d8e8478f1dcbb9cc9d4deb0f5b",
-      "fileSize": 102077,
-      "regeneratedAt": "2026-04-27T12:55:22Z"
+      "hash": "1624a90e197da850f9df0c81914a6981636eaa541527c6ec68a890d92d1228e4",
+      "fileSize": 101954,
+      "regeneratedAt": "2026-04-29T04:17:47Z"
     },
     "SAIL-Helm-Manual.html": {
-      "hash": "577cb3310b09b324cf5b0773e24b045aa4c3aadf07bd326569a1c1567419e3f3",
-      "fileSize": 144845,
-      "regeneratedAt": "2026-04-27T12:55:22Z"
+      "hash": "55c2893e2020dfd0c69ca5d9dcd4e818cbc419d7e7a485202f1388df9196a985",
+      "fileSize": 145020,
+      "regeneratedAt": "2026-04-29T04:17:47Z"
     },
     "SuperStudent-Manual.html": {
-      "hash": "358e13ee8165814e1fa73383892a255451bd5e3059fb1aed39d022d0d290ea9a",
-      "fileSize": 89920,
-      "regeneratedAt": "2026-04-27T12:55:22Z"
+      "hash": "bd15f657eb089695a2e2a0f963d455e37eb4427edfc1dd73a209f6a54c88e253",
+      "fileSize": 90728,
+      "regeneratedAt": "2026-04-29T04:17:47Z"
     },
     "SuperTeacher-Manual.html": {
-      "hash": "598684a1c10a7ae107c9af8e9964ce6adcb2e06ebbc30441aff92d36c514570f",
-      "fileSize": 215538,
-      "regeneratedAt": "2026-04-27T12:55:22Z"
+      "hash": "8a1a0b4452be5750aff061de5e515a7a18e86ffd40d6231e519d3f04af476694",
+      "fileSize": 215714,
+      "regeneratedAt": "2026-04-29T04:17:47Z"
     },
     "Wealth-OS-Manual.html": {
-      "hash": "41a49e22ab72310ec055930ed344d06ae66f5ea13f668476227b844518f1f050",
-      "fileSize": 107458,
-      "regeneratedAt": "2026-04-27T12:55:22Z"
+      "hash": "28d19bfbb71c8cf3d300c4a34f417542ce26e588a63b664bfc06a4e014b8eea4",
+      "fileSize": 107676,
+      "regeneratedAt": "2026-04-29T04:17:47Z"
     }
   }
 }

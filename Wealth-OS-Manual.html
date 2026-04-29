@@ -1879,8 +1879,9 @@
             </section>
 
             <footer class="footer">
-                <p>SAIL Education © 2026 | Wealth-OS v2.1 | Not FCA Regulated | Personal Use Only</p>
+                <p>SAIL Education © 2026 | Wealth-OS | Not FCA Regulated | Personal Use Only</p>
                 <p style="margin-top: 0.5rem; font-size: 0.8rem;">This manual is educational content. See Compliance section for full disclaimers and risk information.</p>
+                <p style="margin-top: 0.5rem; font-size: 0.85rem;">For support, contact: <a href="mailto:learn@sailedu.co" style="color: #9ca3af;">learn@sailedu.co</a></p>
             </footer>
         </main>
         </div>
@@ -1898,7 +1899,8 @@
                 link.classList.add('active');
 
                 sections.forEach(s => s.classList.remove('active'));
-                const target = document.querySelector(link.getAttribute('href'));
+                const targetId = link.getAttribute('data-target');
+                const target = document.getElementById(targetId);
                 if (target) target.classList.add('active');
                 window.scrollTo(0, 0);
             });

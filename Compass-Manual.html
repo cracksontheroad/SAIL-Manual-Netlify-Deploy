@@ -55,12 +55,8 @@
         <main class="main-content">
             <!-- HEADER -->
             <div class="header">
-                <h1>🧭 Compass Manual</h1>
+                <h1>Compass Manual</h1>
                 <p>Your year-long guide to the university you deserve</p>
-                <div class="lang-toggle">
-                    <button class="lang-btn active" onclick="switchLanguage('en')">English</button>
-                    <button class="lang-btn" onclick="switchLanguage('zh')">中文</button>
-                </div>
             </div>
 
             <!-- WELCOME & OVERVIEW -->
@@ -537,7 +533,7 @@
                 <p>Compass categorizes extracurriculars into three tiers to help you build a competitive profile.</p>
 
                 <div class="box milestone">
-                    <h4><span style="color: #DC2626; font-weight: 600;">🏆 Tier 1 Activities</span></h4>
+                    <h4>🏆 Tier 1 Activities</h4>
                     <p><strong>Level:</strong> National or international achievement</p>
                     <p><strong>Examples:</strong></p>
                     <ul style="margin-left: 1.5rem;">
@@ -552,7 +548,7 @@
                 </div>
 
                 <div class="box milestone">
-                    <h4><span style="color: #7C3AED; font-weight: 600;">💼 Tier 2 Activities</span></h4>
+                    <h4>💼 Tier 2 Activities</h4>
                     <p><strong>Level:</strong> Regional achievement or school/community leadership</p>
                     <p><strong>Examples:</strong></p>
                     <ul style="margin-left: 1.5rem;">
@@ -567,7 +563,7 @@
                 </div>
 
                 <div class="box milestone">
-                    <h4><span style="color: #16A34A; font-weight: 600;">📚 Tier 3 Activities</span></h4>
+                    <h4>📚 Tier 3 Activities</h4>
                     <p><strong>Level:</strong> Participation-based (no leadership or major award required)</p>
                     <p><strong>Examples:</strong></p>
                     <ul style="margin-left: 1.5rem;">
@@ -1653,7 +1649,7 @@
                 <ul style="margin-left: 1.5rem;">
                     <li><strong>Email:</strong> privacy@saileducation.com</li>
                     <li><strong>Data Protection Officer:</strong> dpo@saileducation.com (EU users)</li>
-                    <li><strong>Support:</strong> support@saileducation.com</li>
+                    <li><strong>Support:</strong> learn@sailedu.co</li>
                 </ul>
             </div>
 
@@ -1799,7 +1795,8 @@
 
             <!-- FOOTER -->
             <div class="footer">
-                <p>SAIL Education © 2026 | Compass v2 | Last updated Mar 28, 2026 | <a href="javascript:void(0)" data-target="" style="color: #0D9A7C; text-decoration: none;">Privacy Policy</a> | <a href="javascript:void(0)" data-target="" style="color: #0D9A7C; text-decoration: none;">Terms of Service</a></p>
+                <p>SAIL Education © 2026 | Compass | <a href="javascript:void(0)" data-target="" style="color: #0D9A7C; text-decoration: none;">Privacy Policy</a> | <a href="javascript:void(0)" data-target="" style="color: #0D9A7C; text-decoration: none;">Terms of Service</a></p>
+                <p style="margin-top: 0.5rem; font-size: 0.85rem;">For support, contact: <a href="mailto:learn@sailedu.co" style="color: #9ca3af;">learn@sailedu.co</a></p>
             </div>
         </main>
         </div>
@@ -1843,16 +1840,6 @@
             });
         });
 
-        // Language toggle
-        function switchLanguage(lang) {
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            // In a real app, this would change the language
-            console.log('Language switched to:', lang);
-        }
 
         // Print functionality
         document.addEventListener('keydown', function(e) {
