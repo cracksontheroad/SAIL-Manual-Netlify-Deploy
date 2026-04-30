@@ -1,9 +1,9 @@
 {
-  "apps/SAIL-Helm-v9.changelog": {
+  "apps/SAIL-Helm.changelog": {
     "manual": "SAIL-Helm-Manual.html",
     "cascade": [
-      "apps/SuperTeacher-v6.changelog",
-      "apps/SuperStudent-v5.changelog"
+      "apps/SuperTeacher.changelog",
+      "apps/SuperStudent.changelog"
     ],
     "section_map": {
       "calendar": "administration",
@@ -24,7 +24,7 @@
       "roles": "roles"
     }
   },
-  "apps/SuperTeacher-v6.changelog": {
+  "apps/SuperTeacher.changelog": {
     "manual": "SuperTeacher-Manual.html",
     "cascade": [],
     "section_map": {
@@ -45,7 +45,7 @@
       "compliance": "compliance"
     }
   },
-  "apps/SuperStudent-v5.changelog": {
+  "apps/SuperStudent.changelog": {
     "manual": "SuperStudent-Manual.html",
     "cascade": [],
     "section_map": {
@@ -64,7 +64,7 @@
       "compliance": "compliance"
     }
   },
-  "apps/compass-v3.changelog": {
+  "apps/Compass.changelog": {
     "manual": "Compass-Manual.html",
     "cascade": [],
     "section_map": {
@@ -82,7 +82,7 @@
       "compliance": "compliance"
     }
   },
-  "apps/compass-counsellor-v3.changelog": {
+  "apps/Compass-Counsellor.changelog": {
     "manual": "Compass-Counsellor-Manual.html",
     "cascade": [],
     "section_map": {
@@ -99,7 +99,7 @@
       "compliance": "compliance"
     }
   },
-  "apps/sail-ielts-v5.changelog": {
+  "apps/IELTS-OS.changelog": {
     "manual": "IELTS-OS-Manual.html",
     "cascade": [],
     "section_map": {
@@ -117,7 +117,7 @@
       "compliance": "compliance"
     }
   },
-  "apps/LifeOS-v2.changelog": {
+  "apps/Life-OS.changelog": {
     "manual": "Life-OS-Manual.html",
     "cascade": [],
     "section_map": {
@@ -135,7 +135,7 @@
       "settings": "settings"
     }
   },
-  "apps/sail-wealth-v10.changelog": {
+  "apps/Wealth-OS.changelog": {
     "manual": "Wealth-OS-Manual.html",
     "cascade": [],
     "section_map": {

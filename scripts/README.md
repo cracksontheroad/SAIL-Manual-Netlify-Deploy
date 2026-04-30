@@ -1,24 +1,48 @@
 # scripts/
 
-Tooling for the SAIL Manual deploy folder. Hand-edited HTML manuals are
-the source of truth; this folder is the safety + ergonomics layer.
+Tooling for the SAIL Manual deploy folder. The 8 product manuals at
+the repo root are what gets shipped; this folder is the automation
+that keeps them in sync with the apps.
 
-## Daily use
+## Daily use — one command
 
-To update a manual: edit its HTML in this repo, then run:
+After you (or chat-Claude) edit any app source file at
+`~/Documents/SAIL/Projects/`:
 
 ```
-./scripts/deploy.sh
+./scripts/auto-update.sh
 ```
 
-That command:
+That runs the entire pipeline:
+
+1. `sync-apps.py` — auto-discovers latest app source versions, writes
+   stable-name manifests `apps/<App>.changelog`.
+2. For each manifest that changed, runs `generate.py --apply` to call
+   Claude and rewrite the affected manual sections.
+3. `deploy.sh -y` runs the safety gate and pushes to Netlify.
+4. Commits and pushes to GitHub for archival.
+
+No prompts, no diffs to review. Validators do the checking. If any
+validator fails, the pipeline aborts loudly and nothing ships.
+
+## Lower-level — manual control
+
+If you want to run pieces individually (debugging or one-off control):
+
+```
+./scripts/sync-apps.py                                 # refresh manifests
+./scripts/generate.py apps/SAIL-Helm.changelog         # dry-run, prints proposed diff
+./scripts/generate.py apps/SAIL-Helm.changelog --apply # writes the new HTML
+./scripts/deploy.sh                                    # interactive safety-gated deploy
+./scripts/deploy.sh -y                                 # skip confirmation prompt
+```
+
+`deploy.sh` does:
 
 1. Validates all 8 manuals against the safety gate (>80KB, no >20% shrink, none missing).
 2. Updates `manifest.json` with new SHA256 hashes.
-3. Asks you to confirm.
+3. (interactive only) asks you to confirm.
 4. Runs `netlify deploy --prod --dir .` to push to `sailecosystem.netlify.app`.
-
-Pass `-y` (or `--yes`) to skip the confirmation prompt.
 
 ## Why this layer exists
 
@@ -33,8 +57,9 @@ This tooling replaces it with a fail-loud, human-gated alternative:
   20% — the three signatures of the 2026-04-13 wipe.
 - Deploy is CLI-only (`netlify deploy`); the GitHub remote is archival.
   Pushing to GitHub does **not** trigger a Netlify build.
-- No auto-commit, no auto-push, no scheduled execution. Every step is
-  a deliberate human action.
+- No scheduled execution. No GitHub Actions auto-deploy. No webhook
+  triggers. The pipeline only runs when you invoke it with
+  `./scripts/auto-update.sh` (or one of the lower-level scripts).
 
 ## When the safety gate fires
 
@@ -51,26 +76,18 @@ There is intentionally no `--force` flag. If you genuinely need to land
 a smaller version, edit the gate constants in `update_manifest.py`,
 deploy, then revert the change. The friction is the point.
 
-## Change-detection signal (apps/*.changelog → manual-update issue)
+## What's in apps/ — manifests, not source
 
-The repo does **not** contain app source files (`.jsx`/`.html`) — those
-live outside this repo and contain hardcoded API keys that must never
-be committed. Instead, `apps/` contains a `*.changelog` manifest per
-app: a tiny plain-text file with the CHANGELOG comments extracted
-from the app source.
+The repo does **not** contain app source files — those live outside
+this repo at `~/Documents/SAIL/Projects/` and contain hardcoded API
+keys that must never be committed. Instead, `apps/` contains a
+`<App>.changelog` manifest per app: a tiny plain-text file with the
+CHANGELOG comments extracted from the app source.
 
-To regenerate manifests after editing an app:
-
-```
-./scripts/sync-apps.py
-git add apps/
-git commit -m "Sync app manifests"
-git push origin main
-```
-
-`sync-apps.py` reads source files from `$SAIL_APP_SOURCE` (default
-`~/Documents/SAIL/Projects/`), extracts `// CHANGELOG:` lines from
-the top of each, and writes the matching `apps/<name>.changelog`.
+Manifest filenames are version-stable (`apps/SAIL-Helm.changelog`,
+not `apps/SAIL-Helm-v9.changelog`). `sync-apps.py` auto-discovers
+the latest version of each app from the source dir, so v9 → v10
+needs no config changes.
 
 When a `.changelog` file changes on `main`, the workflow
 `.github/workflows/detect-changes.yml` runs `scripts/detect-changes.py`,
@@ -101,10 +118,10 @@ so it's persistent.
 
 ### Use
 ```
-./scripts/generate.py apps/SAIL-Helm-v9.changelog              # dry-run, prints diffs
-./scripts/generate.py apps/SAIL-Helm-v9.changelog --review     # adds self-review pass
-./scripts/generate.py apps/SAIL-Helm-v9.changelog --apply      # writes updates to disk
-./scripts/generate.py apps/SAIL-Helm-v9.changelog --apply --deploy   # writes + runs deploy.sh
+./scripts/generate.py apps/SAIL-Helm.changelog              # dry-run, prints diffs
+./scripts/generate.py apps/SAIL-Helm.changelog --review     # adds self-review pass
+./scripts/generate.py apps/SAIL-Helm.changelog --apply      # writes updates to disk
+./scripts/generate.py apps/SAIL-Helm.changelog --apply --deploy   # writes + runs deploy.sh
 ```
 
 ### How it works

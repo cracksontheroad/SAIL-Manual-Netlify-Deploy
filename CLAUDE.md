@@ -57,30 +57,41 @@ The 8 product manuals at the repo root are the **only** files that ship to Netli
 
 ---
 
-## How updates flow
+## How updates flow — one command
+
+After editing any app source at `~/Documents/SAIL/Projects/`:
 
 ```
-edit app source at ~/Documents/SAIL/Projects/
-        ↓
-./scripts/sync-apps.py                      # writes apps/*.changelog
-git add apps/ && git commit && git push     # triggers detect-changes workflow
-        ↓
-GitHub Issue opens with label `manual-update`
-listing affected manual sections per file-map.json
-        ↓
-[FUTURE: scripts/generate.py reads issue, calls Claude API,
- writes updated manual sections, opens PR for review]
-        ↓
-edit affected manual HTML at repo root (today: by hand)
-        ↓
-./scripts/deploy.sh                         # safety-gated deploy
-        ↓
-sailecosystem.netlify.app live with new content
-        ↓
-git commit + push the manual changes (archival)
+./scripts/auto-update.sh
 ```
 
-**No auto-deploy on git push exists or should ever exist.** The site is not git-connected. Deploys go through `./scripts/deploy.sh` which calls Netlify CLI directly after validating the safety gate. This is the post-wipe-incident model.
+That script does the entire pipeline:
+
+1. `sync-apps.py` — auto-discovers the latest version of each app
+   (handles v9 → v10 bumps without config changes) and writes
+   `apps/<App>.changelog` manifests.
+2. For each manifest that changed, runs `generate.py --apply` —
+   calls Claude to rewrite the affected manual sections, runs
+   per-section validators, then whole-file validators.
+3. `deploy.sh -y` — runs the manifest gate (80 KB / 20 % shrink /
+   footer / all-8-present), then `netlify deploy --prod --dir .`.
+4. Commits + pushes to GitHub for archival.
+
+If any validator fails at any stage, the pipeline aborts loudly
+and nothing ships. The five filters (tight prompt, per-section
+validators, optional review pass, whole-file validators, manifest
+gate) replace human review of the LLM output.
+
+**Manifest filenames are version-stable** (`apps/SAIL-Helm.changelog`,
+not `apps/SAIL-Helm-v9.changelog`). When chat-Claude bumps an app
+to v10, `sync-apps.py` picks up the new file automatically; no
+edits to `file-map.json` or any script.
+
+**No auto-deploy on git push exists or should ever exist.** The
+site is not git-connected. Deploys go through `./scripts/deploy.sh`
+(or `auto-update.sh` which calls it) only — never via webhook,
+GitHub Action, or scheduled task. This is the post-wipe-incident
+model.
 
 ---
 
