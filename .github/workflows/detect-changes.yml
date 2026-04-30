@@ -1,10 +1,10 @@
-name: Detect App Changes → Flag Manual Updates
+name: Flag Manual Updates
 on:
   push:
     branches: [main]
     paths: ['apps/**']
 jobs:
-  detect-and-flag:
+  flag:
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -14,12 +14,10 @@ jobs:
         with: {fetch-depth: 2}
       - uses: actions/setup-python@v5
         with: {python-version: '3.11'}
-      - id: changed
-        run: |
-          CHANGED=$(git diff --name-only HEAD~1 HEAD -- 'apps/')
-          echo "files=$CHANGED" >> $GITHUB_OUTPUT
-      - if: steps.changed.outputs.files != ''
-        run: python scripts/detect-changes.py "${{ steps.changed.outputs.files }}"
+      - id: files
+        run: echo "changed=$(git diff --name-only HEAD~1 HEAD -- apps/)" >> $GITHUB_OUTPUT
+      - if: steps.files.outputs.changed != ''
+        run: python scripts/detect-changes.py "${{ steps.files.outputs.changed }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}

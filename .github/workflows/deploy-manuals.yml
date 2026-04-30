@@ -1,11 +1,10 @@
-name: Deploy Manuals to Netlify
+name: Deploy Manuals
 on:
   workflow_dispatch:
     inputs:
       reason:
-        description: 'Which manual was updated?'
+        description: 'What was updated?'
         required: true
-        default: 'Manual update'
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -16,4 +15,3 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-      - run: echo "Deployed. Reason - ${{ github.event.inputs.reason }}"
