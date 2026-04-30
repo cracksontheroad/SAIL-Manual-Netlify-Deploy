@@ -20,7 +20,7 @@ CHANGED=$(
   (
     git diff --name-only HEAD -- apps/
     git ls-files --others --exclude-standard apps/
-  ) | grep '\.changelog$' | sort -u
+  ) | awk '/\.changelog$/' | sort -u
 )
 
 if [ -z "$CHANGED" ]; then
