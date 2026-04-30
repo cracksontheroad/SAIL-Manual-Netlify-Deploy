@@ -85,14 +85,71 @@ which:
 edits the manual HTML and runs `./scripts/deploy.sh`. The deploy gate
 stays intact.
 
+## LLM-based manual generator (`generate.py`)
+
+Closes the loop from "issue says these sections need updating" to
+"updated HTML is on disk and ready to deploy" without you writing
+prose.
+
+### Setup (one-time)
+```
+pip3 install anthropic
+export ANTHROPIC_API_KEY=sk-ant-...
+```
+Add the env var to your shell profile (`~/.zshrc` or `~/.bash_profile`)
+so it's persistent.
+
+### Use
+```
+./scripts/generate.py apps/SAIL-Helm-v9.changelog              # dry-run, prints diffs
+./scripts/generate.py apps/SAIL-Helm-v9.changelog --review     # adds self-review pass
+./scripts/generate.py apps/SAIL-Helm-v9.changelog --apply      # writes updates to disk
+./scripts/generate.py apps/SAIL-Helm-v9.changelog --apply --deploy   # writes + runs deploy.sh
+```
+
+### How it works
+
+1. Reads the manifest's CHANGELOG entries.
+2. Looks up `file-map.json` to find the target manual + which section
+   keywords matched.
+3. For each affected section, locates the `<div id="X">...</div>` block
+   in the manual.
+4. Calls Claude (Sonnet 4.6 by default) with a constrained prompt:
+   "rewrite this section to reflect the changelog, preserve all classes
+   and IDs, no version stamps, no invented features."
+5. Validates each proposed update:
+   - Section `id="..."` preserved
+   - Class attribute on opening tag unchanged
+   - No `class="version-note"`, no "Updated: ..." stamps
+   - Non-empty
+6. After all sections processed, runs whole-file structural validators:
+   - `learn@sailedu.co` still in footer
+   - Manual still ≥ 80 KB
+   - Manual hasn't shrunk by > 20 %
+7. With `--apply`, writes the new HTML. With `--deploy`, chains into
+   `deploy.sh` which runs the manifest gate and deploys to Netlify.
+
+### Optional `--review` flag
+
+Runs a second LLM call per section asking "list any claim in the
+proposed update not supported by the CHANGELOG." If anything's flagged,
+that section is skipped. Adds latency and cost; recommended until you've
+seen enough output to trust the prompt.
+
+### Cascade is NOT processed in v1
+
+If a manifest's `cascade` lists other manifests (Helm cascades to
+SuperTeacher and SuperStudent), you currently have to run the script
+once per manifest. To be added in v2.
+
 ## What does NOT happen automatically
 
-- `regenerate()` in `update_manifest.py` is a stub that raises
-  `NotImplementedError`. There is no upstream source or generator yet —
-  manuals are hand-edited.
+- `regenerate()` in `update_manifest.py` is still a stub that raises
+  `NotImplementedError`. The actual generator lives in `generate.py`.
 - `manifest.json` only updates when `update_manifest.py --apply` runs
   (which `deploy.sh` does for you).
-- Pushing to GitHub does **not** deploy. Use `./scripts/deploy.sh`.
+- Pushing to GitHub does **not** deploy. Use `./scripts/deploy.sh`
+  or `./scripts/generate.py --apply --deploy`.
 - The detect-changes workflow does **not** deploy or modify manuals —
   it only opens an issue.
 
