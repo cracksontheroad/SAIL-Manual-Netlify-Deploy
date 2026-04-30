@@ -1,0 +1,19 @@
+name: Deploy Manuals to Netlify
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Which manual was updated?'
+        required: true
+        default: 'Manual update'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install -g netlify-cli
+      - run: netlify deploy --prod --dir=.
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      - run: echo "Deployed. Reason - ${{ github.event.inputs.reason }}"

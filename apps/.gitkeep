@@ -1,0 +1,9 @@
+# Drop SAIL app .jsx files here to trigger the detect-changes workflow.
+# apps/SAIL-Helm-v9.jsx → SAIL-Helm-Manual.html
+# apps/SuperTeacher-v6.jsx → SuperTeacher-Manual.html
+# apps/SuperStudent-v5.jsx → SuperStudent-Manual.html
+# apps/compass-v3.jsx → Compass-Manual.html
+# apps/compass-counsellor-v3.jsx → Compass-Counsellor-Manual.html
+# apps/sail-ielts-v5.jsx → IELTS-OS-Manual.html
+# apps/LifeOS-v2.jsx → Life-OS-Manual.html
+# apps/sail-wealth-v10.html → Wealth-OS-Manual.html
