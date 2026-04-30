@@ -51,21 +51,39 @@ There is intentionally no `--force` flag. If you genuinely need to land
 a smaller version, edit the gate constants in `update_manifest.py`,
 deploy, then revert the change. The friction is the point.
 
-## Change-detection signal (apps/ → manual-update issue)
+## Change-detection signal (apps/*.changelog → manual-update issue)
 
-When a `.jsx` (or `.html`) file in `apps/` is pushed to `main`, the
-GitHub Actions workflow `.github/workflows/detect-changes.yml` runs
-`scripts/detect-changes.py`. That script:
+The repo does **not** contain app source files (`.jsx`/`.html`) — those
+live outside this repo and contain hardcoded API keys that must never
+be committed. Instead, `apps/` contains a `*.changelog` manifest per
+app: a tiny plain-text file with the CHANGELOG comments extracted
+from the app source.
 
-- reads CHANGELOG comments from the changed app file,
+To regenerate manifests after editing an app:
+
+```
+./scripts/sync-apps.py
+git add apps/
+git commit -m "Sync app manifests"
+git push origin main
+```
+
+`sync-apps.py` reads source files from `$SAIL_APP_SOURCE` (default
+`~/Documents/SAIL/Projects/`), extracts `// CHANGELOG:` lines from
+the top of each, and writes the matching `apps/<name>.changelog`.
+
+When a `.changelog` file changes on `main`, the workflow
+`.github/workflows/detect-changes.yml` runs `scripts/detect-changes.py`,
+which:
+
+- reads the changed manifest(s),
 - maps keywords to manual section IDs via `scripts/file-map.json`,
 - opens a GitHub Issue labeled `manual-update` listing which manual
   sections likely need updating.
 
-**The workflow does not deploy.** It only signals. A human still has
-to edit the manual HTML and run `./scripts/deploy.sh`. This keeps the
-deploy gate intact while making the "which sections changed?" question
-machine-answerable.
+**The workflow does not deploy.** It only signals. A human still
+edits the manual HTML and runs `./scripts/deploy.sh`. The deploy gate
+stays intact.
 
 ## What does NOT happen automatically
 
